@@ -156,6 +156,7 @@ def pip_cache(version, requires=None):
         'MULTIARCH_URL': f"https://apt.{index_host}/multiarch",
         'DOWNLOADS_URL': f"https://apt.{index_host}/assets",
         'PIP_INDEX_REPO': f"https://pypi.{index_host}/{pip_path}",
+        #'PIP_INDEX_REPO': f"https://pypi.org/simple",
         #'PIP_TRUSTED_HOSTS': index_host,
         'PIP_UPLOAD_REPO': os.environ.get('PIP_UPLOAD_REPO', f"{os.environ.get('PIP_UPLOAD_HOST', 'http://localhost')}/{pip_path}"),
         'PIP_UPLOAD_USER': os.environ.get('PIP_UPLOAD_USER', f"jp{JETPACK_VERSION.major}" if SYSTEM_ARM else 'amd64'),
@@ -197,8 +198,8 @@ if IS_TEGRA:
         cuda_samples('11.8', requires='==35.*'),
 
         # JetPack 4-5 (CUDA installed in base container)
-        cuda_builtin(CUDA_VERSION, requires='<36'),
-        cuda_samples(CUDA_VERSION, requires='<36'),
+        # cuda_builtin(CUDA_VERSION, requires='<36'),
+        # cuda_samples(CUDA_VERSION, requires='<36'),
     ]
 elif IS_SBSA:
     package = [

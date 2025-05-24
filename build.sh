@@ -3,6 +3,7 @@
 ROOT="$(dirname "$(readlink -f "$0")")"
 VENV="$ROOT/venv"
 
+echo "venv is $VENV"
 if [ -d $VENV ]; then
   source $VENV/bin/activate
 fi

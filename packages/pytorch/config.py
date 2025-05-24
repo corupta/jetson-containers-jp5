@@ -40,9 +40,10 @@ def pytorch_pip(version, requires=None):
 
     if L4T_VERSION.major >= 36:
         pkg['build_args']['USE_NCCL'] = 1  # NCCL building only on JP6 and newer
-        
-    if Version(version) >= Version('2.3.1'): # begin disabling MPI with JP 6.1 since GLOO/NCCL is working
-        pkg['build_args']['USE_MPI'] = 0     # and to eliminate security vulnerability from MPI packages
+        if Version(version) >= Version('2.3.1'): # begin disabling MPI with JP 6.1 since GLOO/NCCL is working
+            pkg['build_args']['USE_MPI'] = 0     # and to eliminate security vulnerability from MPI packages
+    else:
+        pkg['build_args']['USE_MPI'] = 1
         
     if requires:
         pkg['requires'] = requires
@@ -110,8 +111,8 @@ package = [
     pytorch_pip('2.4', requires='==36.*'),
     pytorch_pip('2.5', requires='==36.*'),    # without OpenMPI
     pytorch_pip('2.6', requires='==36.*'),    # without OpenMPI
-    pytorch_pip('2.7', requires='==36.*'),    # without OpenMPI
-    pytorch_pip('2.8', requires='==36.*'),    # without OpenMPI
+    pytorch_pip('2.7', requires='>=35'),
+    pytorch_pip('2.8', requires='>=35'),
 
     # JetPack 4
     pytorch_wget('1.10', 'torch-1.10.0-cp36-cp36m-linux_aarch64.whl', 'https://nvidia.box.com/shared/static/fjtbno0vpo676a25cgvuqc1wty0fkkg6.whl', '==32.*'),

@@ -31,5 +31,15 @@ RUN echo "Downloading ${CUDNN_DEB}" && \
     dpkg -P ${CUDNN_DEB} && \
     rm -rf /tmp/cudnn
 
+# RUN cd /usr/src/cudnn_samples_v*/conv_sample/ && cat Makefile
+
+RUN cd /usr/src/cudnn_samples_v*/conv_sample/ && cat ../samples_common.mk
+
+RUN echo "Patching makefile support matrix list"
+
+RUN sed -i '/^SMS_BLACKWELL\s\+?=/c\SMS_BLACKWELL ?=\nifeq ($(shell expr $(CUDA_VERSION) \\>= 13000),1)\nSMS_BLACKWELL ?= 100 101 120\nendif' /usr/src/cudnn_samples_v*/samples_common.mk
+
+RUN cd /usr/src/cudnn_samples_v*/conv_sample/ && cat ../samples_common.mk
+
 RUN cd /usr/src/cudnn_samples_v*/conv_sample/ && \
     make -j$(nproc)

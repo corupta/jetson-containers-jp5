@@ -31,6 +31,7 @@ _PACKAGE_KEYS = ['alias', 'build_args', 'build_flags', 'config', 'depends', 'dis
                  'dockerfile', 'docs', 'group', 'name', 'notes', 'path',
                  'prefix', 'postfix', 'requires', 'test']
 
+uuu=True
 
 def package_search_dirs(package_dirs, scan=False):
     """
@@ -143,7 +144,7 @@ def scan_packages(package_dirs=_PACKAGE_DIRS, rescan=False, **kwargs):
 
     # skip recursively searching under these packages
     PRELOAD = ['robots/ros']
-    BLACKLIST = ['vila-microservice/src']
+    BLACKLIST = ['vila-microservice/src', 'smart-home']
 
     def is_blacklisted(x):
         for blacklist in BLACKLIST:
@@ -210,6 +211,11 @@ def scan_packages(package_dirs=_PACKAGE_DIRS, rescan=False, **kwargs):
 
     for thread in threads:
         thread.join()
+
+    global uuu
+    if uuu:
+        print("pkgs", _PACKAGES)
+        uuu = False
 
     return packages
 
