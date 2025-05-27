@@ -6,10 +6,11 @@ echo "Building FlashInfer ${FLASHINFER_VERSION}"
 REPO_URL="https://github.com/flashinfer-ai/flashinfer"
 REPO_DIR="/opt/flashinfer"
 
-git clone --recursive --depth=1 --branch=v${FLASHINFER_VERSION} $REPO_URL $REPO_DIR ||
+git clone --recursive --depth=1 --branch=v${FLASHINFER_VERSION_SPEC} $REPO_URL $REPO_DIR ||
 git clone --recursive --depth=1 $REPO_URL $REPO_DIR
 
 cd $REPO_DIR
+git apply /tmp/flashinfer/patch.diff
 sed -i 's|options={.*| |g' setup.py
 echo "Patched $REPO_DIR/setup.py"
 cat setup.py

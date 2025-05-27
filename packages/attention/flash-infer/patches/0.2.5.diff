@@ -1,0 +1,65 @@
+diff --git a/docs/installation.rst b/docs/installation.rst
+index 641c5aa..07d8e80 100644
+--- a/docs/installation.rst
++++ b/docs/installation.rst
+@@ -19,7 +19,7 @@ Prerequisites
+ 
+   - Use ``python -c "import torch; print(torch.version.cuda)"`` to check your PyTorch CUDA version.
+ 
+-- Supported GPU architectures: ``sm75``, ``sm80``, ``sm86``, ``sm89``, ``sm90``.
++- Supported GPU architectures: ``sm72``, ``sm75``, ``sm80``, ``sm86``, ``sm89``, ``sm90``.
+ 
+ Quick Start
+ ^^^^^^^^^^^
+diff --git a/flashinfer/jit/core.py b/flashinfer/jit/core.py
+index 7797ad2..b9d82ef 100644
+--- a/flashinfer/jit/core.py
++++ b/flashinfer/jit/core.py
+@@ -50,8 +50,8 @@ def check_cuda_arch():
+     # cuda arch check for fp8 at the moment.
+     for cuda_arch_flags in torch_cpp_ext._get_cuda_arch_flags():
+         arch = int(re.search(r"compute_(\d+)", cuda_arch_flags).group(1))
+-        if arch < 75:
+-            raise RuntimeError("FlashInfer requires sm75+")
++        if arch < 72:
++            raise RuntimeError("FlashInfer requires sm72+")
+ 
+ 
+ def clear_cache_dir():
+diff --git a/include/flashinfer/mma.cuh b/include/flashinfer/mma.cuh
+index 75c7dc6..2baa4ef 100644
+--- a/include/flashinfer/mma.cuh
++++ b/include/flashinfer/mma.cuh
+@@ -41,7 +41,7 @@ namespace mma {
+ #define FLASHINFER_MMA_F16F16F32_M16N8K16_ENABLED
+ #define FLASHINFER_MMA_F16F16F16_M16N8K16_ENABLED
+ #endif
+-#if (!defined(__CUDA_ARCH__) || (__CUDA_ARCH__ >= 750))
++#if (!defined(__CUDA_ARCH__) || (__CUDA_ARCH__ >= 720))
+ #define FLASHINFER_MMA_F16F16F32_M16N8K8_ENABLED
+ #define FLASHINFER_MMA_F16F16F16_M16N8K8_ENABLED
+ #define FLASHINFER_LDMATRIX_M8N8X4_ENABLED
+diff --git a/setup.py b/setup.py
+index cb3478d..59d8e68 100644
+--- a/setup.py
++++ b/setup.py
+@@ -166,8 +166,8 @@ if enable_aot:
+     # cuda arch check for fp8 at the moment.
+     for cuda_arch_flags in torch_cpp_ext._get_cuda_arch_flags():
+         arch = int(re.search(r"compute_(\d+)", cuda_arch_flags).group(1))
+-        if arch < 75:
+-            raise RuntimeError("FlashInfer requires sm75+")
++        if arch < 72:
++            raise RuntimeError("FlashInfer requires sm72+")
+ 
+     if os.environ.get("FLASHINFER_USE_CXX11_ABI"):
+         # force use cxx11 abi
+@@ -177,7 +177,7 @@ if enable_aot:
+     torch_full_version = Version(torch.__version__)
+     torch_version = f"{torch_full_version.major}.{torch_full_version.minor}"
+     cmdclass["build_ext"] = NinjaBuildExtension
+-    install_requires = [f"torch == {torch_version}.*"]
++    install_requires = [f"torch >= {torch_version}.0"]
+ 
+     aot_build_meta = {}
+     aot_build_meta["cuda_major"] = cuda_version.major

@@ -38,12 +38,6 @@ def pytorch_pip(version, requires=None):
     if Version(LSB_RELEASE) >= Version('24.04'):
         pkg['build_args']['USE_XNNPACK'] = 0
 
-    if L4T_VERSION.major >= 36:
-        pkg['build_args']['USE_NCCL'] = 1  # NCCL building only on JP6 and newer
-        if Version(version) >= Version('2.3.1'): # begin disabling MPI with JP 6.1 since GLOO/NCCL is working
-            pkg['build_args']['USE_MPI'] = 0     # and to eliminate security vulnerability from MPI packages
-    else:
-        pkg['build_args']['USE_MPI'] = 1
         
     if requires:
         pkg['requires'] = requires

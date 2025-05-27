@@ -9,6 +9,7 @@ import socket
 import pprint
 
 import torch
+import torch.distributed as dist
 import huggingface_hub
 
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -68,8 +69,9 @@ elif args.precision == 'fp32':
 # load model
 print(f'Loading model {args.model} ({args.precision})')
 
-model = AutoModelForCausalLM.from_pretrained(args.model, device_map=device, **kwargs) #AutoModelForCausalLM.from_pretrained(args.model, **kwargs)
+model = AutoModelForCausalLM.from_pretrained(args.model, **kwargs) #AutoModelForCausalLM.from_pretrained(args.model, **kwargs)
 
+model = model.to(device)
 #if args.precision == 'fp32' or args.precision == 'fp16':
 #    model = model.to(device)   # int8/int4 already sets the device
     
