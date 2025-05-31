@@ -1,3 +1,57 @@
+Hi y'all, 
+So, I've got an AGX Xavier 32GB and an AGX Orin 64GB, and can't afford much.
+I wanted to make the most of my Xavier, so in this repo, I'll try to build stuff that can run in it with the latest versions.
+* Note that it has sm72, it supports tensor matrix operations with size same as sm70 (m8n8k4) but additionally supports int operation. (sm75 supports higher length matrix op m16n8k8, sm80+ even higher m16n8k16)
+* Most open-source software forget about sm72, but if one supports sm70 or sm75 we probably can run it here as well :) Otherwise need to write custom kernels as polyfills.
+
+* Base: Jetpack5 Cuda 12.2 CuDNN 9.10 Python 3.12 Ubuntu 20.04 (as per the latest supported for Xavier)
+* Successfully built triton 3.2, pytorch 2.7, so far.
+* Flashattention/flashinfer raised some issue: sm80 or higher required. Will investigate further..
+
+### LMDeploy 0.8.0
+* Built it for Jetpack6 and tried it in Orin as well. Turbomind seemed to ran somewhat faster than pytorch backend. Turbomind seemed to ran much slower than MLC.
+* `CUDA_VERSION=12.2 PYTHON_VERSION=3.12 PYTORCH_VERSION=2.7 NUMPY_VERSION=1 CUDNN_VERSION=9.10 jetson-containers build lmdeploy:0.8.1`
+* Successfully built lmdeploy version 0.8.0 (dubbed 0.8.1 due to my patches) without flash attention package, both its pytorch engine and turbomind engine works but will fail in models requiring operations/dtypes of sm80+.
+* Below is a sample docker compose, that worked both much better and faster than my expectation in Jetson AGX Xavier 32GB. It might the best model to run as of today. Not all models work due to dtype, quantization, etc.
+* When experimenting if you get `[TM][ERROR] CUDA runtime error: out of memory /opt/lmdeploy/src/turbomind/core/allocator.cc:49` error, if the error includes `weights` try a smaller model, otherwise lower `cache-max-entry-count` or `quant-policy`.
+```
+services:
+  llm-server:
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+    ports:
+      - 9000:9000
+    environment:
+      - DOCKER_PULL=always
+      - HUGGING_FACE_HUB_TOKEN=${HUGGINGFACE_TOKEN}
+      - HF_HUB_CACHE=/root/.cache/huggingface
+    pull_policy: always
+    volumes:
+      - /mnt/nvme/cache:/root/.cache
+    image: corupta/lmdeploy:0.8.1-r35.6.1-cp312-cu122-20.04
+    command: lmdeploy serve api_server Intel/DeepSeek-R1-0528-Qwen3-8B-int4-AutoRound-awq-inc
+      --reasoning-parser deepseek-r1
+      --backend turbomind
+      --cache-max-entry-count 0.5
+      --quant-policy 8
+      --model-format awq
+      --server-port 9000
+```
+https://github.com/user-attachments/assets/e2515eda-365a-4d66-a54f-bc0b5aee1a64
+
+
+
+# Below is the original readme from [dusty-nv/jetson-containers](https://github.com/dusty-nv/jetson-containers)
+Special thanks to original contributers, I really loved the project structure.
+
 [![a header for a software project about building containers for AI and machine learning](https://raw.githubusercontent.com/dusty-nv/jetson-containers/docs/docs/images/header_blueprint_rainbow.jpg)](https://www.jetson-ai-lab.com)
 
 # CUDA Containers for Edge AI & Robotics
