@@ -1,0 +1,18 @@
+diff --git a/mlx/backend/cuda/CMakeLists.txt b/mlx/backend/cuda/CMakeLists.txt
+index 1eab65e..ec4743c 100644
+--- a/mlx/backend/cuda/CMakeLists.txt
++++ b/mlx/backend/cuda/CMakeLists.txt
+@@ -71,11 +71,11 @@ endif()
+ # managed memory. TODO: Add more architectures for potential performance gain.
+ if(MLX_FAST_COMPILE)
+   set(MLX_CUDA_ARCHITECTURES
+-      "70"
++      "72"
+       CACHE STRING "CUDA architectures")
+ else()
+   set(MLX_CUDA_ARCHITECTURES
+-      "70;80"
++      "72;87"
+       CACHE STRING "CUDA architectures")
+ endif()
+ message(STATUS "CUDA architectures: ${MLX_CUDA_ARCHITECTURES}")

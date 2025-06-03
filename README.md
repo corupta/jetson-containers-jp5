@@ -8,6 +8,9 @@ I wanted to make the most of my Xavier, so in this repo, I'll try to build stuff
 * Successfully built triton 3.2, pytorch 2.7, so far.
 * Flashattention/flashinfer raised some issue: sm80 or higher required. Will investigate further..
 
+### Jetpack 5.1.5 (r35.6.1)
+Latest jetpack docker image from nvidia is 35.4.1, so we pull it update apt repo and upgrade to 35.6.1. You can either build it via `cd l4t-jetpack/r35.6.1 && ./build.sh` or use what I've uploaded to dockerhub, aka: `corupta/l4t-jetpack:r35.6.1`
+
 ### LMDeploy 0.8.0
 * Built it for Jetpack6 and tried it in Orin as well. Turbomind seemed to ran somewhat faster than pytorch backend. Turbomind seemed to ran much slower than MLC.
 * `CUDA_VERSION=12.2 PYTHON_VERSION=3.12 PYTORCH_VERSION=2.7 NUMPY_VERSION=1 CUDNN_VERSION=9.10 jetson-containers build lmdeploy:0.8.1`
@@ -46,6 +49,9 @@ services:
       --server-port 9000
 ```
 https://github.com/user-attachments/assets/e2515eda-365a-4d66-a54f-bc0b5aee1a64
+
+### MLX 0.26.0
+* It seems they are porting MLX to use CUDA unified memory. I see that the repo is under active development, I wanted to head up and start building it for jetson.
 
 
 

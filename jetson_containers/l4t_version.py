@@ -354,6 +354,8 @@ def get_l4t_base(l4t_version: str = None):
     elif l4t_version.major >= 36:  # JetPack 6
         return f"ubuntu:{LSB_RELEASE}"  # "nvcr.io/ea-linux4tegra/l4t-jetpack:r36.0.0"
     elif l4t_version.major >= 34:  # JetPack 5
+        if l4t_version == Version('35.6.1'):
+            return "corupta/l4t-jetpack:r35.6.1"
         if l4t_version >= Version('35.4.1'):
             return "nvcr.io/nvidia/l4t-jetpack:r35.4.1"
         else:
