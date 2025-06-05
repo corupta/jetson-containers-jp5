@@ -50,9 +50,16 @@ services:
 ```
 https://github.com/user-attachments/assets/e2515eda-365a-4d66-a54f-bc0b5aee1a64
 
+* Surprisingly, I got the best result for the following query in that same model, Intel AutoRound is much better than plain DWQ/AWQ or any MLC/MLX quantization in its response.
+
+https://github.com/user-attachments/assets/e262474d-6da5-4b24-994a-16607f21ea34
+
 ### MLX 0.26.0
 * It seems they are porting MLX to use CUDA unified memory. I see that the repo is under active development, I wanted to head up and start building it for jetson.
+* Ok, it won't work, yet, will continue once most development is done for CUDA, tracked in [[WIP] CUDA backend](https://github.com/ml-explore/mlx/pull/1983#issuecomment-2942722126)
 
+### TensorRT LLm 0.21
+* Now, I'm trying this one :)
 
 
 # Below is the original readme from [dusty-nv/jetson-containers](https://github.com/dusty-nv/jetson-containers)

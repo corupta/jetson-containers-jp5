@@ -35,8 +35,8 @@ else
 	fi
 	
 	sed -i 's|tensorrt.*||' requirements.txt
-	sed -i 's|torch.*|torch|' requirements.txt
-	sed -i 's|nvidia-cudnn.*||' requirements.txt
+	#sed -i 's|torch.*|torch|' requirements.txt
+	#sed -i 's|nvidia-cudnn.*||' requirements.txt
 	
 	git status
 	git diff --submodule=diff
@@ -50,7 +50,7 @@ fi
 pip3 install -r ${SOURCE_DIR}/requirements.txt
 pip3 install tensorrt_llm==${TRT_LLM_VERSION}
 
-pip3 uninstall -y torch && pip3 install torch==${PYTORCH_VERSION}
+#pip3 uninstall -y torch && pip3 install torch==${PYTORCH_VERSION}
 
 #pip3 show tensorrt_llm
 #python3 -c "import tensorrt_llm; print(tensorrt_llm.__version__)"

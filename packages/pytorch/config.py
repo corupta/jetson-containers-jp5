@@ -112,6 +112,7 @@ package = [
     pytorch_pip('2.5', requires='==36.*'),    # without OpenMPI
     pytorch_pip('2.6', requires='>=35'),
     pytorch_pip('2.7', requires='>=35'),
+    pytorch_pip('2.7.1', requires='>=35'),
     pytorch_pip('2.8', requires='>=35'),
 
     # JetPack 4

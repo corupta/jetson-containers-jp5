@@ -24,7 +24,7 @@ def cuda_python(version, cuda=None):
     builder['name'] = builder['name'] + '-builder'
     builder['build_args'] = {**builder['build_args'], 'FORCE_BUILD': 'on'}
     
-    if Version(version) == CUDA_VERSION:
+    if Version(cuda) == CUDA_VERSION:
         pkg['alias'] = 'cuda-python'
         builder['alias'] = 'cuda-python:builder'
         
@@ -45,5 +45,6 @@ else:
     elif L4T_VERSION.major >= 34:  # JetPack 5
         package = [
             cuda_python('11.4'),
+            cuda_python('12.2.1'),
             #cuda_python('11.7', '11.4'),
         ]

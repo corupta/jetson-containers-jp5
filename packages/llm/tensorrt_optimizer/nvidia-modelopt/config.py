@@ -25,5 +25,6 @@ def nvidiamodelopt(version, requires=None, default=False):
     return pkg, builder
 
 package = [
-    nvidiamodelopt('0.28.0', default=True)
+    nvidiamodelopt('0.28.0', default=False),
+    nvidiamodelopt('0.29.0', default=True)
 ]
