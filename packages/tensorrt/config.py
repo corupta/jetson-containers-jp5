@@ -168,7 +168,7 @@ if IS_TEGRA:
         # JetPack 4-5 (TensorRT installed in base container)
         # tensorrt_builtin(requires='<36', default=True),
         # tensorrt_git('10.7', '12.2', f'{TENSORRT_URL}/10.7.0/tars/TensorRT-10.7.0.23.l4t.aarch64-gnu.cuda-12.6.tar.gz', cudnn='9.10', requires=['==r35.*', '==cu122'])
-        tensorrt_tar('10.7', f'{TENSORRT_URL}/10.7.0/tars/TensorRT-10.7.0.23.l4t.aarch64-gnu.cuda-12.6.tar.gz', cudnn='9.3', requires=['==r35.*', '==cu122']),
+        tensorrt_tar('10.7', f'{TENSORRT_URL}/10.7.0/tars/TensorRT-10.7.0.23.l4t.aarch64-gnu.cuda-12.6.tar.gz', cudnn='9.10', requires=['==r35.*', '>=cu122']),
     ]
 
 elif IS_SBSA:

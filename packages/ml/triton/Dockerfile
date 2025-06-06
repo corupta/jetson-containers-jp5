@@ -13,7 +13,7 @@ FROM ${BASE_IMAGE}
 
 ARG TRITON_VERSION \
     TRITON_BRANCH \
-    FORCE_BUILD=off
+    FORCE_BUILD=on
 
 COPY build.sh install.sh /tmp/triton/
 

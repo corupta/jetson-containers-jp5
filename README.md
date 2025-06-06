@@ -8,6 +8,8 @@ I wanted to make the most of my Xavier, so in this repo, I'll try to build stuff
 * Successfully built triton 3.2, pytorch 2.7, so far.
 * Flashattention/flashinfer raised some issue: sm80 or higher required. Will investigate further..
 
+* Ongoing Build: Jetpack5 Ubuntu 22.04 Cuda 12.5 CuDNN 9.10 Python 3.12 TensorRT 10.7 triton 3.3.1 pytorch 2.7.1
+
 ### Jetpack 5.1.5 (r35.6.1)
 Latest jetpack docker image from nvidia is 35.4.1, so we pull it update apt repo and upgrade to 35.6.1. You can either build it via `cd l4t-jetpack/r35.6.1 && ./build.sh` or use what I've uploaded to dockerhub, aka: `corupta/l4t-jetpack:r35.6.1`
 
@@ -69,146 +71,329 @@ https://github.com/user-attachments/assets/e262474d-6da5-4b24-994a-16607f21ea34
 - [x] Build corupta/l4t-jetpack:r35.6.1-22.04
 - [x] ~~Build Cuda 12.9 just to try,~~ if it won't work build Cuda 12.2 package (Prolly, latest supported by the driver) (To my great surprise, it built but gave segfault in Cuda sample)
 - [x] Build Cuda samples with maching version to see if it works. (12.2 works)
-  - [x] Test Cuda 12.2 => OK
-  > [x] Test Cuda 12.9 => Bad
+  <details><summary>Test Cuda 12.2 => OK</summary>
+
     ```
-      cuda:12.9-samples-r35.6.1-cp312-cu129-22.04-cuda_12.9-samples \
-      /bin/bash -c '/bin/bash test-samples.sh                                                        
-      + : /opt/cuda-samples
-      ++ uname -m
-      + cd /opt/cuda-samples/bin/aarch64/linux/release
-      + ./deviceQuery
-      ./deviceQuery Starting...
-      CUDA Device Query (Runtime API) version (CUDART static linking)
-      test-samples.sh: line 8:    21 Segmentation fault      (core dumped) ./deviceQuery
-      [14:46:14] Failed building:  cuda:12.9-samples
+    cuda:12.2-samples-r35.6.1-cp312-cu122-22.04 \
+        /bin/bash -c '/bin/bash test-samples.sh
+    + : /opt/cuda-samples
+    ++ uname -m
+    + cd /opt/cuda-samples/bin/aarch64/linux/release
+    + ./deviceQuery
+    ./deviceQuery Starting...
+    CUDA Device Query (Runtime API) version (CUDART static linking)
+    Detected 1 CUDA Capable device(s)
+    Device 0: "Xavier"
+      CUDA Driver Version / Runtime Version          12.2 / 12.2
+      CUDA Capability Major/Minor version number:    7.2
+      Total amount of global memory:                 30991 MBytes (32496205824 bytes)
+      (008) Multiprocessors, (064) CUDA Cores/MP:    512 CUDA Cores
+      GPU Max Clock rate:                            1377 MHz (1.38 GHz)
+      Memory Clock rate:                             1377 Mhz
+      Memory Bus Width:                              256-bit
+      L2 Cache Size:                                 524288 bytes
+      Maximum Texture Dimension Size (x,y,z)         1D=(131072), 2D=(131072, 65536), 3D=(16384, 16384, 16384)
+      Maximum Layered 1D Texture Size, (num) layers  1D=(32768), 2048 layers
+      Maximum Layered 2D Texture Size, (num) layers  2D=(32768, 32768), 2048 layers
+      Total amount of constant memory:               65536 bytes
+      Total amount of shared memory per block:       49152 bytes
+      Total shared memory per multiprocessor:        98304 bytes
+      Total number of registers available per block: 65536
+      Warp size:                                     32
+      Maximum number of threads per multiprocessor:  2048
+      Maximum number of threads per block:           1024
+      Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+      Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+      Maximum memory pitch:                          2147483647 bytes
+      Texture alignment:                             512 bytes
+      Concurrent copy and kernel execution:          Yes with 1 copy engine(s)
+      Run time limit on kernels:                     No
+      Integrated GPU sharing Host Memory:            Yes
+      Support host page-locked memory mapping:       Yes
+      Alignment requirement for Surfaces:            Yes
+      Device has ECC support:                        Disabled
+      Device supports Unified Addressing (UVA):      Yes
+      Device supports Managed Memory:                Yes
+      Device supports Compute Preemption:            Yes
+      Supports Cooperative Kernel Launch:            Yes
+      Supports MultiDevice Co-op Kernel Launch:      Yes
+      Device PCI Domain ID / Bus ID / location ID:   0 / 0 / 0
+      Compute Mode:
+        < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
+    deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 12.2, CUDA Runtime Version = 12.2, NumDevs = 1
+    Result = PASS
+    + ./bandwidthTest
+    [CUDA Bandwidth Test] - Starting...
+    Running on...
+    Device 0: Xavier
+    Quick Mode
+    Host to Device Bandwidth, 1 Device(s)
+    PINNED Memory Transfers
+      Transfer Size (Bytes)        Bandwidth(GB/s)
+      32000000                     12.3
+    Device to Host Bandwidth, 1 Device(s)
+    PINNED Memory Transfers
+      Transfer Size (Bytes)        Bandwidth(GB/s)
+      32000000                     35.2
+    Device to Device Bandwidth, 1 Device(s)
+    PINNED Memory Transfers
+      Transfer Size (Bytes)        Bandwidth(GB/s)
+      32000000                     113.9
+    Result = PASS
+    NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.
+    + ./vectorAdd
+    [Vector addition of 50000 elements]
+    Copy input data from the host memory to the CUDA device
+    CUDA kernel launch with 196 blocks of 256 threads
+    Copy output data from the CUDA device to the host memory
+    Test PASSED
+    Done
+    + ./matrixMul
+    [Matrix Multiply Using CUDA] - Starting...
+    GPU Device 0: "Xavier" with compute capability 7.2
+    MatrixA(320,320), MatrixB(640,320)
+    Computing result using CUDA Kernel...
+    done
+    Performance= 366.93 GFlop/s, Time= 0.357 msec, Size= 131072000 Ops, WorkgroupSize= 1024 threads/block
+    Checking computed result for correctness: Result = PASS
+    NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.
+    [11:58:01] ✅ Built cuda:12.2-samples (cuda:12.2-samples-r35.6.1-cp312-cu122-22.04)
     ```
-  > [ ] Test Cuda 12.8 => Pending
+  </details>
+  <details><summary>Test Cuda 12.9 => Bad</summary>
+
     ```
-      cuda:12.8-samples-r35.6.1-cp312-cu128-22.04-cuda_12.8-samples \
-      /bin/bash -c '/bin/bash test-samples.sh
-
-      + : /opt/cuda-samples
-      ++ uname -m
-      + cd /opt/cuda-samples/bin/aarch64/linux/release
-      + ./deviceQuery
-      ./deviceQuery Starting...
-
-      CUDA Device Query (Runtime API) version (CUDART static linking)
-
-      cudaGetDeviceCount returned 803
-      -> system has unsupported display driver / cuda driver combination
+    cuda:12.9-samples-r35.6.1-cp312-cu129-22.04-cuda_12.9-samples \
+    /bin/bash -c '/bin/bash test-samples.sh                                                        
+    + : /opt/cuda-samples
+    ++ uname -m
+    + cd /opt/cuda-samples/bin/aarch64/linux/release
+    + ./deviceQuery
+    ./deviceQuery Starting...
+    CUDA Device Query (Runtime API) version (CUDART static linking)
+    test-samples.sh: line 8:    21 Segmentation fault      (core dumped) ./deviceQuery
+    [14:46:14] Failed building:  cuda:12.9-samples
     ```
-  > [x] Test Cuda 12.4 => OK
+  </details>
+  <details><summary>Test Cuda 12.8 => Bad</summary>
+
     ```
-      cuda:12.4-samples-r35.6.1-cp312-cu124-22.04 \
-      /bin/bash -c '/bin/bash test-samples.sh
-
-
-      + : /opt/cuda-samples
-      ++ uname -m
-      + cd /opt/cuda-samples/bin/aarch64/linux/release
-      + ./deviceQuery
-      ./deviceQuery Starting...
-
-      CUDA Device Query (Runtime API) version (CUDART static linking)
-
-      Detected 1 CUDA Capable device(s)
-
-      Device 0: "Xavier"
-        CUDA Driver Version / Runtime Version          12.4 / 12.4
-        CUDA Capability Major/Minor version number:    7.2
-        Total amount of global memory:                 30991 MBytes (32496205824 bytes)
-        (008) Multiprocessors, (064) CUDA Cores/MP:    512 CUDA Cores
-        GPU Max Clock rate:                            1377 MHz (1.38 GHz)
-        Memory Clock rate:                             1377 Mhz
-        Memory Bus Width:                              256-bit
-        L2 Cache Size:                                 524288 bytes
-        Maximum Texture Dimension Size (x,y,z)         1D=(131072), 2D=(131072, 65536), 3D=(16384, 16384, 16384)
-        Maximum Layered 1D Texture Size, (num) layers  1D=(32768), 2048 layers
-        Maximum Layered 2D Texture Size, (num) layers  2D=(32768, 32768), 2048 layers
-        Total amount of constant memory:               65536 bytes
-        Total amount of shared memory per block:       49152 bytes
-        Total shared memory per multiprocessor:        98304 bytes
-        Total number of registers available per block: 65536
-        Warp size:                                     32
-        Maximum number of threads per multiprocessor:  2048
-        Maximum number of threads per block:           1024
-        Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
-        Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
-        Maximum memory pitch:                          2147483647 bytes
-        Texture alignment:                             512 bytes
-        Concurrent copy and kernel execution:          Yes with 1 copy engine(s)
-        Run time limit on kernels:                     No
-        Integrated GPU sharing Host Memory:            Yes
-        Support host page-locked memory mapping:       Yes
-        Alignment requirement for Surfaces:            Yes
-        Device has ECC support:                        Disabled
-        Device supports Unified Addressing (UVA):      Yes
-        Device supports Managed Memory:                Yes
-        Device supports Compute Preemption:            Yes
-        Supports Cooperative Kernel Launch:            Yes
-        Supports MultiDevice Co-op Kernel Launch:      Yes
-        Device PCI Domain ID / Bus ID / location ID:   0 / 0 / 0
-        Compute Mode:
-          < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
-
-      deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 12.4, CUDA Runtime Version = 12.4, NumDevs = 1
-      Result = PASS
-      + ./bandwidthTest
-      [CUDA Bandwidth Test] - Starting...
-      Running on...
-
-      Device 0: Xavier
-      Quick Mode
-
-      Host to Device Bandwidth, 1 Device(s)
-      PINNED Memory Transfers
-        Transfer Size (Bytes)        Bandwidth(GB/s)
-        32000000                     15.6
-
-      Device to Host Bandwidth, 1 Device(s)
-      PINNED Memory Transfers
-        Transfer Size (Bytes)        Bandwidth(GB/s)
-        32000000                     28.9
-
-      Device to Device Bandwidth, 1 Device(s)
-      PINNED Memory Transfers
-        Transfer Size (Bytes)        Bandwidth(GB/s)
-        32000000                     110.6
-
-      Result = PASS
-
-      NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.
-      + ./vectorAdd
-      [Vector addition of 50000 elements]
-      Copy input data from the host memory to the CUDA device
-      CUDA kernel launch with 196 blocks of 256 threads
-      Copy output data from the CUDA device to the host memory
-      Test PASSED
-      Done
-      + ./matrixMul
-      [Matrix Multiply Using CUDA] - Starting...
-      GPU Device 0: "Xavier" with compute capability 7.2
-
-      MatrixA(320,320), MatrixB(640,320)
-      Computing result using CUDA Kernel...
-      done
-      Performance= 358.26 GFlop/s, Time= 0.366 msec, Size= 131072000 Ops, WorkgroupSize= 1024 threads/block
-      Checking computed result for correctness: Result = PASS
-
-      NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.
-
-      [18:57:28] ✅ Built cuda:12.4-samples (cuda:12.4-samples-r35.6.1-cp312-cu124-22.04) 
+    cuda:12.8-samples-r35.6.1-cp312-cu128-22.04-cuda_12.8-samples \
+    /bin/bash -c '/bin/bash test-samples.sh
+    + : /opt/cuda-samples
+    ++ uname -m
+    + cd /opt/cuda-samples/bin/aarch64/linux/release
+    + ./deviceQuery
+    ./deviceQuery Starting...
+    CUDA Device Query (Runtime API) version (CUDART static linking)
+    cudaGetDeviceCount returned 803
+    -> system has unsupported display driver / cuda driver combination
     ```
-  - [ ] Test Cuda 12.6 =>
-- [ ] Build TensorRT 10.10
+  </details>
+  <details><summary>Test Cuda 12.4 => OK</summary>
+
+    ```
+    cuda:12.4-samples-r35.6.1-cp312-cu124-22.04 \
+    /bin/bash -c '/bin/bash test-samples.sh
+    + : /opt/cuda-samples
+    ++ uname -m
+    + cd /opt/cuda-samples/bin/aarch64/linux/release
+    + ./deviceQuery
+    ./deviceQuery Starting...
+    CUDA Device Query (Runtime API) version (CUDART static linking)
+    Detected 1 CUDA Capable device(s)
+    Device 0: "Xavier"
+      CUDA Driver Version / Runtime Version          12.4 / 12.4
+      CUDA Capability Major/Minor version number:    7.2
+      Total amount of global memory:                 30991 MBytes (32496205824 bytes)
+      (008) Multiprocessors, (064) CUDA Cores/MP:    512 CUDA Cores
+      GPU Max Clock rate:                            1377 MHz (1.38 GHz)
+      Memory Clock rate:                             1377 Mhz
+      Memory Bus Width:                              256-bit
+      L2 Cache Size:                                 524288 bytes
+      Maximum Texture Dimension Size (x,y,z)         1D=(131072), 2D=(131072, 65536), 3D=(16384, 16384, 16384)
+      Maximum Layered 1D Texture Size, (num) layers  1D=(32768), 2048 layers
+      Maximum Layered 2D Texture Size, (num) layers  2D=(32768, 32768), 2048 layers
+      Total amount of constant memory:               65536 bytes
+      Total amount of shared memory per block:       49152 bytes
+      Total shared memory per multiprocessor:        98304 bytes
+      Total number of registers available per block: 65536
+      Warp size:                                     32
+      Maximum number of threads per multiprocessor:  2048
+      Maximum number of threads per block:           1024
+      Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+      Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+      Maximum memory pitch:                          2147483647 bytes
+      Texture alignment:                             512 bytes
+      Concurrent copy and kernel execution:          Yes with 1 copy engine(s)
+      Run time limit on kernels:                     No
+      Integrated GPU sharing Host Memory:            Yes
+      Support host page-locked memory mapping:       Yes
+      Alignment requirement for Surfaces:            Yes
+      Device has ECC support:                        Disabled
+      Device supports Unified Addressing (UVA):      Yes
+      Device supports Managed Memory:                Yes
+      Device supports Compute Preemption:            Yes
+      Supports Cooperative Kernel Launch:            Yes
+      Supports MultiDevice Co-op Kernel Launch:      Yes
+      Device PCI Domain ID / Bus ID / location ID:   0 / 0 / 0
+      Compute Mode:
+        < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
+    deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 12.4, CUDA Runtime Version = 12.4, NumDevs = 1
+    Result = PASS
+    + ./bandwidthTest
+    [CUDA Bandwidth Test] - Starting...
+    Running on...
+    Device 0: Xavier
+    Quick Mode
+    Host to Device Bandwidth, 1 Device(s)
+    PINNED Memory Transfers
+      Transfer Size (Bytes)        Bandwidth(GB/s)
+      32000000                     15.6
+    Device to Host Bandwidth, 1 Device(s)
+    PINNED Memory Transfers
+      Transfer Size (Bytes)        Bandwidth(GB/s)
+      32000000                     28.9
+    Device to Device Bandwidth, 1 Device(s)
+    PINNED Memory Transfers
+      Transfer Size (Bytes)        Bandwidth(GB/s)
+      32000000                     110.6
+    Result = PASS
+    NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.
+    + ./vectorAdd
+    [Vector addition of 50000 elements]
+    Copy input data from the host memory to the CUDA device
+    CUDA kernel launch with 196 blocks of 256 threads
+    Copy output data from the CUDA device to the host memory
+    Test PASSED
+    Done
+    + ./matrixMul
+    [Matrix Multiply Using CUDA] - Starting...
+    GPU Device 0: "Xavier" with compute capability 7.2
+    MatrixA(320,320), MatrixB(640,320)
+    Computing result using CUDA Kernel...
+    done
+    Performance= 358.26 GFlop/s, Time= 0.366 msec, Size= 131072000 Ops, WorkgroupSize= 1024 threads/block
+    Checking computed result for correctness: Result = PASS
+    NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.
+    [18:57:28] ✅ Built cuda:12.4-samples (cuda:12.4-samples-r35.6.1-cp312-cu124-22.04) 
+    ```
+  </details>
+  <details><summary>Test Cuda 12.6 => Bad</summary>
+
+    ```
+    cuda:12.6-samples-r35.6.1-cp312-cu126-22.04-cuda_12.6-samples \
+        /bin/bash -c '/bin/bash test-samples.sh
+    + : /opt/cuda-samples
+    ++ uname -m
+    + cd /opt/cuda-samples/bin/aarch64/linux/release
+    + ./deviceQuery
+    ./deviceQuery Starting...
+    CUDA Device Query (Runtime API) version (CUDART static linking)
+    cudaGetDeviceCount returned 803
+    -> system has unsupported display driver / cuda driver combination
+    Result = FAIL
+    ```
+  </details>
+  <details><summary>Test Cuda 12.5 => OK</summary>
+
+    ```
+    cuda:12.5-samples-r35.6.1-cp312-cu125-22.04 \
+        /bin/bash -c '/bin/bash test-samples.sh
+    + : /opt/cuda-samples
+    ++ uname -m
+    + cd /opt/cuda-samples/bin/aarch64/linux/release
+    + ./deviceQuery
+    ./deviceQuery Starting...
+    CUDA Device Query (Runtime API) version (CUDART static linking)
+    Detected 1 CUDA Capable device(s)
+    Device 0: "Xavier"
+      CUDA Driver Version / Runtime Version          12.5 / 12.5
+      CUDA Capability Major/Minor version number:    7.2
+      Total amount of global memory:                 30991 MBytes (32496205824 bytes)
+      (008) Multiprocessors, (064) CUDA Cores/MP:    512 CUDA Cores
+      GPU Max Clock rate:                            1377 MHz (1.38 GHz)
+      Memory Clock rate:                             1377 Mhz
+      Memory Bus Width:                              256-bit
+      L2 Cache Size:                                 524288 bytes
+      Maximum Texture Dimension Size (x,y,z)         1D=(131072), 2D=(131072, 65536), 3D=(16384, 16384, 16384)
+      Maximum Layered 1D Texture Size, (num) layers  1D=(32768), 2048 layers
+      Maximum Layered 2D Texture Size, (num) layers  2D=(32768, 32768), 2048 layers
+      Total amount of constant memory:               65536 bytes
+      Total amount of shared memory per block:       49152 bytes
+      Total shared memory per multiprocessor:        98304 bytes
+      Total number of registers available per block: 65536
+      Warp size:                                     32
+      Maximum number of threads per multiprocessor:  2048
+      Maximum number of threads per block:           1024
+      Max dimension size of a thread block (x,y,z): (1024, 1024, 64)
+      Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)
+      Maximum memory pitch:                          2147483647 bytes
+      Texture alignment:                             512 bytes
+      Concurrent copy and kernel execution:          Yes with 1 copy engine(s)
+      Run time limit on kernels:                     No
+      Integrated GPU sharing Host Memory:            Yes
+      Support host page-locked memory mapping:       Yes
+      Alignment requirement for Surfaces:            Yes
+      Device has ECC support:                        Disabled
+      Device supports Unified Addressing (UVA):      Yes
+      Device supports Managed Memory:                Yes
+      Device supports Compute Preemption:            Yes
+      Supports Cooperative Kernel Launch:            Yes
+      Supports MultiDevice Co-op Kernel Launch:      Yes
+      Device PCI Domain ID / Bus ID / location ID:   0 / 0 / 0
+      Compute Mode:
+        < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) >
+    deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 12.5, CUDA Runtime Version = 12.5, NumDevs = 1
+    Result = PASS
+    + ./bandwidthTest
+    [CUDA Bandwidth Test] - Starting...
+    Running on...
+    Device 0: Xavier
+    Quick Mode
+    Host to Device Bandwidth, 1 Device(s)
+    PINNED Memory Transfers
+      Transfer Size (Bytes)        Bandwidth(GB/s)
+      32000000                     3.2
+    Device to Host Bandwidth, 1 Device(s)
+    PINNED Memory Transfers
+      Transfer Size (Bytes)        Bandwidth(GB/s)
+      32000000                     3.2
+    Device to Device Bandwidth, 1 Device(s)
+    PINNED Memory Transfers
+      Transfer Size (Bytes)        Bandwidth(GB/s)
+      32000000                     10.7
+    Result = PASS
+    NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.
+    + ./vectorAdd
+    [Vector addition of 50000 elements]
+    Copy input data from the host memory to the CUDA device
+    CUDA kernel launch with 196 blocks of 256 threads
+    Copy output data from the CUDA device to the host memory
+    Test PASSED
+    Done
+    + ./matrixMul
+    [Matrix Multiply Using CUDA] - Starting...
+    GPU Device 0: "Xavier" with compute capability 7.2
+    MatrixA(320,320), MatrixB(640,320)
+    Computing result using CUDA Kernel...
+    done
+    Performance= 320.24 GFlop/s, Time= 0.409 msec, Size= 131072000 Ops, WorkgroupSize= 1024 threads/block
+    Checking computed result for correctness: Result = PASS
+    NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.
+    [10:47:12] ✅ Built cuda:12.5-samples (cuda:12.5-samples-r35.6.1-cp312-cu125-22.04)
+    ```
+  </details>
+
+- [x] Build TensorRT 10.10
+- [ ] Build pytorch 2.7.1
 - [ ] Build triton
-- [ ] Build pytorch
 - [ ] Build torchvision
 - [ ] Build torchaudio
 - [ ] Build transformers
 - [ ] Build other stuff.
+
+* `LSB_RELEASE=22.04 CUDA_VERSION=12.5 PYTHON_VERSION=3.12 PYTORCH_VERSION=2.7.1 NUMPY_VERSION=1 CUDNN_VERSION=9.10 TENSORRT_VERSION=10.7 jetson-containers build tensorrt_llm`
 
 
 # Below is the original readme from [dusty-nv/jetson-containers](https://github.com/dusty-nv/jetson-containers)

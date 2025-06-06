@@ -102,7 +102,8 @@ if IS_TEGRA and IS_CONFIG:
 
 
         # JetPack 5 Cuda 12.2
-        cudnn_package('9.10',f'{CUDNN_URL}/9.10.1/local_installers/cudnn-local-tegra-repo-ubuntu2004-9.10.1_1.0-1_arm64.deb', cuda='12.2', requires='>=35', packages="libcudnn9-cuda-12 libcudnn9-headers-cuda-12 libcudnn9-dev-cuda-12 libcudnn9-samples")
+        # cudnn_package('9.10',f'{CUDNN_URL}/9.10.1/local_installers/cudnn-local-tegra-repo-ubuntu2004-9.10.1_1.0-1_arm64.deb', cuda='12.2', requires='>=35', packages="libcudnn9-cuda-12 libcudnn9-headers-cuda-12 libcudnn9-dev-cuda-12 libcudnn9-samples")
+        cudnn_package('9.10',f'{CUDNN_URL}/9.10.1/local_installers/cudnn-local-tegra-repo-ubuntu2204-9.10.1_1.0-1_arm64.deb', cuda='12.5', requires='>=35', packages="libcudnn9-cuda-12 libcudnn9-headers-cuda-12 libcudnn9-dev-cuda-12 libcudnn9-samples")
         # JetPack 4-5 (cuDNN installed in base container)
         #cudnn_builtin(requires='<36', default=True),
     ]

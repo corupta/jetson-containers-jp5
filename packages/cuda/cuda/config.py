@@ -105,7 +105,7 @@ def cuda_samples(version, requires, branch=None) -> list:
     if not branch:
         branch = 'v' + version
 
-    if Version(version) > Version('12.5'):
+    if Version(version) > Version('12.7'):
         make_cmd='cmake'
         samples['depends'] += ['opengl', 'vulkan']
     elif Version(version) >= Version('12.0'):
@@ -182,8 +182,10 @@ if IS_TEGRA:
         cuda_samples('12.2', requires='>=35'),
         cuda_package('12.4', 'https://developer.download.nvidia.com/compute/cuda/12.4.1/local_installers/cuda-tegra-repo-ubuntu2204-12-4-local_12.4.1-1_arm64.deb', requires='>=35'),
         cuda_samples('12.4', requires='>=35'),
+        cuda_package('12.5', 'https://developer.download.nvidia.com/compute/cuda/12.5.1/local_installers/cuda-tegra-repo-ubuntu2204-12-5-local_12.5.1-1_arm64.deb', requires='>=35'),
+        cuda_samples('12.5', requires='>=35'),
         cuda_package('12.6', 'https://developer.download.nvidia.com/compute/cuda/12.6.3/local_installers/cuda-tegra-repo-ubuntu2204-12-6-local_12.6.3-1_arm64.deb', requires='>=35'),
-        cuda_samples('12.6', branch='12.5', requires='>=35'),
+        cuda_samples('12.6', branch='v12.5', requires='>=35'),
         cuda_package('12.8', 'https://developer.download.nvidia.com/compute/cuda/12.8.1/local_installers/cuda-tegra-repo-ubuntu2204-12-8-local_12.8.1-1_arm64.deb', requires='>=35'),
         cuda_samples('12.8', requires='>=35'),
         cuda_package('12.9','https://developer.download.nvidia.com/compute/cuda/12.9.0/local_installers/cuda-tegra-repo-ubuntu2204-12-9-local_12.9.0-1_arm64.deb', requires='>=35'),

@@ -46,5 +46,7 @@ else:
         package = [
             cuda_python('11.4'),
             cuda_python('12.2.1'),
+            cuda_python('12.4'),
+            cuda_python('12.5'),
             #cuda_python('11.7', '11.4'),
         ]

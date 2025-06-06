@@ -34,8 +34,8 @@ else
 		git apply ${GIT_PATCHES}
 	fi
 	
-	sed -i 's|tensorrt.*||' requirements.txt
-	#sed -i 's|torch.*|torch|' requirements.txt
+	sed -i 's|^tensorrt\W.*|tensorrt|' requirements.txt
+	sed -i 's|^torch\W.*|torch|' requirements.txt
 	#sed -i 's|nvidia-cudnn.*||' requirements.txt
 	
 	git status
