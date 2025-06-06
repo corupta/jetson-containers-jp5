@@ -47,6 +47,8 @@ if [ "$FORCE_BUILD" == "on" ]; then
 	exit 1
 fi
 
+
+apt update && apt install python3.12-venv
 pip3 install -r ${SOURCE_DIR}/requirements.txt
 pip3 install tensorrt_llm==${TRT_LLM_VERSION}
 

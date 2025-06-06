@@ -1,0 +1,38 @@
+#---
+# name: tensorrt
+# group: cuda
+# depends: [cuda, cudnn, python, cmake]
+# config: config.py
+# test: test.sh
+#---
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+ARG TENSORRT_VERSION \
+    TENSORRT_BRANCH \
+    TENSORRT_URL \
+    SOURCE_DIR=/opt/tensorrt \
+    USE_CUDA_VERSION \
+    USE_CUDNN_VERSION \
+    TMP_DIR=/tmp/tensorrt
+
+# The thing is, tensorrt is open-source while libnvinfer is not.
+# So we need to download closest libnvinfer from tensorrt tar.
+RUN set -ex && \
+    echo "Downloading ${TENSORRT_URL}" && \
+    mkdir -p ${TMP_DIR} && \
+    cd ${TMP_DIR} && \
+    wget $WGET_FLAGS ${TENSORRT_URL} -O TensorRT.tar && \
+    tar -xvf TensorRT.tar -C /usr/src && \
+    rm -rf /usr/src/tensorrt && \
+    mv /usr/src/TensorRT-* /usr/src/tensorrt
+    
+RUN cp -r /usr/src/tensorrt/lib/* /usr/lib/$(uname -m)-linux-gnu/ && \
+    cp -r /usr/src/tensorrt/include/* /usr/include/$(uname -m)-linux-gnu/ && \
+    rm -rf ${TMP_DIR}
+
+# Then we can build tensorrt from source, hoping it might work with a lower glibc version
+# (All this effort to run tensorrt 10.7 in Ubuntu 20.04 JP5 instead of 22.04 JP6)
+COPY build.sh ${TMP_DIR}/
+
+RUN ${TMP_DIR}/build.sh || echo "BUILD FAILED (tensorrt ${TENSORRT_VERSION})"

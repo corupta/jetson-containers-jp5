@@ -11,18 +11,18 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
-ARG TRT_LLM_VERSION \
-    TRT_LLM_BRANCH \
-    TRT_LLM_SOURCE \
-    TRT_LLM_PATCH \
-    CUDA_ARCHS \
-    CUDA_VERSION \
-    FORCE_BUILD="off" \
+ARG TRT_LLM_VERSION="0.21.0" \
+    TRT_LLM_BRANCH="v0.21.0rc0" \
+    TRT_LLM_SOURCE="sources/empty.tar.gz" \
+    TRT_LLM_PATCH="patches/empty.diff" \
+    CUDA_ARCHS="72-real;87-real" \
+    FORCE_BUILD="on" \
     BUILD_DIR="/opt/TensorRT-LLM/cpp/build" \
     SOURCE_DIR="/opt/TensorRT-LLM" \
     SOURCE_TAR="/tmp/TensorRT-LLM/source.tar.gz" \
     GIT_PATCHES="/tmp/TensorRT-LLM/patch.diff" \
     TMP_DIR="/tmp/TensorRT-LLM/"
+    # CUDA_VERSION \
 
 COPY ${TRT_LLM_PATCH} ${GIT_PATCHES}
 COPY sources ${TMP_DIR}
@@ -30,8 +30,10 @@ COPY build.sh install.sh /tmp/setup/
 
 RUN /tmp/setup/install.sh || /tmp/setup/build.sh #|| echo "BUILD FAILED!"
 
-RUN pip3 install --upgrade transformers && \
-    pip3 install uvicorn fastapi
+RUN pip3 install uvicorn fastapi
+
+# RUN pip3 install --upgrade transformers && \
+#     pip3 install uvicorn fastapi
 
 COPY llama.sh ${SOURCE_DIR}/
 

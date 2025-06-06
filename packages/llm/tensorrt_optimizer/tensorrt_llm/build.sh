@@ -3,6 +3,8 @@ set -ex
 
 echo "Building TensorRT-LLM ${TRT_LLM_VERSION}"
 
+pip3 install --upgrade six
+
 python3 ${SOURCE_DIR}/scripts/build_wheel.py \
         --clean \
         --build_type Release \
@@ -12,7 +14,8 @@ python3 ${SOURCE_DIR}/scripts/build_wheel.py \
         --extra-cmake-vars "ENABLE_MULTI_DEVICE=0" \
         --benchmarks \
         --use_ccache \
-        --python_bindings
+        --python_bindings \
+        --no-venv
 
 pip3 install $PIP_WHEEL_DIR/tensorrt_llm*.whl
 

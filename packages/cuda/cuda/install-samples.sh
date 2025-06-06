@@ -8,7 +8,7 @@ function make_dirs() {
   make
   cd ../bandwidthTest
   make
-  cd ../0_Introduction/matrixMul
+  cd ../../0_Introduction/matrixMul
   make
   cd ../vectorAdd
   make

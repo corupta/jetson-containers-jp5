@@ -34,6 +34,37 @@ elif SYSTEM_ARM:
 else:
     TENSORRT_VERSION = Version('10.10') # x86_64
 
+def tensorrt_git(version, cuda, url, cudnn=None, requires=None):
+    """
+    Build TensorRT from source
+    """
+
+    tensorrt = package.copy()
+    
+    tensorrt['name'] = f'tensorrt:{version}'
+    tensorrt['dockerfile'] = 'Dockerfile.git'
+    
+    tensorrt['build_args'] = {
+        'TENSORRT_VERSION': version,
+        'TENSORRT_URL': url,
+        'TENSORRT_BRANCH': f'release/{version}',
+        'USE_CUDA_VERSION': cuda,
+        'USE_CUDNN_VERSION': cudnn
+    }
+
+    if Version(version) == TENSORRT_VERSION:
+        tensorrt['alias'] = 'tensorrt'
+    
+    if cudnn:
+        tensorrt['depends'] = update_dependencies(tensorrt['depends'], f"cudnn:{cudnn}")
+         
+    if requires:
+        tensorrt['requires'] = requires
+
+    package_requires(tensorrt, system_arch='aarch64') # default to aarch64
+
+    return tensorrt
+
         
 def tensorrt_deb(version, url, deb, cudnn=None, packages=None, requires=None):
     """
@@ -135,7 +166,9 @@ if IS_TEGRA:
         # JetPack 5 with upgraded CUDA
         # tensorrt_tar('10.7', f'{TENSORRT_URL}/10.7.0/tars/TensorRT-10.7.0.23.l4t.aarch64-gnu.cuda-12.6.tar.gz', cudnn='9.10', requires=['==r35.*', '==cu122']),
         # JetPack 4-5 (TensorRT installed in base container)
-        tensorrt_builtin(requires='<36', default=True),
+        # tensorrt_builtin(requires='<36', default=True),
+        # tensorrt_git('10.7', '12.2', f'{TENSORRT_URL}/10.7.0/tars/TensorRT-10.7.0.23.l4t.aarch64-gnu.cuda-12.6.tar.gz', cudnn='9.10', requires=['==r35.*', '==cu122'])
+        tensorrt_tar('10.7', f'{TENSORRT_URL}/10.7.0/tars/TensorRT-10.7.0.23.l4t.aarch64-gnu.cuda-12.6.tar.gz', cudnn='9.3', requires=['==r35.*', '==cu122']),
     ]
 
 elif IS_SBSA:
