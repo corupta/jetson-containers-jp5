@@ -2,7 +2,7 @@
 # name: cuda
 # group: cuda
 # config: config.py
-# depends: [build-essential]
+# depends: [build-essential, pip-cache]
 # test: test.sh
 #---
 ARG BASE_IMAGE

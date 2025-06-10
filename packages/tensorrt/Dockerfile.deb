@@ -1,5 +1,5 @@
 #---
-# name: tensorrt
+# name: tensorrt-deb
 # group: cuda
 # depends: [cuda, cudnn, python]
 # config: config.py

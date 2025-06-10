@@ -34,19 +34,17 @@ elif SYSTEM_ARM:
 else:
     TENSORRT_VERSION = Version('10.10') # x86_64
 
-def tensorrt_git(version, cuda, url, cudnn=None, requires=None):
+def tensorrt_git(version, cuda, cudnn=None, requires=None):
     """
     Build TensorRT from source
     """
-
     tensorrt = package.copy()
     
     tensorrt['name'] = f'tensorrt:{version}'
     tensorrt['dockerfile'] = 'Dockerfile.git'
-    
+
     tensorrt['build_args'] = {
         'TENSORRT_VERSION': version,
-        'TENSORRT_URL': url,
         'TENSORRT_BRANCH': f'release/{version}',
         'USE_CUDA_VERSION': cuda,
         'USE_CUDNN_VERSION': cudnn
@@ -54,9 +52,16 @@ def tensorrt_git(version, cuda, url, cudnn=None, requires=None):
 
     if Version(version) == TENSORRT_VERSION:
         tensorrt['alias'] = 'tensorrt'
+
+    tensorrt['depends'] = [f"tensorrt-deb:8.6"]
+
+    if cuda:
+        tensorrt['depends'] = update_dependencies(tensorrt['depends'], f"cuda:{cuda}")
     
     if cudnn:
         tensorrt['depends'] = update_dependencies(tensorrt['depends'], f"cudnn:{cudnn}")
+
+    tensorrt['depends'] = update_dependencies(tensorrt['depends'], ["cmake", "pybind11"])
          
     if requires:
         tensorrt['requires'] = requires
@@ -66,7 +71,7 @@ def tensorrt_git(version, cuda, url, cudnn=None, requires=None):
     return tensorrt
 
         
-def tensorrt_deb(version, url, deb, cudnn=None, packages=None, requires=None):
+def tensorrt_deb(version, url, deb, cuda=None, cudnn=None, packages=None, requires=None):
     """
     Generate containers for a particular version of TensorRT installed from debian packages
     """
@@ -75,7 +80,7 @@ def tensorrt_deb(version, url, deb, cudnn=None, packages=None, requires=None):
     
     tensorrt = package.copy()
     
-    tensorrt['name'] = f'tensorrt:{version}'
+    tensorrt['name'] = f'tensorrt-deb:{version}'
     tensorrt['dockerfile'] = 'Dockerfile.deb'
     
     tensorrt['build_args'] = {
@@ -85,7 +90,10 @@ def tensorrt_deb(version, url, deb, cudnn=None, packages=None, requires=None):
     }
 
     if Version(version) == TENSORRT_VERSION:
-        tensorrt['alias'] = 'tensorrt'
+        tensorrt['alias'] = 'tensorrt-deb'
+
+    if cuda:
+        tensorrt['depends'] = update_dependencies(tensorrt['depends'], f"cuda:{cuda}")
     
     if cudnn:
         tensorrt['depends'] = update_dependencies(tensorrt['depends'], f"cudnn:{cudnn}")
@@ -149,8 +157,8 @@ TENSORRT_URL='https://developer.nvidia.com/downloads/compute/machine-learning/te
 if IS_TEGRA:
     package = [
         # JetPack 6.1
-        tensorrt_deb('8.6', 'https://nvidia.box.com/shared/static/hmwr57hm88bxqrycvlyma34c3k4c53t9.deb','nv-tensorrt-local-repo-l4t-8.6.2-cuda-12.2', cudnn='8.9', requires=['==r36.*', '==cu122']),
-        # tensorrt_tar('9.3', 'https://nvidia.box.com/shared/static/fp3o14iq7qbm67qjuqivdrdch7009axu.gz', cudnn='8.9', requires=['==r36.*', '==cu122']),
+        tensorrt_deb('8.6', 'https://nvidia.box.com/shared/static/hmwr57hm88bxqrycvlyma34c3k4c53t9.deb','nv-tensorrt-local-repo-l4t-8.6.2-cuda-12.2', cuda='12.2', cudnn='8.9', requires=['==r35.*', '>=cu122']),
+        # tensorrt_tar('9.3', 'https://nvidia.box.com/shared/static/fp3o14iq7qbm67qjuqivdrdch7009axu.gz', cudnn='9.10', requires=['==r35.*', '==cu122']),
 
         # JetPack 6.1+ with upgraded CUDA
         tensorrt_tar('10.0', f'{TENSORRT_URL}/10.0.1/tars/TensorRT-10.0.1.6.l4t.aarch64-gnu.cuda-12.4.tar.gz', cudnn='9.0', requires=['==r36.*', '==cu124']),
@@ -167,8 +175,13 @@ if IS_TEGRA:
         # tensorrt_tar('10.7', f'{TENSORRT_URL}/10.7.0/tars/TensorRT-10.7.0.23.l4t.aarch64-gnu.cuda-12.6.tar.gz', cudnn='9.10', requires=['==r35.*', '==cu122']),
         # JetPack 4-5 (TensorRT installed in base container)
         # tensorrt_builtin(requires='<36', default=True),
-        # tensorrt_git('10.7', '12.2', f'{TENSORRT_URL}/10.7.0/tars/TensorRT-10.7.0.23.l4t.aarch64-gnu.cuda-12.6.tar.gz', cudnn='9.10', requires=['==r35.*', '==cu122'])
-        tensorrt_tar('10.7', f'{TENSORRT_URL}/10.7.0/tars/TensorRT-10.7.0.23.l4t.aarch64-gnu.cuda-12.6.tar.gz', cudnn='9.10', requires=['==r35.*', '>=cu122']),
+
+        # tensorrt_tar('10.1', f'{TENSORRT_URL}/10.1.0/tars/TensorRT-10.1.0.27.l4t.aarch64-gnu.cuda-12.4.tar.gz', cudnn='9.10', requires=['==r35.*', '==cu125']),
+        # 10.11 won't work on jp5, due to sm not supported or a similar error.
+        # tensorrt_tar_git('9.3', '12.2', f'https://nvidia.box.com/shared/static/fp3o14iq7qbm67qjuqivdrdch7009axu.gz', cudnn='9.10', requires=['==r35.*', '>=cu122'])
+        tensorrt_git('8.6', '12.4', cudnn='9.10', requires=['==r35.*', '>=cu122'])
+        # tensorrt_git('9.3', '12.5', cudnn='9.10', requires=['==r35.*', '>=cu122'])
+        # tensorrt_tar('10.7', f'{TENSORRT_URL}/10.7.0/tars/TensorRT-10.7.0.23.l4t.aarch64-gnu.cuda-12.6.tar.gz', cudnn='9.10', requires=['==r35.*', '>=cu122']),
     ]
 
 elif IS_SBSA:

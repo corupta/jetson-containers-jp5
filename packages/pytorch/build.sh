@@ -20,7 +20,7 @@ pip3 install scikit-build ninja
 pip3 install 'cmake<4'
 
 echo 'Checking python versions :)'
-python --version
+python --version || echo 'no python version'
 python3 --version
 ln -sf /usr/local/bin/python3 /usr/bin/python
 python --version

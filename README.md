@@ -385,16 +385,26 @@ https://github.com/user-attachments/assets/e262474d-6da5-4b24-994a-16607f21ea34
     ```
   </details>
 
-- [x] Build TensorRT 10.10
-- [ ] Build pytorch 2.7.1
-- [ ] Build triton
-- [ ] Build torchvision
-- [ ] Build torchaudio
-- [ ] Build transformers
-- [ ] Build other stuff.
+- [ ] Build TensorRT 10.11
+- [x] Build pytorch 2.7.1
+- [x] Build triton 3.3.1
+- [x] Build torchvision 0.22.1
+- [x] Build torchaudio 2.7.1
+- [x] Build transformers
+- [x] Build flashinfer 0.2.6.post1 (I had to patch tanh kernel for sm<75 myself cheating from cublas)
+- [ ] Build tensorrt-llm
 
-* `LSB_RELEASE=22.04 CUDA_VERSION=12.5 PYTHON_VERSION=3.12 PYTORCH_VERSION=2.7.1 NUMPY_VERSION=1 CUDNN_VERSION=9.10 TENSORRT_VERSION=10.7 jetson-containers build tensorrt_llm`
+#### Some of my ramblings :)
+* In that process, I had another horrifying experience. Turns out TensorRT calls nvinfer calls nvdla which is hardware specific. 
+* ~~I copied nvdla from Orin as a patch, and made sure that when linking, tensorrt would priotize that nvdla. Doing so has the implication that TensorRT packages built that way will not be able to utilize DLA, and probably cause weird errors when tried to do so. Still, I believe that tensorrt-llm might be built and successfully utilize tensorrt for gpu/cuda/tensor cores~~
+~~* Ok I'm trying very hard to make later versions of TensorRT work. Through tremendous trial-and error, I was able to make TesorRT 9.3 run successfully. Now, I can either try to figure out what changed between 9.3 and 10.0 to build TensorRT 10 work, or`` make TensorRT-LLM work with 9.3 :D~~
 
+* In the end, we download cuda 12.2 cudnn 8.9 tensorrt 8.6.0.2 and upgrade to tensorrt 8.6.1.5 cuda 12.4 cudnn 9.10
+* The reason for that is, what's introduced in tensorrt 9+ is int4, etc which are NOT SUPPORTED IN HARDWARE of Jetson Xavier AGX. So, even if tensorrt 9.3 could work partially, it was partially broke, 8.6 is more stable.
+* Also CUDA 12.5 breaks tensorrt 8.6 :) due to many header change. So, we use CUDA 12.4, although 12.5 works in Xavier.
+* `LSB_RELEASE=22.04 CUDA_VERSION=12.4 PYTHON_VERSION=3.12 PYTORCH_VERSION=2.7.1 NUMPY_VERSION=1 CUDNN_VERSION=9.10 TENSORRT_VERSION=8.6 jetson-containers build tensorrt:8.6`
+
+* `LSB_RELEASE=22.04 CUDA_VERSION=12.4 PYTHON_VERSION=3.12 PYTORCH_VERSION=2.7.1 NUMPY_VERSION=1 CUDNN_VERSION=9.10 TENSORRT_VERSION=8.6 jetson-containers build tensorrt_llm`
 
 # Below is the original readme from [dusty-nv/jetson-containers](https://github.com/dusty-nv/jetson-containers)
 Special thanks to original contributers, I really loved the project structure.

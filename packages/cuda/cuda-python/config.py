@@ -45,6 +45,7 @@ else:
     elif L4T_VERSION.major >= 34:  # JetPack 5
         package = [
             cuda_python('11.4'),
+            cuda_python('12.2'),
             cuda_python('12.2.1'),
             cuda_python('12.4'),
             cuda_python('12.5'),

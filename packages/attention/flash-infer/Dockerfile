@@ -4,7 +4,7 @@
 # config: config.py
 # depends: [pytorch, triton]
 # requires: '>=36'
-# test: test.py
+# test: [test1.py, test2a.py, test2b.py, test3.py]
 #---
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}

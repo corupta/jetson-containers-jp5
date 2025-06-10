@@ -53,7 +53,7 @@ def cuda_package(version, url, deb=None, packages=None, requires=None) -> list:
         cuda['alias'] = 'cuda'
 
     cuda_pip = pip_cache(version, requires)
-    cuda['depends'].append(cuda_pip['name'])
+    # cuda['depends'].append(cuda_pip['name'])
 
     return cuda, cuda_pip
 
@@ -81,7 +81,7 @@ def cuda_builtin(version, requires=None) -> list:
 
     passthrough['depends'] = ['build-essential']
 
-    cuda_pip = pip_cache(version, requires)
+    # cuda_pip = pip_cache(version, requires)
     passthrough['depends'].append(cuda_pip['name'])
 
     return passthrough, cuda_pip

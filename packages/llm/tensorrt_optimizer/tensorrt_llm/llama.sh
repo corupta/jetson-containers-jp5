@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 
-MODEL="meta-llama/Llama-2-7b-chat-hf"
-QUANT="TheBloke/Llama-2-7B-Chat-GPTQ/model.safetensors"
+MODEL="huggyllama/llama-7b"
+QUANT="TheBloke/LLaMa-7B-GPTQ/model.safetensors"
 
 LLAMA_EXAMPLES="/opt/TensorRT-LLM/examples/llama"
 TRT_LLM_MODELS="/data/models/tensorrt_llm"

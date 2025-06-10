@@ -2,8 +2,8 @@
 # name: tensorrt_llm
 # group: llm
 # config: config.py
-# depends: [tensorrt, pytorch, transformers, cuda-python, nvidia_modelopt]
-# test: [test.py]
+# depends: [tensorrt, pytorch, transformers, cuda-python, nvidia_modelopt, flashinfer]
+# test: [test.py, test.sh]
 # requires: '>=35'
 # notes: The `tensorrt-llm:builder` container includes the C++ binaries under `/opt`
 #---
@@ -24,16 +24,27 @@ ARG TRT_LLM_VERSION="0.21.0" \
     TMP_DIR="/tmp/TensorRT-LLM/"
     # CUDA_VERSION \
 
-COPY ${TRT_LLM_PATCH} ${GIT_PATCHES}
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        openmpi-bin \
+        libopenmpi-dev \
+        git-lfs \
+        ccache && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
+
+RUN pip3 install polygraphy mpi4py uvicorn fastapi && \
+    pip3 install --upgrade six
+
 COPY sources ${TMP_DIR}
+RUN bash ${TMP_DIR}/install_cusparselt.sh
+
+COPY ${TRT_LLM_PATCH} ${GIT_PATCHES}
 COPY build.sh install.sh /tmp/setup/
 
-RUN /tmp/setup/install.sh || /tmp/setup/build.sh #|| echo "BUILD FAILED!"
+RUN /tmp/setup/install.sh 
 
-RUN pip3 install uvicorn fastapi
-
-# RUN pip3 install --upgrade transformers && \
-#     pip3 install uvicorn fastapi
+RUN /tmp/setup/build.sh
 
 COPY llama.sh ${SOURCE_DIR}/
 
