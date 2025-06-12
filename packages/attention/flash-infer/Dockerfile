@@ -13,7 +13,7 @@ ARG FLASHINFER_VERSION \
     FLASHINFER_VERSION_SPEC \
     FLASHINFER_ENABLE_AOT=1 \
     MAX_JOBS="$(nproc)" \
-    FORCE_BUILD=off \
+    FORCE_BUILD=on \
     TMP=/tmp/flashinfer
 
 COPY build.sh install.sh $TMP/

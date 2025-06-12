@@ -1,7 +1,7 @@
 Submodule 3rdparty/tvm contains modified content
 Submodule 3rdparty/cutlass contains modified content
 diff --git a/3rdparty/tvm/3rdparty/cutlass/CMakeLists.txt b/3rdparty/tvm/3rdparty/cutlass/CMakeLists.txt
-index ed759073..3af70b1c 100755
+index ed759073..2126a44e 100755
 --- a/3rdparty/tvm/3rdparty/cutlass/CMakeLists.txt
 +++ b/3rdparty/tvm/3rdparty/cutlass/CMakeLists.txt
 @@ -138,13 +138,7 @@ set(CUTLASS_ENABLE_GTEST_UNIT_TESTS ${CUTLASS_ENABLE_TESTS} CACHE BOOL "Enable C
@@ -15,14 +15,14 @@ index ed759073..3af70b1c 100755
 -endif()
 -if (CUDA_VERSION VERSION_GREATER_EQUAL 12.0 AND NOT CUDA_COMPILER MATCHES "[Cc]lang")
 -  list(APPEND CUTLASS_NVCC_ARCHS_SUPPORTED 90a)
-+   list(APPEND CUTLASS_NVCC_ARCHS_SUPPORTED 87)
++   list(APPEND CUTLASS_NVCC_ARCHS_SUPPORTED 72 87)
  endif()
  set(CUTLASS_NVCC_ARCHS ${CUTLASS_NVCC_ARCHS_SUPPORTED} CACHE STRING "The SM architectures requested.")
  set(CUTLASS_NVCC_ARCHS_ENABLED ${CUTLASS_NVCC_ARCHS} CACHE STRING "The SM architectures to build code for.")
 Submodule 3rdparty/cutlass_fpA_intB_gemm contains modified content
 Submodule cutlass contains modified content
 diff --git a/3rdparty/tvm/3rdparty/cutlass_fpA_intB_gemm/cutlass/CMakeLists.txt b/3rdparty/tvm/3rdparty/cutlass_fpA_intB_gemm/cutlass/CMakeLists.txt
-index 30e261c2..17806cd5 100755
+index 30e261c2..bb5f2427 100755
 --- a/3rdparty/tvm/3rdparty/cutlass_fpA_intB_gemm/cutlass/CMakeLists.txt
 +++ b/3rdparty/tvm/3rdparty/cutlass_fpA_intB_gemm/cutlass/CMakeLists.txt
 @@ -101,26 +101,8 @@ if (CUTLASS_ENABLE_TESTS)
@@ -50,28 +50,88 @@ index 30e261c2..17806cd5 100755
 -if (NOT CUDA_VERSION VERSION_LESS 11.1 AND NOT CUDA_COMPILER MATCHES "[Cc]lang")
 -  list(APPEND CUTLASS_NVCC_ARCHS_SUPPORTED 86)
 +if (CUDA_VERSION VERSION_GREATER_EQUAL 11.4 AND NOT CUDA_COMPILER MATCHES "[Cc]lang")
-+  list(APPEND CUTLASS_NVCC_ARCHS_SUPPORTED 87)
++  list(APPEND CUTLASS_NVCC_ARCHS_SUPPORTED 72 87)
  endif()
  set(CUTLASS_NVCC_ARCHS ${CUTLASS_NVCC_ARCHS_SUPPORTED} CACHE STRING "The SM architectures requested.")
  set(CUTLASS_NVCC_ARCHS_ENABLED ${CUTLASS_NVCC_ARCHS} CACHE STRING "The SM architectures to build code for.")
 Submodule 3rdparty/flashinfer contains modified content
-diff --git a/3rdparty/tvm/3rdparty/flashinfer/include/flashinfer/mma.cuh b/3rdparty/tvm/3rdparty/flashinfer/include/flashinfer/mma.cuh
-index 82f457a..3272050 100644
---- a/3rdparty/tvm/3rdparty/flashinfer/include/flashinfer/mma.cuh
-+++ b/3rdparty/tvm/3rdparty/flashinfer/include/flashinfer/mma.cuh
-@@ -29,7 +29,7 @@ namespace flashinfer {
+diff --git a/3rdparty/tvm/3rdparty/flashinfer/include/flashinfer/math.cuh b/3rdparty/tvm/3rdparty/flashinfer/include/flashinfer/math.cuh
+index c2401c7..76133a2 100644
+--- a/3rdparty/tvm/3rdparty/flashinfer/include/flashinfer/math.cuh
++++ b/3rdparty/tvm/3rdparty/flashinfer/include/flashinfer/math.cuh
+@@ -115,13 +115,19 @@ __forceinline__ __device__ float rsqrt(float x) {
+ }
  
- namespace mma {
+ /*!
+- * \brief Wrapper of PTX tanh.approx.f32 instruction, which computes tanh(x)
++ * \brief Wrapper of PTX tanh.approx.f32 instruction or fallback in SM < 75, which computes tanh(x)
+  * \param x input
+  */
+ __forceinline__ __device__ float tanh(float x) {
++#if (__CUDACC_VER_MAJOR__ < 11) || (__CUDA_ARCH__ < 750)
++  float exp_val = -2.0f * fabsf(x);
++  float e = __expf(exp_val);
++  return copysignf((1.0f - e) / (1.0f + e), x);
++#else
+   float y;
+   asm volatile("tanh.approx.f32 %0, %1;" : "=f"(y) : "f"(x));
+   return y;
++#endif
+ }
  
--#if (__CUDACC_VER_MAJOR__ * 10000 + __CUDACC_VER_MINOR__ * 100 >= 120400)
-+#if (__CUDACC_VER_MAJOR__ * 10000 + __CUDACC_VER_MINOR__ * 100 >= 130000)
- #if (!defined(__CUDA_ARCH__) || (__CUDA_ARCH__ >= 890))
- #define FLASHINFER_MMA_F8F8F32_M16N8K32_ENABLED
- #endif
+ /*!
+@@ -129,10 +135,16 @@ __forceinline__ __device__ float tanh(float x) {
+  * \param x input
+  */
+ __forceinline__ __device__ half2 tanh(half2 x) {
++#if (__CUDACC_VER_MAJOR__ < 11) || (__CUDA_ARCH__ < 750)
++  half lo = __low2half(x);
++  half hi = __high2half(x);
++  return __halves2half2(flashinfer::math::tanh(lo), flashinfer::math::tanh(hi));  // reuse half version
++#else
+   uint32_t y_u32;
+   uint32_t x_u32 = half2_as_uint32(x);
+   asm volatile("tanh.approx.f16x2 %0, %1;" : "=r"(y_u32) : "r"(x_u32));
+   return uint32_as_half2(y_u32);
++#endif
+ }
+ 
+ /*!
+@@ -140,9 +152,15 @@ __forceinline__ __device__ half2 tanh(half2 x) {
+  * \param x input
+  */
+ __forceinline__ __device__ half tanh(half x) {
++#if (__CUDACC_VER_MAJOR__ < 11) || (__CUDA_ARCH__ < 750)
++  float xf = __half2float(x);
++  float yf = flashinfer::math::tanh(xf);  // calls float version
++  return __float2half(yf);
++#else
+   ushort y_u16;
+   asm volatile("tanh.approx.f16 %0, %1;" : "=h"(y_u16) : "h"(__half_as_ushort(x)));
+   return __ushort_as_half(y_u16);
++#endif
+ }
+ 
+ }  // namespace math
+diff --git a/3rdparty/tvm/3rdparty/flashinfer/python/setup.py b/3rdparty/tvm/3rdparty/flashinfer/python/setup.py
+index a23c6ac..3d25a40 100644
+--- a/3rdparty/tvm/3rdparty/flashinfer/python/setup.py
++++ b/3rdparty/tvm/3rdparty/flashinfer/python/setup.py
+@@ -38,8 +38,8 @@ enable_bf16 = True
+ enable_fp8 = True
+ for cuda_arch_flags in torch_cpp_ext._get_cuda_arch_flags():
+     arch = int(re.search("compute_\d+", cuda_arch_flags).group()[-2:])
+-    if arch < 75:
+-        raise RuntimeError("FlashInfer requires sm75+")
++    if arch < 72:
++        raise RuntimeError("FlashInfer requires sm72+")
+     elif arch == 75:
+         # disable bf16 for sm75
+         enable_bf16 = False
 Submodule 3rdparty/libflash_attn contains modified content
 Submodule cutlass contains modified content
 diff --git a/3rdparty/tvm/3rdparty/libflash_attn/cutlass/CMakeLists.txt b/3rdparty/tvm/3rdparty/libflash_attn/cutlass/CMakeLists.txt
-index 2d4f9cc3..21328555 100755
+index 2d4f9cc3..df4212af 100755
 --- a/3rdparty/tvm/3rdparty/libflash_attn/cutlass/CMakeLists.txt
 +++ b/3rdparty/tvm/3rdparty/libflash_attn/cutlass/CMakeLists.txt
 @@ -121,15 +121,7 @@ endif()
@@ -87,7 +147,7 @@ index 2d4f9cc3..21328555 100755
 -if (CUDA_VERSION VERSION_GREATER_EQUAL 12.0 AND NOT CUDA_COMPILER MATCHES "[Cc]lang")
 -  list(APPEND CUTLASS_NVCC_ARCHS_SUPPORTED 90a)
 -endif()
-+list(APPEND CUTLASS_NVCC_ARCHS_SUPPORTED 87)
++list(APPEND CUTLASS_NVCC_ARCHS_SUPPORTED 72 87)
  set(CUTLASS_NVCC_ARCHS ${CUTLASS_NVCC_ARCHS_SUPPORTED} CACHE STRING "The SM architectures requested.")
  set(CUTLASS_NVCC_ARCHS_ENABLED ${CUTLASS_NVCC_ARCHS} CACHE STRING "The SM architectures to build code for.")
  
@@ -119,22 +179,23 @@ index 7b3b6f4f..3d0e3efe 100644
  // Return the number of elements in a mode
  template <int... Is, class A, class O, class B>
 diff --git a/3rdparty/tvm/3rdparty/libflash_attn/src/CMakeLists.txt b/3rdparty/tvm/3rdparty/libflash_attn/src/CMakeLists.txt
-index ba2ac1a..7d163c7 100644
+index ba2ac1a..98919bb 100644
 --- a/3rdparty/tvm/3rdparty/libflash_attn/src/CMakeLists.txt
 +++ b/3rdparty/tvm/3rdparty/libflash_attn/src/CMakeLists.txt
-@@ -1,6 +1,4 @@
--set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr --expt-relaxed-constexpr --use_fast_math -t 8 \
+@@ -1,5 +1,6 @@
+ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr --expt-relaxed-constexpr --use_fast_math -t 8 \
 -                      -gencode=arch=compute_80,code=\\\"sm_80,compute_80\\\" \
--                      ")
-+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-relaxed-constexpr --expt-relaxed-constexpr --use_fast_math -t 8")
++                      -gencode=arch=compute_72,code=\\\"sm_72,compute_72\\\" \
++                      -gencode=arch=compute_87,code=\\\"sm_87,compute_87\\\" \
+                       ")
  
  include_directories(${CUTLASS_DIR}/include)
- include_directories(../include)
-@@ -17,4 +15,3 @@ add_library(flash_attn SHARED
+@@ -17,4 +18,4 @@ add_library(flash_attn SHARED
    flash_fwd_hdim96_fp16_sm80.cu
  )
  
 -set_target_properties(flash_attn PROPERTIES CUDA_ARCHITECTURES "80")
++set_target_properties(flash_attn PROPERTIES CUDA_ARCHITECTURES "72;87")
 diff --git a/3rdparty/tvm/3rdparty/libflash_attn/src/static_switch.h b/3rdparty/tvm/3rdparty/libflash_attn/src/static_switch.h
 index b4a4b48..6ea899a 100644
 --- a/3rdparty/tvm/3rdparty/libflash_attn/src/static_switch.h
@@ -271,6 +332,177 @@ index 2212d8c7..a322ef68 100644
  MLC_LIBRARY_PATH = os.environ.get("MLC_LIBRARY_PATH", None)
  
  
+diff --git a/python/mlc_llm/model/model.py b/python/mlc_llm/model/model.py
+index e4b69539..e587c82c 100644
+--- a/python/mlc_llm/model/model.py
++++ b/python/mlc_llm/model/model.py
+@@ -335,12 +335,14 @@ MODELS: Dict[str, Model] = {
+         source={
+             "huggingface-torch": qwen3_loader.huggingface,
+             "huggingface-safetensor": qwen3_loader.huggingface,
++            "awq": qwen3_loader.awq,
+         },
+         quantize={
+             "no-quant": qwen3_quantization.no_quant,
+             "group-quant": qwen3_quantization.group_quant,
+             "ft-quant": qwen3_quantization.ft_quant,
+             "block-scale-quant": qwen3_quantization.block_scale_quant,
++            "awq": qwen3_quantization.awq_quant,
+         },
+     ),
+     "qwen3_moe": Model(
+diff --git a/python/mlc_llm/model/qwen3/qwen3_loader.py b/python/mlc_llm/model/qwen3/qwen3_loader.py
+index 88cdaebd..a3b0bdb3 100644
+--- a/python/mlc_llm/model/qwen3/qwen3_loader.py
++++ b/python/mlc_llm/model/qwen3/qwen3_loader.py
+@@ -12,6 +12,7 @@ from mlc_llm.loader import ExternMapping, QuantizeMapping
+ from mlc_llm.quantization import BlockScaleQuantize, Quantization
+ 
+ from .qwen3_model import Qwen3Config, Qwen3LMHeadModel
++from .qwen3_quantization import awq_quant
+ 
+ 
+ def huggingface(model_config: Qwen3Config, quantization: Quantization) -> ExternMapping:
+@@ -133,3 +134,84 @@ def huggingface(model_config: Qwen3Config, quantization: Quantization) -> Extern
+                 ),
+             )
+     return mapping
++
++def awq(model_config: Qwen3Config, quantization: Quantization) -> ExternMapping:
++    """Returns a parameter mapping that maps from the names of MLC LLM parameters to
++    the names of AWQ parameters.
++    Parameters
++    ----------
++    model_config : Qwen3Config
++        The configuration of the Qwen3 model.
++
++    quantization : Quantization
++        The quantization configuration.
++
++    Returns
++    -------
++    param_map : ExternMapping
++        The parameter mapping from MLC to AWQ.
++    """
++    model, _ = awq_quant(model_config, quantization)
++    _, _named_params, _ = model.export_tvm(  # type: ignore[misc]
++        spec=model.get_default_spec(),  # type: ignore[attr-defined]
++        allow_extern=True,
++    )
++    named_parameters = dict(_named_params)
++
++    mapping = ExternMapping()
++
++    for i in range(model_config.num_hidden_layers):
++        # map attention weight
++        attn = f"model.layers.{i}.self_attn"
++        for quantize_suffix in ["qweight", "qzeros", "scales"]:
++            mlc_name = f"{attn}.c_attn.{quantize_suffix}"
++            assert mlc_name in named_parameters
++            mlc_param = named_parameters[mlc_name]
++            mapping.add_mapping(
++                mlc_name,
++                [
++                    f"{attn}.q_proj.{quantize_suffix}",
++                    f"{attn}.k_proj.{quantize_suffix}",
++                    f"{attn}.v_proj.{quantize_suffix}",
++                ],
++                functools.partial(
++                    lambda q, k, v, dtype: np.concatenate(
++                        [q, k, v],
++                        axis=1,  # AWQ GEMM would transpose the weight
++                    ).astype(dtype),
++                    dtype=mlc_param.dtype,
++                ),
++            )
++
++        # Concat gate and up in MLP
++        mlp = f"model.layers.{i}.mlp"
++        for quantize_suffix in ["qweight", "qzeros", "scales"]:
++            mlc_name = f"{mlp}.gate_up_proj.{quantize_suffix}"
++            assert mlc_name in named_parameters
++            mlc_param = named_parameters[mlc_name]
++            mapping.add_mapping(
++                mlc_name,
++                [
++                    f"{mlp}.gate_proj.{quantize_suffix}",
++                    f"{mlp}.up_proj.{quantize_suffix}",
++                ],
++                functools.partial(
++                    lambda gate, up, dtype: np.concatenate(
++                        [gate, up],
++                        axis=1,  # AWQ GEMM would transpose the weight
++                    ).astype(dtype),
++                    dtype=mlc_param.dtype,
++                ),
++            )
++
++        # inv_freq is not used in the model
++        mapping.add_unused(f"{attn}.rotary_emb.inv_freq")
++
++    for mlc_name, mlc_param in named_parameters.items():
++        if mlc_name not in mapping.param_map:
++            mapping.add_mapping(
++                mlc_name,
++                [mlc_name],
++                functools.partial(lambda x, dtype: x.astype(dtype), dtype=mlc_param.dtype),
++            )
++    return mapping
+diff --git a/python/mlc_llm/model/qwen3/qwen3_model.py b/python/mlc_llm/model/qwen3/qwen3_model.py
+index a4468ffe..244368af 100644
+--- a/python/mlc_llm/model/qwen3/qwen3_model.py
++++ b/python/mlc_llm/model/qwen3/qwen3_model.py
+@@ -59,13 +59,13 @@ class Qwen3Config(ConfigBase):  # pylint: disable=too-many-instance-attributes
+                     not isinstance(self.weight_block_size, (tuple, list))
+                     or len(self.weight_block_size) != 2
+                 ):
+-                    raise ValueError(
++                    logger.info(
+                         "Invalid DeepSeek model quantization config: "
+                         "weight_block_size must be a tuple of two integers, "
+                         f"got {self.weight_block_size} of type {type(self.weight_block_size)}"
+                     )
+             else:
+-                raise ValueError(
++                logger.info(
+                     "Invalid DeepSeek model quantization config: unrecognized quantization config: "
+                     f"{quantization_config}"
+                 )
+diff --git a/python/mlc_llm/model/qwen3/qwen3_quantization.py b/python/mlc_llm/model/qwen3/qwen3_quantization.py
+index 2f3a9904..4d940246 100644
+--- a/python/mlc_llm/model/qwen3/qwen3_quantization.py
++++ b/python/mlc_llm/model/qwen3/qwen3_quantization.py
+@@ -7,6 +7,7 @@ from tvm.relax.frontend import nn
+ 
+ from mlc_llm.loader import QuantizeMapping
+ from mlc_llm.quantization import (
++    AWQQuantize,
+     BlockScaleQuantize,
+     FTQuantize,
+     GroupQuantize,
+@@ -49,6 +50,22 @@ def ft_quant(
+     return model, quant_map
+ 
+ 
++def awq_quant(
++    model_config: Qwen3Config,
++    quantization: AWQQuantize,
++) -> Tuple[nn.Module, QuantizeMapping]:
++    """Quantize a Llama-architecture model using Activation-aware Weight Quantization(AWQ)."""
++    model: nn.Module = Qwen3LMHeadModel(model_config)
++    model.to(quantization.model_dtype)
++    quant_map = QuantizeMapping({}, {})
++    model = quantization.quantize_model(
++        model,
++        quant_map,
++        "",
++    )
++    return model, quant_map
++
++
+ def no_quant(
+     model_config: Qwen3Config,
+     quantization: NoQuantize,
 diff --git a/python/mlc_llm/quantization/ft_quantization.py b/python/mlc_llm/quantization/ft_quantization.py
 index 4a158460..7cd8fc6a 100644
 --- a/python/mlc_llm/quantization/ft_quantization.py
