@@ -1,0 +1,51 @@
+diff --git a/mlx/backend/cuda/CMakeLists.txt b/mlx/backend/cuda/CMakeLists.txt
+index 1eab65e..31aae66 100644
+--- a/mlx/backend/cuda/CMakeLists.txt
++++ b/mlx/backend/cuda/CMakeLists.txt
+@@ -71,11 +71,11 @@ endif()
+ # managed memory. TODO: Add more architectures for potential performance gain.
+ if(MLX_FAST_COMPILE)
+   set(MLX_CUDA_ARCHITECTURES
+-      "70"
++      "70;72"
+       CACHE STRING "CUDA architectures")
+ else()
+   set(MLX_CUDA_ARCHITECTURES
+-      "70;80"
++      "70;72;80;87"
+       CACHE STRING "CUDA architectures")
+ endif()
+ message(STATUS "CUDA architectures: ${MLX_CUDA_ARCHITECTURES}")
+@@ -104,7 +104,7 @@ find_package(CUDAToolkit REQUIRED)
+ target_include_directories(mlx PRIVATE ${CUDAToolkit_INCLUDE_DIRS})
+ 
+ # Use cublasLt.
+-target_link_libraries(mlx PRIVATE CUDA::cublasLt_static)
++target_link_libraries(mlx PRIVATE CUDA::cublasLt)
+ 
+ # Use NVRTC and driver APIs.
+ target_link_libraries(mlx PRIVATE CUDA::nvrtc CUDA::cuda_driver)
+@@ -112,3 +112,6 @@ target_link_libraries(mlx PRIVATE CUDA::nvrtc CUDA::cuda_driver)
+ # Suppress nvcc warnings on MLX headers.
+ target_compile_options(mlx PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:-Xcudafe
+                                    --diag_suppress=997>)
++
++# Disable strict aliasing for all C/C++ code (https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html?highlight=bfloat#cuda-math-release-12-3)
++target_compile_options(mlx PRIVATE -fno-strict-aliasing)
+diff --git a/mlx/backend/cuda/device.cpp b/mlx/backend/cuda/device.cpp
+index 8a3d66c..ce17290 100644
+--- a/mlx/backend/cuda/device.cpp
++++ b/mlx/backend/cuda/device.cpp
+@@ -43,9 +43,9 @@ Device::Device(int device) : device_(device) {
+   CHECK_CUDA_ERROR(cudaDeviceGetAttribute(
+       &attr, cudaDevAttrConcurrentManagedAccess, device_));
+   if (attr != 1) {
+-    throw std::runtime_error(fmt::format(
+-        "Device {} does not support synchronization in managed memory.",
+-        device_));
++    std::cerr << fmt::format(
++        "Device {} does not support synchronization in managed memory. Ignoring...",
++        device_) << std::endl;
+   }
+   // The cublasLt handle is used by matmul.
+   make_current();
