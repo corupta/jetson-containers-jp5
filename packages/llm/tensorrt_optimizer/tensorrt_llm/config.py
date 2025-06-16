@@ -48,5 +48,5 @@ def tensorrt_llm(version, branch=None, patch=None, src=None, depends=None, requi
 package = [
     tensorrt_llm('0.12', branch='v0.12.0-jetson', requires='<cu128', default=False),
     tensorrt_llm('0.19.0', requires='>=cu122', default=False),
-    tensorrt_llm('0.21.0', branch='v0.21.0rc0', requires='>=cu122', default=True, depends=['tensorrt:9.3'])
+    tensorrt_llm('0.21.0', branch='9c012d5b', requires='>=cu122', patch='patches/9c012d5b.diff', default=True)
 ]

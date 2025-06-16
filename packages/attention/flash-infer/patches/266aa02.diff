@@ -1,8 +1,8 @@
 diff --git a/flashinfer/jit/core.py b/flashinfer/jit/core.py
-index 7797ad2..b9d82ef 100644
+index 83931ed..070ef88 100644
 --- a/flashinfer/jit/core.py
 +++ b/flashinfer/jit/core.py
-@@ -50,8 +50,8 @@ def check_cuda_arch():
+@@ -48,8 +48,8 @@ def check_cuda_arch():
      # cuda arch check for fp8 at the moment.
      for cuda_arch_flags in torch_cpp_ext._get_cuda_arch_flags():
          arch = int(re.search(r"compute_(\d+)", cuda_arch_flags).group(1))
@@ -71,18 +71,3 @@ index 27c6351..8298988 100644
  }
  
  }  // namespace math
-diff --git a/setup.py b/setup.py
-index cb3478d..4564bf8 100644
---- a/setup.py
-+++ b/setup.py
-@@ -166,8 +166,8 @@ if enable_aot:
-     # cuda arch check for fp8 at the moment.
-     for cuda_arch_flags in torch_cpp_ext._get_cuda_arch_flags():
-         arch = int(re.search(r"compute_(\d+)", cuda_arch_flags).group(1))
--        if arch < 75:
--            raise RuntimeError("FlashInfer requires sm75+")
-+        if arch < 72:
-+            raise RuntimeError("FlashInfer requires sm72+")
- 
-     if os.environ.get("FLASHINFER_USE_CXX11_ABI"):
-         # force use cxx11 abi

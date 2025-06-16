@@ -8,7 +8,7 @@ REPO_DIR="/opt/flashinfer"
 
 git clone $REPO_URL $REPO_DIR
 cd $REPO_DIR
-git checkout v${FLASHINFER_VERSION_SPEC}
+git checkout v${FLASHINFER_VERSION_SPEC} || git checkout ${FLASHINFER_VERSION_SPEC}
 git submodule update --init --recursive
 git apply /tmp/flashinfer/patch.diff
 sed -i 's|options={.*| |g' setup.py
@@ -17,8 +17,12 @@ cat setup.py
 sed -i 's/^license = "Apache-2.0"/license = { text = "Apache License 2.0" }/' \
   pyproject.toml
 
-python3 -m flashinfer.aot --f8-dtype
-python -m pip install --no-build-isolation --verbose .
+if [ "$FLASHINFER_VERSION_SPEC" = "0.2.5" ]; then
+  FLASHINFER_ENABLE_AOT=1 pip install --no-build-isolation -e . -v
+else
+  python3 -m flashinfer.aot --f8-dtype
+  python -m pip install --no-build-isolation --verbose .
+fi
 
 # wheel build cmd errs, can be prolly fixed if tinkered with, but I don't upload to twine anyways.
 # python3 setup.py --verbose bdist_wheel --dist-dir $PIP_WHEEL_DIR 

@@ -41,6 +41,13 @@ if [ "$TENSORRT_VERSION" = "9.3" ]; then
   sed -i '/#include <cub\/cub.cuh>/a #include <cfloat>' plugin/common/common.cuh
 fi
 
+if [ "$TENSORRT_VERSION" = "8.6" ]; then
+  # Manually mark it as 8.6.2.3 :)
+  sed -i 's/#define NV_TENSORRT_PATCH 1/#define NV_TENSORRT_PATCH 2/' include/NvInferVersion.h
+  sed -i 's/#define NV_TENSORRT_BUILD 5/#define NV_TENSORRT_BUILD 3/' include/NvInferVersion.h
+  sed -i 's/#define NV_TENSORRT_SONAME_PATCH 1/#define NV_TENSORRT_SONAME_PATCH 2/' include/NvInferVersion.h
+fi
+
 mkdir -p build && cd build
 cmake .. -DTRT_LIB_DIR=/usr/lib/aarch64-linux-gnu \
   -DTRT_OUT_DIR=`pwd`/out \

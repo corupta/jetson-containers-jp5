@@ -14,7 +14,7 @@ I wanted to make the most of my Xavier, so in this repo, I'll try to build stuff
 Latest jetpack docker image from nvidia is 35.4.1, so we pull it update apt repo and upgrade to 35.6.1. You can either build it via `cd l4t-jetpack/r35.6.1 && ./build.sh` or use what I've uploaded to dockerhub, aka: `corupta/l4t-jetpack:r35.6.1`
 
 ### LMDeploy 0.8.0
-* Built it for Jetpack6 and tried it in Orin as well. Turbomind seemed to ran somewhat faster than pytorch backend. Turbomind seemed to ran much slower than MLC.
+* Built it for Jetpack6 and tried it in Orin as well. Turbomind seemed to ran somewhat faster than pytorch backend. Turbomind seemed to ran much faster than MLC.
 * `CUDA_VERSION=12.2 PYTHON_VERSION=3.12 PYTORCH_VERSION=2.7 NUMPY_VERSION=1 CUDNN_VERSION=9.10 jetson-containers build lmdeploy:0.8.1`
 * Successfully built lmdeploy version 0.8.0 (dubbed 0.8.1 due to my patches) without flash attention package, both its pytorch engine and turbomind engine works but will fail in models requiring operations/dtypes of sm80+.
 * Below is a sample docker compose, that worked both much better and faster than my expectation in Jetson AGX Xavier 32GB. It might the best model to run as of today. Not all models work due to dtype, quantization, etc.
@@ -385,26 +385,43 @@ https://github.com/user-attachments/assets/e262474d-6da5-4b24-994a-16607f21ea34
     ```
   </details>
 
-- [ ] Build TensorRT 10.11
+- [x] Build TensorRT ~~10.11~~ 8.6.2
 - [x] Build pytorch 2.7.1
 - [x] Build triton 3.3.1
 - [x] Build torchvision 0.22.1
 - [x] Build torchaudio 2.7.1
 - [x] Build transformers
 - [x] Build flashinfer 0.2.6.post1 (I had to patch tanh kernel for sm<75 myself cheating from cublas)
-- [ ] Build tensorrt-llm
+- [ ] ~~Build tensorrt-llm~~ (Too much coupled with tensorrt 10, disabling enable fp8 bf16 etc. won't work, tried to patch all occurences but there are too much of them :/)
 
 #### Some of my ramblings :)
 * In that process, I had another horrifying experience. Turns out TensorRT calls nvinfer calls nvdla which is hardware specific. 
 * ~~I copied nvdla from Orin as a patch, and made sure that when linking, tensorrt would priotize that nvdla. Doing so has the implication that TensorRT packages built that way will not be able to utilize DLA, and probably cause weird errors when tried to do so. Still, I believe that tensorrt-llm might be built and successfully utilize tensorrt for gpu/cuda/tensor cores~~
 ~~* Ok I'm trying very hard to make later versions of TensorRT work. Through tremendous trial-and error, I was able to make TesorRT 9.3 run successfully. Now, I can either try to figure out what changed between 9.3 and 10.0 to build TensorRT 10 work, or`` make TensorRT-LLM work with 9.3 :D~~
 
-* In the end, we download cuda 12.2 cudnn 8.9 tensorrt 8.6.0.2 and upgrade to tensorrt 8.6.1.5 cuda 12.4 cudnn 9.10
+* In the end, we download cuda 12.2 cudnn 8.9 tensorrt 8.6.2.3 and upgrade to tensorrt 8.6.1.5 cuda 12.4 cudnn 9.10
 * The reason for that is, what's introduced in tensorrt 9+ is int4, etc which are NOT SUPPORTED IN HARDWARE of Jetson Xavier AGX. So, even if tensorrt 9.3 could work partially, it was partially broke, 8.6 is more stable.
 * Also CUDA 12.5 breaks tensorrt 8.6 :) due to many header change. So, we use CUDA 12.4, although 12.5 works in Xavier.
 * `LSB_RELEASE=22.04 CUDA_VERSION=12.4 PYTHON_VERSION=3.12 PYTORCH_VERSION=2.7.1 NUMPY_VERSION=1 CUDNN_VERSION=9.10 TENSORRT_VERSION=8.6 jetson-containers build tensorrt:8.6`
+* Deployed `corupta/tensorrt:8.6-r35.6.1-cp312-cu124-22.04`
 
 * `LSB_RELEASE=22.04 CUDA_VERSION=12.4 PYTHON_VERSION=3.12 PYTORCH_VERSION=2.7.1 NUMPY_VERSION=1 CUDNN_VERSION=9.10 TENSORRT_VERSION=8.6 jetson-containers build tensorrt_llm`
+
+
+
+### MLC 0.20.0
+Yeah using flashinfer built when I was trying to make TensorRT-LLM work, I might be able to build this one.
+After lots of trial and error, I gave up. an early version of flashInfer 0.1.6 is necessary to build, but support for sm<75 added later. My best bet was to upgrade flashinfer to a version that would still be compatible with tvm/mlc but also support sm72. Well I did choose a good point that could compile, but it was not compatible with tvm sadly as several method declarations changed. 
+Currently, both flashinfer and MLC is being refactored to use FFI, such that we won't need to build flashinfer within MLC, it is good news and bad news. bad news is it won't compile atm, good news is might compile in the future when they finish the new version :)
+I'm planning to try sglang and vllm as well, but lmdeploy is pretty fast anyways.
+
+
+
+
+
+
+
+
 
 # Below is the original readme from [dusty-nv/jetson-containers](https://github.com/dusty-nv/jetson-containers)
 Special thanks to original contributers, I really loved the project structure.

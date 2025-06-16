@@ -10,6 +10,9 @@ cd ${SOURCE_DIR}
 sed -i 's|venv_python = venv_prefix / sys\.executable\.removeprefix(sys\.prefix)\[1:\]|venv_python = venv_prefix / "bin" / Path(sys.executable).name|' ${SOURCE_DIR}/scripts/build_wheel.py
 sed -i 's|^flashinfer-python\W.*|flashinfer-python|' ${SOURCE_DIR}/requirements.txt
 sed -i 's/find_package(TensorRT 10 REQUIRED COMPONENTS OnnxParser)/find_package(TensorRT REQUIRED COMPONENTS OnnxParser)/' ${SOURCE_DIR}/cpp/CMakeLists.txt
+sed -i '/add_definitions("-DENABLE_BF16")/d' ${SOURCE_DIR}/cpp/CMakeLists.txt
+sed -i '/add_definitions("-DENABLE_FP8")/d' ${SOURCE_DIR}/cpp/CMakeLists.txt
+sed -i '/add_definitions("-DENABLE_FP4")/d' ${SOURCE_DIR}/cpp/CMakeLists.txt
 
 # TODO 1. Try to build tensorrt 10.10 (10.11 won't build)
         # Test if its trt exec works

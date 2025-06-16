@@ -1,0 +1,2129 @@
+diff --git a/cpp/include/tensorrt_llm/common/dataType.h b/cpp/include/tensorrt_llm/common/dataType.h
+index c41bdf281..b7d8ef27e 100644
+--- a/cpp/include/tensorrt_llm/common/dataType.h
++++ b/cpp/include/tensorrt_llm/common/dataType.h
+@@ -27,17 +27,17 @@ constexpr static size_t getDTypeSize(nvinfer1::DataType type)
+ {
+     switch (type)
+     {
+-    case nvinfer1::DataType::kINT64: return 8;
++    // case nvinfer1::DataType::kINT64: return 8;
+     case nvinfer1::DataType::kINT32: [[fallthrough]];
+     case nvinfer1::DataType::kFLOAT: return 4;
+-    case nvinfer1::DataType::kBF16: [[fallthrough]];
++    // case nvinfer1::DataType::kBF16: [[fallthrough]];
+     case nvinfer1::DataType::kHALF: return 2;
+     case nvinfer1::DataType::kBOOL: [[fallthrough]];
+     case nvinfer1::DataType::kUINT8: [[fallthrough]];
+     case nvinfer1::DataType::kINT8: [[fallthrough]];
+-    case nvinfer1::DataType::kFP8: return 1;
+-    case nvinfer1::DataType::kINT4: TLLM_THROW("Cannot determine size of INT4 data type");
+-    case nvinfer1::DataType::kFP4: TLLM_THROW("Cannot determine size of FP4 data type");
++    // case nvinfer1::DataType::kFP8: return 1;
++    // case nvinfer1::DataType::kINT4: TLLM_THROW("Cannot determine size of INT4 data type");
++    // case nvinfer1::DataType::kFP4: TLLM_THROW("Cannot determine size of FP4 data type");
+     default: TLLM_THROW("Unknown dtype %d", static_cast<int>(type));
+     }
+     return 0;
+@@ -47,17 +47,17 @@ constexpr static size_t getDTypeSizeInBits(nvinfer1::DataType type)
+ {
+     switch (type)
+     {
+-    case nvinfer1::DataType::kINT64: return 64;
++    // case nvinfer1::DataType::kINT64: return 64;
+     case nvinfer1::DataType::kINT32: [[fallthrough]];
+     case nvinfer1::DataType::kFLOAT: return 32;
+-    case nvinfer1::DataType::kBF16: [[fallthrough]];
++    // case nvinfer1::DataType::kBF16: [[fallthrough]];
+     case nvinfer1::DataType::kHALF: return 16;
+     case nvinfer1::DataType::kBOOL: [[fallthrough]];
+     case nvinfer1::DataType::kUINT8: [[fallthrough]];
+     case nvinfer1::DataType::kINT8: [[fallthrough]];
+-    case nvinfer1::DataType::kFP8: return 8;
+-    case nvinfer1::DataType::kINT4: [[fallthrough]];
+-    case nvinfer1::DataType::kFP4: return 4;
++    // case nvinfer1::DataType::kFP8: return 8;
++    // case nvinfer1::DataType::kINT4: [[fallthrough]];
++    // case nvinfer1::DataType::kFP4: return 4;
+     default: TLLM_THROW("Unknown dtype %d", static_cast<int>(type));
+     }
+     return 0;
+@@ -73,11 +73,11 @@ constexpr static size_t getDTypeSizeInBits(nvinfer1::DataType type)
+     case nvinfer1::DataType::kINT32: return "int32"; break;
+     case nvinfer1::DataType::kBOOL: return "bool"; break;
+     case nvinfer1::DataType::kUINT8: return "uint8"; break;
+-    case nvinfer1::DataType::kFP8: return "fp8"; break;
+-    case nvinfer1::DataType::kBF16: return "bf16"; break;
+-    case nvinfer1::DataType::kINT64: return "int64"; break;
+-    case nvinfer1::DataType::kINT4: return "int4"; break;
+-    case nvinfer1::DataType::kFP4: return "fp4"; break;
++    // case nvinfer1::DataType::kFP8: return "fp8"; break;
++    // case nvinfer1::DataType::kBF16: return "bf16"; break;
++    // case nvinfer1::DataType::kINT64: return "int64"; break;
++    // case nvinfer1::DataType::kINT4: return "int4"; break;
++    // case nvinfer1::DataType::kFP4: return "fp4"; break;
+     default: throw std::runtime_error("Unsupported data type"); break;
+     }
+ 
+diff --git a/cpp/include/tensorrt_llm/runtime/iBuffer.h b/cpp/include/tensorrt_llm/runtime/iBuffer.h
+index 91d5cd739..54494ec23 100644
+--- a/cpp/include/tensorrt_llm/runtime/iBuffer.h
++++ b/cpp/include/tensorrt_llm/runtime/iBuffer.h
+@@ -125,13 +125,13 @@ struct DataTypeTraits<nvinfer1::DataType::kINT32>
+     static auto constexpr size = sizeof(type);
+ };
+ 
+-template <>
+-struct DataTypeTraits<nvinfer1::DataType::kINT64>
+-{
+-    using type = std::int64_t;
+-    static char constexpr name[] = "int64";
+-    static auto constexpr size = sizeof(type);
+-};
++// template <>
++// struct DataTypeTraits<nvinfer1::DataType::kINT64>
++// {
++//     using type = std::int64_t;
++//     static char constexpr name[] = "int64";
++//     static auto constexpr size = sizeof(type);
++// };
+ 
+ template <>
+ struct DataTypeTraits<nvinfer1::DataType::kINT32, true>
+@@ -141,13 +141,13 @@ struct DataTypeTraits<nvinfer1::DataType::kINT32, true>
+     static auto constexpr size = sizeof(type);
+ };
+ 
+-template <>
+-struct DataTypeTraits<nvinfer1::DataType::kINT64, true>
+-{
+-    using type = std::uint64_t;
+-    static char constexpr name[] = "uint64";
+-    static auto constexpr size = sizeof(type);
+-};
++// template <>
++// struct DataTypeTraits<nvinfer1::DataType::kINT64, true>
++// {
++//     using type = std::uint64_t;
++//     static char constexpr name[] = "uint64";
++//     static auto constexpr size = sizeof(type);
++// };
+ 
+ template <bool kUnsigned>
+ struct DataTypeTraits<nvinfer1::DataType::kBOOL, kUnsigned>
+@@ -166,23 +166,23 @@ struct DataTypeTraits<nvinfer1::DataType::kUINT8, kUnsigned>
+ };
+ 
+ #ifdef ENABLE_BF16
+-template <>
+-struct DataTypeTraits<nvinfer1::DataType::kBF16>
+-{
+-    using type = __nv_bfloat16;
+-    static char constexpr name[] = "bfloat16";
+-    static auto constexpr size = sizeof(type);
+-};
++// template <>
++// struct DataTypeTraits<nvinfer1::DataType::kBF16>
++// {
++//     using type = __nv_bfloat16;
++//     static char constexpr name[] = "bfloat16";
++//     static auto constexpr size = sizeof(type);
++// };
+ #endif
+ 
+ #ifdef ENABLE_FP8
+-template <>
+-struct DataTypeTraits<nvinfer1::DataType::kFP8>
+-{
+-    using type = __nv_fp8_e4m3;
+-    static char constexpr name[] = "fp8";
+-    static auto constexpr size = sizeof(type);
+-};
++// template <>
++// struct DataTypeTraits<nvinfer1::DataType::kFP8>
++// {
++//     using type = __nv_fp8_e4m3;
++//     static char constexpr name[] = "fp8";
++//     static auto constexpr size = sizeof(type);
++// };
+ #endif
+ 
+ template <nvinfer1::DataType kDataType, bool kUnsigned>
+@@ -205,7 +205,7 @@ public:
+     {
+     }
+ 
+-    static auto constexpr kTrtPointerType = nvinfer1::DataType::kINT64;
++    static auto constexpr kTrtPointerType = nvinfer1::DataType::kINT32;
+ 
+     constexpr operator nvinfer1::DataType() const noexcept // NOLINT(*-explicit-constructor)
+     {
+@@ -284,17 +284,17 @@ struct TRTDataType<std::uint32_t>
+     static constexpr auto value = BufferDataType{nvinfer1::DataType::kINT32, true};
+ };
+ 
+-template <>
+-struct TRTDataType<std::int64_t>
+-{
+-    static constexpr auto value = nvinfer1::DataType::kINT64;
+-};
++// template <>
++// struct TRTDataType<std::int64_t>
++// {
++//     static constexpr auto value = nvinfer1::DataType::kINT64;
++// };
+ 
+-template <>
+-struct TRTDataType<std::uint64_t>
+-{
+-    static constexpr auto value = BufferDataType{nvinfer1::DataType::kINT64, true};
+-};
++// template <>
++// struct TRTDataType<std::uint64_t>
++// {
++//     static constexpr auto value = BufferDataType{nvinfer1::DataType::kINT64, true};
++// };
+ 
+ template <>
+ struct TRTDataType<bool>
+@@ -309,19 +309,19 @@ struct TRTDataType<std::uint8_t>
+ };
+ 
+ #ifdef ENABLE_BF16
+-template <>
+-struct TRTDataType<__nv_bfloat16>
+-{
+-    static constexpr auto value = nvinfer1::DataType::kBF16;
+-};
++// template <>
++// struct TRTDataType<__nv_bfloat16>
++// {
++//     static constexpr auto value = nvinfer1::DataType::kBF16;
++// };
+ #endif
+ 
+ #ifdef ENABLE_FP8
+-template <>
+-struct TRTDataType<__nv_fp8_e4m3>
+-{
+-    static constexpr auto value = nvinfer1::DataType::kFP8;
+-};
++// template <>
++// struct TRTDataType<__nv_fp8_e4m3>
++// {
++//     static constexpr auto value = nvinfer1::DataType::kFP8;
++// };
+ #endif
+ 
+ template <>
+diff --git a/cpp/include/tensorrt_llm/runtime/iTensor.h b/cpp/include/tensorrt_llm/runtime/iTensor.h
+index b3c8cc8c2..a43b5970f 100644
+--- a/cpp/include/tensorrt_llm/runtime/iTensor.h
++++ b/cpp/include/tensorrt_llm/runtime/iTensor.h
+@@ -50,11 +50,11 @@ public:
+     using SharedPtr = std::shared_ptr<ITensor>;
+     using UniqueConstPtr = std::unique_ptr<ITensor const>;
+     using SharedConstPtr = std::shared_ptr<ITensor const>;
+-    using Shape = nvinfer1::Dims;
+-    using DimType64 = std::remove_reference_t<decltype(Shape::d[0])>;
++    using Shape = nvinfer1::Dims32;
++    using DimType32 = std::remove_reference_t<decltype(Shape::d[0])>;
+     using TensorMap = runtime::StringPtrMap<runtime::ITensor>;
+ 
+-    static_assert(std::is_same_v<DimType64, std::int64_t>, "This version of TRT-LLM requires TensorRT 10.0 or later.");
++    static_assert(std::is_same_v<DimType32, std::int32_t>, "This version of TRT-LLM requires TensorRT 8.6.");
+ 
+     ~ITensor() override = default;
+ 
+@@ -68,7 +68,7 @@ public:
+     //! TODO: replace with constexpr parameter when moving to C++20.
+     //!
+     template <SizeType32 n>
+-    [[nodiscard]] DimType64 getDimension() const
++    [[nodiscard]] DimType32 getDimension() const
+     {
+         auto const shape = getShape();
+         static_assert(n < shape.MAX_DIMS && n >= -shape.MAX_DIMS,
+@@ -109,13 +109,13 @@ public:
+     //!
+     //! \brief Returns the volume of the dimensions. Returns -1 if `d.nbDims < 0`.
+     //!
+-    static std::int64_t volume(Shape const& dims)
++    static std::int32_t volume(Shape const& dims)
+     {
+         {
+             return dims.nbDims < 0 ? -1
+                 : dims.nbDims == 0
+                 ? 0
+-                : std::accumulate(dims.d, dims.d + dims.nbDims, std::int64_t{1}, std::multiplies<>{});
++                : std::accumulate(dims.d, dims.d + dims.nbDims, std::int32_t{1}, std::multiplies<>{});
+         }
+     }
+ 
+@@ -221,9 +221,9 @@ public:
+     //!         or [size] when \param offsetDims specifies all dimensions.
+     //! \throw Whenever offset overflows or the last dimension offset+size overflows.
+     //!
+-    static UniquePtr slice(SharedPtr tensor, Shape const& offsetDims, DimType64 size);
++    static UniquePtr slice(SharedPtr tensor, Shape const& offsetDims, DimType32 size);
+ 
+-    static UniquePtr slice(SharedPtr tensor, std::initializer_list<DimType64> const& offsetDims, DimType64 size)
++    static UniquePtr slice(SharedPtr tensor, std::initializer_list<DimType32> const& offsetDims, DimType32 size)
+     {
+         return slice(std::move(tensor), makeShape(offsetDims), size);
+     }
+@@ -236,7 +236,7 @@ public:
+ 
+     template <typename TConstPtr, std::enable_if_t<std::is_const_v<PointerElementType<TConstPtr>>, int> = 0>
+     static UniqueConstPtr slice(
+-        TConstPtr&& tensor, std::initializer_list<DimType64> const& offsetDims, std::size_t size)
++        TConstPtr&& tensor, std::initializer_list<DimType32> const& offsetDims, std::size_t size)
+     {
+         return slice(constPointerCast(std::forward<TConstPtr>(tensor)), offsetDims, size);
+     }
+@@ -252,7 +252,7 @@ public:
+         return ITensor::slice(std::move(tensor), offsetDims, size);
+     }
+ 
+-    static UniquePtr slice(SharedPtr tensor, std::initializer_list<DimType64> const& offsetDims)
++    static UniquePtr slice(SharedPtr tensor, std::initializer_list<DimType32> const& offsetDims)
+     {
+         return slice(std::move(tensor), makeShape(offsetDims));
+     }
+@@ -264,7 +264,7 @@ public:
+     }
+ 
+     template <typename TConstPtr, std::enable_if_t<std::is_const_v<PointerElementType<TConstPtr>>, int> = 0>
+-    static UniqueConstPtr slice(TConstPtr&& tensor, std::initializer_list<DimType64> const& offsetDims)
++    static UniqueConstPtr slice(TConstPtr&& tensor, std::initializer_list<DimType32> const& offsetDims)
+     {
+         return slice(constPointerCast(std::forward<TConstPtr>(tensor)), offsetDims);
+     }
+@@ -283,7 +283,7 @@ public:
+         return result;
+     }
+ 
+-    static UniquePtr at(SharedPtr tensor, std::initializer_list<DimType64> const& offsetDims)
++    static UniquePtr at(SharedPtr tensor, std::initializer_list<DimType32> const& offsetDims)
+     {
+         return at(std::move(tensor), makeShape(offsetDims));
+     }
+@@ -295,7 +295,7 @@ public:
+     }
+ 
+     template <typename TConstPtr, std::enable_if_t<std::is_const_v<PointerElementType<TConstPtr>>, int> = 0>
+-    static ITensor::UniqueConstPtr at(TConstPtr&& tensor, std::initializer_list<DimType64> const& offsetDims)
++    static ITensor::UniqueConstPtr at(TConstPtr&& tensor, std::initializer_list<DimType32> const& offsetDims)
+     {
+         return at(constPointerCast(std::forward<TConstPtr>(tensor)), offsetDims);
+     }
+@@ -334,7 +334,7 @@ public:
+     //! \param sliceN Slice the first N elements after flattening. -1 means take the whole flattened tensor.
+     //! \return A flatten view on the `tensor`.
+     //!
+-    static UniquePtr flattenN(SharedPtr tensor, std::int64_t sliceN = -1)
++    static UniquePtr flattenN(SharedPtr tensor, std::int32_t sliceN = -1)
+     {
+         UniquePtr flatten = ITensor::view(tensor, ITensor::makeShape({ITensor::volume(tensor->getShape()), 1}));
+         if (sliceN > 0)
+@@ -381,7 +381,7 @@ public:
+     //!
+     //! \brief A convenience function to create a tensor shape with the given dimensions.
+     //!
+-    static Shape makeShape(std::initializer_list<DimType64> const& dims);
++    static Shape makeShape(std::initializer_list<DimType32> const& dims);
+ 
+     //!
+     //! \brief A convenience function for converting a tensor shape to a `string`.
+@@ -424,11 +424,11 @@ public:
+ protected:
+     ITensor() = default;
+ 
+-    static DimType64 castSize(size_t newSize)
++    static DimType32 castSize(size_t newSize)
+     {
+         TLLM_CHECK_WITH_INFO(
+-            newSize <= std::numeric_limits<DimType64>::max(), "New size is too large. Use reshape() instead.");
+-        return static_cast<DimType64>(newSize);
++            newSize <= std::numeric_limits<DimType32>::max(), "New size is too large. Use reshape() instead.");
++        return static_cast<DimType32>(newSize);
+     }
+ };
+ 
+diff --git a/cpp/tensorrt_llm/batch_manager/runtimeBuffers.cpp b/cpp/tensorrt_llm/batch_manager/runtimeBuffers.cpp
+index 83afef204..2c64a0b46 100644
+--- a/cpp/tensorrt_llm/batch_manager/runtimeBuffers.cpp
++++ b/cpp/tensorrt_llm/batch_manager/runtimeBuffers.cpp
+@@ -269,14 +269,14 @@ void RuntimeBuffers::create(SizeType32 maxBatchSize, SizeType32 maxBeamWidth,
+     sortedSeqSlots = tensorrt_llm::runtime::BufferManager::pinnedPool(maxBatchSizeShape, nvinfer1::DataType::kINT32);
+ 
+     cacheIndirDecoderIOBatchedCopySrcOffsets
+-        = tensorrt_llm::runtime::BufferManager::pinnedPool(maxBatchSizeShape, nvinfer1::DataType::kINT64);
++        = tensorrt_llm::runtime::BufferManager::pinnedPool(maxBatchSizeShape, nvinfer1::DataType::kINT32);
+     cacheIndirDecoderIOBatchedCopyDstOffsets
+-        = tensorrt_llm::runtime::BufferManager::pinnedPool(maxBatchSizeShape, nvinfer1::DataType::kINT64);
++        = tensorrt_llm::runtime::BufferManager::pinnedPool(maxBatchSizeShape, nvinfer1::DataType::kINT32);
+     cacheIndirDecoderIOBatchedCopySizes
+-        = tensorrt_llm::runtime::BufferManager::pinnedPool(maxBatchSizeShape, nvinfer1::DataType::kINT64);
+-    mCacheIndirDecoderIOBatchedCopySrcOffsetsSliceDevice = manager.gpu(maxBatchSizeShape, nvinfer1::DataType::kINT64);
+-    mCacheIndirDecoderIOBatchedCopyDstOffsetsSliceDevice = manager.gpu(maxBatchSizeShape, nvinfer1::DataType::kINT64);
+-    mCacheIndirDecoderIOBatchedCopyCopySizesDevice = manager.gpu(maxBatchSizeShape, nvinfer1::DataType::kINT64);
++        = tensorrt_llm::runtime::BufferManager::pinnedPool(maxBatchSizeShape, nvinfer1::DataType::kINT32);
++    mCacheIndirDecoderIOBatchedCopySrcOffsetsSliceDevice = manager.gpu(maxBatchSizeShape, nvinfer1::DataType::kINT32);
++    mCacheIndirDecoderIOBatchedCopyDstOffsetsSliceDevice = manager.gpu(maxBatchSizeShape, nvinfer1::DataType::kINT32);
++    mCacheIndirDecoderIOBatchedCopyCopySizesDevice = manager.gpu(maxBatchSizeShape, nvinfer1::DataType::kINT32);
+ 
+     // Pre-allocate buffer for saving generation logits for model w/o draft tokens
+     if (gatherGenerationLogits
+@@ -294,9 +294,9 @@ void RuntimeBuffers::create(SizeType32 maxBatchSize, SizeType32 maxBeamWidth,
+             logitsType);
+ 
+         generationLogitsCache.fragmentPointerDevice
+-            = manager.gpu(ITensor::makeShape({GenerationLogitsCache::kCACHE_LENGTH}), nvinfer1::DataType::kINT64);
++            = manager.gpu(ITensor::makeShape({GenerationLogitsCache::kCACHE_LENGTH}), nvinfer1::DataType::kINT32);
+         generationLogitsCache.fragmentPointerHost = tensorrt_llm::runtime::BufferManager::pinnedPool(
+-            ITensor::makeShape({maxBatchSize, GenerationLogitsCache::kCACHE_LENGTH}), nvinfer1::DataType::kINT64);
++            ITensor::makeShape({maxBatchSize, GenerationLogitsCache::kCACHE_LENGTH}), nvinfer1::DataType::kINT32);
+     }
+ 
+     if (modelConfig.useCrossAttention())
+diff --git a/cpp/tensorrt_llm/batch_manager/transformerBuffers.cpp b/cpp/tensorrt_llm/batch_manager/transformerBuffers.cpp
+index 5810344a0..2bfa37940 100644
+--- a/cpp/tensorrt_llm/batch_manager/transformerBuffers.cpp
++++ b/cpp/tensorrt_llm/batch_manager/transformerBuffers.cpp
+@@ -87,11 +87,11 @@ TransformerBuffers::TransformerBuffers(SizeType32 maxBatchSize, SizeType32 maxBe
+             // Pinned memory for batch copy of attention masks.
+             // There will be paddings in the dim1, so copy it by tokens.
+             crossAttentionMaskCopySrcOffsets = tensorrt_llm::runtime::BufferManager::pinnedPool(
+-                ITensor::makeShape({maxNumTokens}), nvinfer1::DataType::kINT64);
++                ITensor::makeShape({maxNumTokens}), nvinfer1::DataType::kINT32);
+             crossAttentionMaskCopyDstOffsets = tensorrt_llm::runtime::BufferManager::pinnedPool(
+-                ITensor::makeShape({maxNumTokens}), nvinfer1::DataType::kINT64);
++                ITensor::makeShape({maxNumTokens}), nvinfer1::DataType::kINT32);
+             crossAttentionMaskCopySizes = tensorrt_llm::runtime::BufferManager::pinnedPool(
+-                ITensor::makeShape({maxNumTokens}), nvinfer1::DataType::kINT64);
++                ITensor::makeShape({maxNumTokens}), nvinfer1::DataType::kINT32);
+         }
+     }
+ 
+@@ -103,11 +103,11 @@ TransformerBuffers::TransformerBuffers(SizeType32 maxBatchSize, SizeType32 maxBe
+     seqSlotsAltDevice = manager.gpu(ITensor::makeShape({maxBatchSize}), nvinfer1::DataType::kINT32);
+ 
+     cacheIndirBatchedCopySrcOffsets = tensorrt_llm::runtime::BufferManager::pinnedPool(
+-        ITensor::makeShape({maxBatchSize}), nvinfer1::DataType::kINT64);
++        ITensor::makeShape({maxBatchSize}), nvinfer1::DataType::kINT32);
+     cacheIndirBatchedCopyDstOffsets = tensorrt_llm::runtime::BufferManager::pinnedPool(
+-        ITensor::makeShape({maxBatchSize}), nvinfer1::DataType::kINT64);
++        ITensor::makeShape({maxBatchSize}), nvinfer1::DataType::kINT32);
+     cacheIndirBatchedCopySizes = tensorrt_llm::runtime::BufferManager::pinnedPool(
+-        ITensor::makeShape({maxBatchSize}), nvinfer1::DataType::kINT64);
++        ITensor::makeShape({maxBatchSize}), nvinfer1::DataType::kINT32);
+     skipCrossAttnBlocks
+         = tensorrt_llm::runtime::BufferManager::pinnedPool(ITensor::makeShape({1}), nvinfer1::DataType::kBOOL);
+ 
+@@ -124,7 +124,7 @@ TransformerBuffers::TransformerBuffers(SizeType32 maxBatchSize, SizeType32 maxBe
+     sinkTokenLengths = BufferManager::cpu(ITensor::makeShape({1}), nvinfer1::DataType::kINT32);
+     bufferCast<SizeType32>(*sinkTokenLengths)[0] = sinkTokenLen;
+ 
+-    contextProgressHost = BufferManager::cpu(ITensor::makeShape({1}), nvinfer1::DataType::kINT64);
++    contextProgressHost = BufferManager::cpu(ITensor::makeShape({1}), nvinfer1::DataType::kINT32);
+     bufferCast<int64_t>(*contextProgressHost)[0] = 0;
+ 
+     if (modelConfig.useGemmAllReducePlugin() && worldConfig.isTensorParallel())
+diff --git a/cpp/tensorrt_llm/common/attentionOp.cpp b/cpp/tensorrt_llm/common/attentionOp.cpp
+index e9cab4a9c..f5238572a 100644
+--- a/cpp/tensorrt_llm/common/attentionOp.cpp
++++ b/cpp/tensorrt_llm/common/attentionOp.cpp
+@@ -142,19 +142,19 @@ struct ConvertMMHAToXQAParamsHelper<__half, KVBlockArray>
+ };
+ 
+ #ifdef ENABLE_BF16
+-template <>
+-struct ConvertMMHAToXQAParamsHelper<__nv_bfloat16, KVLinearBuffer>
+-{
+-    static constexpr Data_type data_type = DATA_TYPE_BF16;
+-    static constexpr bool supported = true;
+-};
+-
+-template <>
+-struct ConvertMMHAToXQAParamsHelper<__nv_bfloat16, KVBlockArray>
+-{
+-    static constexpr Data_type data_type = DATA_TYPE_BF16;
+-    static constexpr bool supported = true;
+-};
++// template <>
++// struct ConvertMMHAToXQAParamsHelper<__nv_bfloat16, KVLinearBuffer>
++// {
++//     static constexpr Data_type data_type = DATA_TYPE_BF16;
++//     static constexpr bool supported = true;
++// };
++
++// template <>
++// struct ConvertMMHAToXQAParamsHelper<__nv_bfloat16, KVBlockArray>
++// {
++//     static constexpr Data_type data_type = DATA_TYPE_BF16;
++//     static constexpr bool supported = true;
++// };
+ #endif
+ 
+ template <typename T, typename KVCacheBuffer>
+@@ -2375,7 +2375,7 @@ int AttentionOp::initialize() noexcept
+     if (mEnableContextFMHA)
+     {
+         mEnableContextFMHA = false;
+-        if (!(mType == nvinfer1::DataType::kHALF || mType == nvinfer1::DataType::kBF16))
++        if (!(mType == nvinfer1::DataType::kHALF))// || mType == nvinfer1::DataType::kBF16))
+         {
+             TLLM_LOG_WARNING("Fall back to unfused MHA because of unsupported data type.");
+         }
+@@ -2415,8 +2415,8 @@ int AttentionOp::initialize() noexcept
+     TLLM_CHECK_WITH_INFO(!mFuseFp4Quant || mSM == 100, "fuse_fp4_quant only supports SM100 devices.");
+ 
+     TLLM_CHECK(isRoPE() == (mRotaryEmbeddingDim != 0));
+-    TLLM_CHECK_WITH_INFO((mSM >= 80) || (mType != nvinfer1::DataType::kBF16),
+-        "Unsupported data type, pre SM 80 GPUs do not support bfloat16");
++    // TLLM_CHECK_WITH_INFO((mSM >= 80) || (mType != nvinfer1::DataType::kBF16),
++    //     "Unsupported data type, pre SM 80 GPUs do not support bfloat16");
+ 
+     // Pre-check whether the head size is supported by MMHA.
+     // Support head size == 72 only for fmha kernels, so skip pre-check here.
+@@ -2462,10 +2462,10 @@ int AttentionOp::initialize() noexcept
+         {
+             data_type = DATA_TYPE_FP16;
+         }
+-        else if (mType == nvinfer1::DataType::kBF16)
+-        {
+-            data_type = DATA_TYPE_BF16;
+-        }
++        // else if (mType == nvinfer1::DataType::kBF16)
++        // {
++        //     data_type = DATA_TYPE_BF16;
++        // }
+         else
+         {
+             TLLM_CHECK_WITH_INFO(false, "GPTAttentionPlugin received wrong data type.");
+@@ -2571,12 +2571,12 @@ int AttentionOp::initialize() noexcept
+                     kvDataType = DATA_TYPE_FP16;
+                     outputDataType = DATA_TYPE_FP16;
+                 }
+-                else if (mType == nvinfer1::DataType::kBF16)
+-                {
+-                    qDataType = DATA_TYPE_BF16;
+-                    kvDataType = DATA_TYPE_BF16;
+-                    outputDataType = DATA_TYPE_BF16;
+-                }
++                // else if (mType == nvinfer1::DataType::kBF16)
++                // {
++                //     qDataType = DATA_TYPE_BF16;
++                //     kvDataType = DATA_TYPE_BF16;
++                //     outputDataType = DATA_TYPE_BF16;
++                // }
+                 else
+                 {
+                     TLLM_CHECK_WITH_INFO(false, "The data type is not supported.");
+@@ -2661,7 +2661,7 @@ int AttentionOp::initialize() noexcept
+     }
+ 
+     mEnableXQA = (mEnableXQA || mIsSpecDecodingEnabled) && !mCrossAttention
+-        && (mType == nvinfer1::DataType::kHALF || mType == nvinfer1::DataType::kBF16) && mUseKVCache;
++        && (mType == nvinfer1::DataType::kHALF) && mUseKVCache;
+ 
+     if (mEnableXQA)
+     {
+@@ -2676,11 +2676,11 @@ int AttentionOp::initialize() noexcept
+             fixedParams.inputDataType = DATA_TYPE_FP16;
+             fixedParams.outputDataType = DATA_TYPE_FP16;
+         }
+-        else if (mType == nvinfer1::DataType::kBF16)
+-        {
+-            fixedParams.inputDataType = DATA_TYPE_BF16;
+-            fixedParams.outputDataType = DATA_TYPE_BF16;
+-        }
++        // else if (mType == nvinfer1::DataType::kBF16)
++        // {
++        //     fixedParams.inputDataType = DATA_TYPE_BF16;
++        //     fixedParams.outputDataType = DATA_TYPE_BF16;
++        // }
+         // Update KV cache and math dtype.
+         if (mKVCacheQuantMode.hasInt8KvCache())
+         {
+diff --git a/cpp/tensorrt_llm/common/opUtils.cpp b/cpp/tensorrt_llm/common/opUtils.cpp
+index d997e45d5..bbb5fd48d 100644
+--- a/cpp/tensorrt_llm/common/opUtils.cpp
++++ b/cpp/tensorrt_llm/common/opUtils.cpp
+@@ -35,11 +35,11 @@ std::unordered_map<nvinfer1::DataType, ncclDataType_t>* getDtypeMap()
+     static std::unordered_map<nvinfer1::DataType, ncclDataType_t> dtypeMap = {
+         {nvinfer1::DataType::kFLOAT, ncclFloat32},
+         {nvinfer1::DataType::kHALF, ncclFloat16},
+-        {nvinfer1::DataType::kBF16, ncclBfloat16},
+-        {nvinfer1::DataType::kFP8, ncclInt8},
++        // {nvinfer1::DataType::kBF16, ncclBfloat16},
++        // {nvinfer1::DataType::kFP8, ncclInt8},
+         {nvinfer1::DataType::kBOOL, ncclInt8},
+         {nvinfer1::DataType::kINT32, ncclInt32},
+-        {nvinfer1::DataType::kINT64, ncclInt64},
++        // {nvinfer1::DataType::kINT64, ncclInt64},
+         {nvinfer1::DataType::kUINT8, ncclUint8},
+         {nvinfer1::DataType::kINT8, ncclInt8},
+     };
+diff --git a/cpp/tensorrt_llm/common/safetensors.cpp b/cpp/tensorrt_llm/common/safetensors.cpp
+index d948e9114..182f0f179 100644
+--- a/cpp/tensorrt_llm/common/safetensors.cpp
++++ b/cpp/tensorrt_llm/common/safetensors.cpp
+@@ -37,18 +37,18 @@ static DataType convertDataTypeStrToEnum(std::string const& str)
+         return DataType::kINT8;
+     if (str == "I32")
+         return DataType::kINT32;
+-    if (str == "I64")
+-        return DataType::kINT64;
++    // if (str == "I64")
++    //     return DataType::kINT64;
+     if (str == "U8")
+         return DataType::kUINT8;
+     if (str == "F16")
+         return DataType::kHALF;
+     if (str == "F32")
+         return DataType::kFLOAT;
+-    if (str == "BF16")
+-        return DataType::kBF16;
+-    if (str == "F8_E4M3")
+-        return DataType::kFP8;
++    // if (str == "BF16")
++    //     return DataType::kBF16;
++    // if (str == "F8_E4M3")
++    //     return DataType::kFP8;
+     TLLM_THROW("Unsupported data type: " + str);
+ }
+ 
+diff --git a/cpp/tensorrt_llm/executor/cache_transmission/cacheConcatenate.cu b/cpp/tensorrt_llm/executor/cache_transmission/cacheConcatenate.cu
+index a3e4ef8c9..ecda1b1fc 100644
+--- a/cpp/tensorrt_llm/executor/cache_transmission/cacheConcatenate.cu
++++ b/cpp/tensorrt_llm/executor/cache_transmission/cacheConcatenate.cu
+@@ -792,7 +792,7 @@ void splitKVCache(std::vector<runtime::ITensor::SharedPtr> const& kVCacheBlocks,
+         CachePtrs.push_back(reinterpret_cast<T*>(outputSplitBlock->data()));
+     }
+     runtime::BufferManager::IBufferPtr PtrsDeviceBuffer
+-        = bufferManager.gpu(CachePtrs.size(), nvinfer1::DataType::kINT64);
++        = bufferManager.gpu(CachePtrs.size(), nvinfer1::DataType::kINT32);
+     TLLM_CHECK(PtrsDeviceBuffer->getSizeInBytes() == CachePtrs.size() * sizeof(T*));
+     bufferManager.copy(CachePtrs.data(), *PtrsDeviceBuffer, runtime::MemoryType::kCPU);
+ 
+@@ -1021,7 +1021,7 @@ void concatenateKVCache(std::vector<runtime::ITensor::SharedPtr> const& inputSpl
+         CachePtrs.push_back(reinterpret_cast<T*>(inputSplitBlock->data()));
+     }
+     runtime::BufferManager::IBufferPtr PtrsDeviceBuffer
+-        = bufferManager.gpu(CachePtrs.size(), nvinfer1::DataType::kINT64);
++        = bufferManager.gpu(CachePtrs.size(), nvinfer1::DataType::kINT32);
+     TLLM_CHECK(PtrsDeviceBuffer->getSizeInBytes() == CachePtrs.size() * sizeof(T*));
+     bufferManager.copy(CachePtrs.data(), *PtrsDeviceBuffer, runtime::MemoryType::kCPU);
+ 
+diff --git a/cpp/tensorrt_llm/executor/tensor.cpp b/cpp/tensorrt_llm/executor/tensor.cpp
+index 8b7e15ac1..c780b91d0 100644
+--- a/cpp/tensorrt_llm/executor/tensor.cpp
++++ b/cpp/tensorrt_llm/executor/tensor.cpp
+@@ -57,13 +57,13 @@ DataType Tensor::getDataType() const
+     case nvinfer1::DataType::kINT8: return DataType::kINT8;
+     case nvinfer1::DataType::kINT32: return DataType::kINT32;
+     case nvinfer1::DataType::kUINT8: return DataType::kUINT8;
+-    case nvinfer1::DataType::kFP8: return DataType::kFP8;
++    // case nvinfer1::DataType::kFP8: return DataType::kFP8;
+     case nvinfer1::DataType::kHALF: return DataType::kFP16;
+     case nvinfer1::DataType::kFLOAT: return DataType::kFP32;
+-    case nvinfer1::DataType::kBF16: return DataType::kBF16;
+-    case nvinfer1::DataType::kINT64: return DataType::kINT64;
+-    case nvinfer1::DataType::kINT4: [[fallthrough]] /* do nothing */;
+-    case nvinfer1::DataType::kFP4: /* do nothing */;
++    // case nvinfer1::DataType::kBF16: return DataType::kBF16;
++    // case nvinfer1::DataType::kINT64: return DataType::kINT64;
++    // case nvinfer1::DataType::kINT4: [[fallthrough]] /* do nothing */;
++    // case nvinfer1::DataType::kFP4: /* do nothing */;
+     }
+     TLLM_THROW("Unsupported data type");
+ }
+diff --git a/cpp/tensorrt_llm/kernels/cutlass_kernels/cutlass_type_conversion.h b/cpp/tensorrt_llm/kernels/cutlass_kernels/cutlass_type_conversion.h
+index 411013aa2..02d1e7cb8 100644
+--- a/cpp/tensorrt_llm/kernels/cutlass_kernels/cutlass_type_conversion.h
++++ b/cpp/tensorrt_llm/kernels/cutlass_kernels/cutlass_type_conversion.h
+@@ -28,7 +28,7 @@
+ #include <cuda_fp8.h>
+ 
+ #include "cutlass/float_subbyte.h"
+-#include <cuda_fp4.h>
++// #include <cuda_fp4.h>
+ 
+ namespace tensorrt_llm
+ {
+@@ -51,23 +51,23 @@ struct CutlassType<nvinfer1::DataType::kHALF>
+     using type = cutlass::half_t;
+ };
+ 
+-template <>
+-struct CutlassType<nvinfer1::DataType::kBF16>
+-{
+-    using type = cutlass::bfloat16_t;
+-};
++// template <>
++// struct CutlassType<nvinfer1::DataType::kBF16>
++// {
++//     using type = cutlass::bfloat16_t;
++// };
+ 
+-template <>
+-struct CutlassType<nvinfer1::DataType::kFP8>
+-{
+-    using type = cutlass::float_e4m3_t;
+-};
++// template <>
++// struct CutlassType<nvinfer1::DataType::kFP8>
++// {
++//     using type = cutlass::float_e4m3_t;
++// };
+ 
+-template <>
+-struct CutlassType<nvinfer1::DataType::kFP4>
+-{
+-    using type = cutlass::float_e2m1_t;
+-};
++// template <>
++// struct CutlassType<nvinfer1::DataType::kFP4>
++// {
++//     using type = cutlass::float_e2m1_t;
++// };
+ 
+ ///////////////////////////////////////////////////////////////////////////////////////////////////
+ // Tllm to Cutlass
+@@ -85,33 +85,33 @@ struct TllmToCutlassTypeAdapter<half>
+ };
+ 
+ #if defined(ENABLE_BF16)
+-template <>
+-struct TllmToCutlassTypeAdapter<__nv_bfloat16>
+-{
+-    using type = cutlass::bfloat16_t;
+-};
++// template <>
++// struct TllmToCutlassTypeAdapter<__nv_bfloat16>
++// {
++//     using type = cutlass::bfloat16_t;
++// };
+ #endif
+ 
+ #if defined(ENABLE_FP8)
+-template <>
+-struct TllmToCutlassTypeAdapter<__nv_fp8_e4m3>
+-{
+-    using type = cutlass::float_e4m3_t;
+-};
+-
+-template <>
+-struct TllmToCutlassTypeAdapter<__nv_fp8_e5m2>
+-{
+-    using type = cutlass::float_e5m2_t;
+-};
++// template <>
++// struct TllmToCutlassTypeAdapter<__nv_fp8_e4m3>
++// {
++//     using type = cutlass::float_e4m3_t;
++// };
++
++// template <>
++// struct TllmToCutlassTypeAdapter<__nv_fp8_e5m2>
++// {
++//     using type = cutlass::float_e5m2_t;
++// };
+ #endif
+ 
+ #if defined(ENABLE_FP4)
+-template <>
+-struct TllmToCutlassTypeAdapter<__nv_fp4_e2m1>
+-{
+-    using type = cutlass::float_e2m1_t;
+-};
++// template <>
++// struct TllmToCutlassTypeAdapter<__nv_fp4_e2m1>
++// {
++//     using type = cutlass::float_e2m1_t;
++// };
+ #endif
+ 
+ ///////////////////////////////////////////////////////////////////////////////////////////////////
+@@ -130,33 +130,33 @@ struct CutlassToTllmTypeAdapter<cutlass::half_t>
+ };
+ 
+ #if defined(ENABLE_BF16)
+-template <>
+-struct CutlassToTllmTypeAdapter<cutlass::bfloat16_t>
+-{
+-    using type = __nv_bfloat16;
+-};
++// template <>
++// struct CutlassToTllmTypeAdapter<cutlass::bfloat16_t>
++// {
++//     using type = __nv_bfloat16;
++// };
+ #endif
+ 
+ #if defined(ENABLE_FP8)
+-template <>
+-struct CutlassToTllmTypeAdapter<cutlass::float_e4m3_t>
+-{
+-    using type = __nv_fp8_e4m3;
+-};
+-
+-template <>
+-struct CutlassToTllmTypeAdapter<cutlass::float_e5m2_t>
+-{
+-    using type = __nv_fp8_e5m2;
+-};
++// template <>
++// struct CutlassToTllmTypeAdapter<cutlass::float_e4m3_t>
++// {
++//     using type = __nv_fp8_e4m3;
++// };
++
++// template <>
++// struct CutlassToTllmTypeAdapter<cutlass::float_e5m2_t>
++// {
++//     using type = __nv_fp8_e5m2;
++// };
+ #endif
+ 
+ #if defined(ENABLE_FP4)
+-template <>
+-struct CutlassToTllmTypeAdapter<cutlass::float_e2m1_t>
+-{
+-    using type = __nv_fp4_e2m1;
+-};
++// template <>
++// struct CutlassToTllmTypeAdapter<cutlass::float_e2m1_t>
++// {
++//     using type = __nv_fp4_e2m1;
++// };
+ #endif
+ 
+ ///////////////////////////////////////////////////////////////////////////////////////////////////
+diff --git a/cpp/tensorrt_llm/kernels/decoderMaskedMultiheadAttentionUtils.h b/cpp/tensorrt_llm/kernels/decoderMaskedMultiheadAttentionUtils.h
+index 5f767a250..285ae558b 100644
+--- a/cpp/tensorrt_llm/kernels/decoderMaskedMultiheadAttentionUtils.h
++++ b/cpp/tensorrt_llm/kernels/decoderMaskedMultiheadAttentionUtils.h
+@@ -299,23 +299,23 @@ struct packed_type<half, 8>
+     using type = uint4;
+ };
+ 
+-template <>
+-struct packed_type<__nv_bfloat16, 2>
+-{
+-    using type = __nv_bfloat162;
+-};
++// template <>
++// struct packed_type<__nv_bfloat16, 2>
++// {
++//     using type = __nv_bfloat162;
++// };
+ 
+-template <>
+-struct packed_type<__nv_bfloat16, 4>
+-{
+-    using type = bf16_4_t;
+-};
++// template <>
++// struct packed_type<__nv_bfloat16, 4>
++// {
++//     using type = bf16_4_t;
++// };
+ 
+-template <>
+-struct packed_type<__nv_bfloat16, 8>
+-{
+-    using type = bf16_8_t;
+-};
++// template <>
++// struct packed_type<__nv_bfloat16, 8>
++// {
++//     using type = bf16_8_t;
++// };
+ 
+ template <>
+ struct packed_type<float, 2>
+@@ -346,10 +346,10 @@ inline __device__ uint32_t sub(uint32_t a, uint32_t b)
+ 
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+-inline __device__ __nv_bfloat162 sub(__nv_bfloat162 a, __nv_bfloat162 b)
+-{
+-    return hsub2(a, b);
+-}
++// inline __device__ __nv_bfloat162 sub(__nv_bfloat162 a, __nv_bfloat162 b)
++// {
++//     return hsub2(a, b);
++// }
+ 
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+@@ -399,7 +399,7 @@ inline __device__ float4 add(float4 a, float4 b)
+ 
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+-#ifdef ENABLE_FP8
++// #ifdef ENABLE_FP8
+ inline __device__ Float8_ add(Float8_ a, Float8_ b)
+ {
+     Float8_ c;
+@@ -409,7 +409,7 @@ inline __device__ Float8_ add(Float8_ a, Float8_ b)
+     c.w = add(a.w, b.w);
+     return c;
+ }
+-#endif
++// #endif
+ 
+ ////////////////////////////////////////////////////////////////////////////////////////////////////
+ 
+diff --git a/cpp/tensorrt_llm/layers/lookaheadDecodingLayer.cpp b/cpp/tensorrt_llm/layers/lookaheadDecodingLayer.cpp
+index 365a96df9..63dc08d01 100644
+--- a/cpp/tensorrt_llm/layers/lookaheadDecodingLayer.cpp
++++ b/cpp/tensorrt_llm/layers/lookaheadDecodingLayer.cpp
+@@ -122,7 +122,7 @@ LookaheadDecodingLayer<T>::LookaheadDecodingLayer(
+         = mBufferManager->gpu(ITensor::makeShape({maxBatchSize, sizeof(curandState_t)}), nvinfer1::DataType::kINT8);
+ 
+     mSetupWorkspaceSize = DecodingLayerWorkspace::calculateRequiredWorkspaceSize(
+-        std::make_pair(maxBatchShape1D, nvinfer1::DataType::kINT64));
++        std::make_pair(maxBatchShape1D, nvinfer1::DataType::kINT32));
+ 
+     TLLM_LOG_TRACE("%s stop", __PRETTY_FUNCTION__);
+ }
+diff --git a/cpp/tensorrt_llm/layers/lookaheadDecodingUtils.h b/cpp/tensorrt_llm/layers/lookaheadDecodingUtils.h
+index 739cf6500..dc683b345 100644
+--- a/cpp/tensorrt_llm/layers/lookaheadDecodingUtils.h
++++ b/cpp/tensorrt_llm/layers/lookaheadDecodingUtils.h
+@@ -322,7 +322,7 @@ public:
+         case nvinfer1::DataType::kFLOAT: return values<float>();
+         case nvinfer1::DataType::kINT8: return values<std::int8_t>();
+         case nvinfer1::DataType::kINT32: return values<std::int32_t>();
+-        case nvinfer1::DataType::kINT64: return values<std::int64_t>();
++        // case nvinfer1::DataType::kINT64: return values<std::int64_t>();
+         case nvinfer1::DataType::kUINT8: return values<std::uint8_t>();
+         default: return std::string(mName + ": Unsupported data type");
+         }
+@@ -380,7 +380,7 @@ public:
+             case nvinfer1::DataType::kFLOAT: return randomize<float>(3);
+             case nvinfer1::DataType::kINT8: return randomize<std::int8_t>(3);
+             case nvinfer1::DataType::kINT32: return randomize<std::int32_t>(3);
+-            case nvinfer1::DataType::kINT64: return randomize<std::int64_t>(3);
++            // case nvinfer1::DataType::kINT64: return randomize<std::int64_t>(3);
+             case nvinfer1::DataType::kUINT8: return randomize<std::uint8_t>(3);
+             default: return;
+             }
+@@ -395,7 +395,7 @@ public:
+         case nvinfer1::DataType::kFLOAT: return randomize<float>(0);
+         case nvinfer1::DataType::kINT8: return randomize<std::int8_t>(0);
+         case nvinfer1::DataType::kINT32: return randomize<std::int32_t>(0);
+-        case nvinfer1::DataType::kINT64: return randomize<std::int64_t>(0);
++        // case nvinfer1::DataType::kINT64: return randomize<std::int64_t>(0);
+         case nvinfer1::DataType::kUINT8: return randomize<std::uint8_t>(0);
+         default: return;
+         }
+@@ -409,7 +409,7 @@ public:
+         case nvinfer1::DataType::kFLOAT: return randomize<float>(1);
+         case nvinfer1::DataType::kINT8: return randomize<std::int8_t>(1);
+         case nvinfer1::DataType::kINT32: return randomize<std::int32_t>(1);
+-        case nvinfer1::DataType::kINT64: return randomize<std::int64_t>(1);
++        // case nvinfer1::DataType::kINT64: return randomize<std::int64_t>(1);
+         case nvinfer1::DataType::kUINT8: return randomize<std::uint8_t>(1);
+         default: return;
+         }
+diff --git a/cpp/tensorrt_llm/plugins/common/plugin.h b/cpp/tensorrt_llm/plugins/common/plugin.h
+index a7febe4cc..65f21f2b8 100644
+--- a/cpp/tensorrt_llm/plugins/common/plugin.h
++++ b/cpp/tensorrt_llm/plugins/common/plugin.h
+@@ -53,10 +53,7 @@ protected:
+     std::string mNamespace{api::kDefaultNamespace};
+ };
+ 
+-class BasePluginV3 : public nvinfer1::IPluginV3,
+-                     public nvinfer1::IPluginV3OneCore,
+-                     public nvinfer1::IPluginV3OneBuild,
+-                     public nvinfer1::IPluginV3OneRuntime
++class BasePluginV3 : public nvinfer1::IPluginV2
+ {
+ public:
+     void setPluginNamespace(char const* libNamespace) noexcept
+@@ -90,7 +87,7 @@ protected:
+     std::string mNamespace{api::kDefaultNamespace};
+ };
+ 
+-class BaseCreatorV3 : public nvinfer1::IPluginCreatorV3One
++class BaseCreatorV3 : public nvinfer1::IPluginCreator
+ {
+ public:
+     void setPluginNamespace(char const* libNamespace) noexcept
+diff --git a/cpp/tensorrt_llm/plugins/cpSplitPlugin/cpSplitPlugin.cpp b/cpp/tensorrt_llm/plugins/cpSplitPlugin/cpSplitPlugin.cpp
+index 221d5dac2..6e7e6b56a 100644
+--- a/cpp/tensorrt_llm/plugins/cpSplitPlugin/cpSplitPlugin.cpp
++++ b/cpp/tensorrt_llm/plugins/cpSplitPlugin/cpSplitPlugin.cpp
+@@ -50,19 +50,19 @@ void CpSplitPlugin::initFieldsToSerialize()
+     mFCToSerialize.fields = mDataToSerialize.data();
+ }
+ 
+-// IPluginV3 methods
+-nvinfer1::IPluginCapability* CpSplitPlugin::getCapabilityInterface(nvinfer1::PluginCapabilityType type) noexcept
+-{
+-    switch (type)
+-    {
+-    case PluginCapabilityType::kBUILD: return static_cast<IPluginV3OneBuild*>(this);
+-    case PluginCapabilityType::kRUNTIME: return static_cast<IPluginV3OneRuntime*>(this);
+-    case PluginCapabilityType::kCORE: return static_cast<IPluginV3OneCore*>(this);
+-    }
+-    return nullptr;
+-}
+-
+-nvinfer1::IPluginV3* CpSplitPlugin::clone() noexcept
++// IPluginV2 methods
++// nvinfer1::IPluginCapability* CpSplitPlugin::getCapabilityInterface(nvinfer1::PluginCapabilityType type) noexcept
++// {
++//     switch (type)
++//     {
++//     case PluginCapabilityType::kBUILD: return static_cast<IPluginV3OneBuild*>(this);
++//     case PluginCapabilityType::kRUNTIME: return static_cast<IPluginV3OneRuntime*>(this);
++//     case PluginCapabilityType::kCORE: return static_cast<IPluginV3OneCore*>(this);
++//     }
++//     return nullptr;
++// }
++
++nvinfer1::IPluginV2* CpSplitPlugin::clone() noexcept
+ {
+     std::unique_ptr<CpSplitPlugin> plugin{std::make_unique<CpSplitPlugin>(*this)};
+     plugin->setPluginNamespace(mNamespace.c_str());
+@@ -286,7 +286,7 @@ int32_t CpSplitPlugin::enqueue(nvinfer1::PluginTensorDesc const* inputDesc,
+     return 0;
+ }
+ 
+-nvinfer1::IPluginV3* CpSplitPlugin::attachToContext(nvinfer1::IPluginResourceContext* context) noexcept
++nvinfer1::IPluginV2* CpSplitPlugin::attachToContext(nvinfer1::IPluginResourceContext* context) noexcept
+ {
+     return clone();
+ }
+@@ -321,7 +321,7 @@ nvinfer1::PluginFieldCollection const* CpSplitPluginCreator::getFieldNames() noe
+     return &mFC;
+ }
+ 
+-nvinfer1::IPluginV3* CpSplitPluginCreator::createPlugin(
++nvinfer1::IPluginV2* CpSplitPluginCreator::createPlugin(
+     char const* name, nvinfer1::PluginFieldCollection const* fc, nvinfer1::TensorRTPhase phase) noexcept
+ {
+     PluginField const* fields = fc->fields;
+diff --git a/cpp/tensorrt_llm/plugins/cpSplitPlugin/cpSplitPlugin.h b/cpp/tensorrt_llm/plugins/cpSplitPlugin/cpSplitPlugin.h
+index 1dc8c15b3..d55990755 100644
+--- a/cpp/tensorrt_llm/plugins/cpSplitPlugin/cpSplitPlugin.h
++++ b/cpp/tensorrt_llm/plugins/cpSplitPlugin/cpSplitPlugin.h
+@@ -33,9 +33,9 @@ public:
+     CpSplitPlugin(CpSplitPlugin const& p) = default;
+     void initFieldsToSerialize();
+ 
+-    // IPluginV3 methods
+-    nvinfer1::IPluginCapability* getCapabilityInterface(nvinfer1::PluginCapabilityType type) noexcept override;
+-    nvinfer1::IPluginV3* clone() noexcept override;
++    // IPluginV2 methods
++    // nvinfer1::IPluginCapability* getCapabilityInterface(nvinfer1::PluginCapabilityType type) noexcept override;
++    nvinfer1::IPluginV2* clone() noexcept override;
+ 
+     // IPluginV3OneCore methods
+     char const* getPluginName() const noexcept override;
+@@ -67,7 +67,7 @@ public:
+     int32_t enqueue(nvinfer1::PluginTensorDesc const* inputDesc, nvinfer1::PluginTensorDesc const* outputDesc,
+         void const* const* inputs, void* const* outputs, void* workspace,
+         cudaStream_t stream) noexcept override; // fixed
+-    nvinfer1::IPluginV3* attachToContext(nvinfer1::IPluginResourceContext* context) noexcept override;
++    nvinfer1::IPluginV2* attachToContext(nvinfer1::IPluginResourceContext* context) noexcept override;
+     nvinfer1::PluginFieldCollection const* getFieldsToSerialize() noexcept override;
+ 
+ private:
+@@ -101,7 +101,7 @@ public:
+ 
+     nvinfer1::PluginFieldCollection const* getFieldNames() noexcept override;
+ 
+-    nvinfer1::IPluginV3* createPlugin(
++    nvinfer1::IPluginV2* createPlugin(
+         char const* name, nvinfer1::PluginFieldCollection const* fc, nvinfer1::TensorRTPhase phase) noexcept override;
+ 
+ private:
+diff --git a/cpp/tensorrt_llm/plugins/doraPlugin/doraPlugin.cpp b/cpp/tensorrt_llm/plugins/doraPlugin/doraPlugin.cpp
+index 7c980f079..6c436e313 100644
+--- a/cpp/tensorrt_llm/plugins/doraPlugin/doraPlugin.cpp
++++ b/cpp/tensorrt_llm/plugins/doraPlugin/doraPlugin.cpp
+@@ -56,19 +56,19 @@ void DoraPlugin::init()
+     mFieldsToSerialize.fields = mDataToSerialize.data();
+ }
+ 
+-// IPluginV3 methods
+-nvinfer1::IPluginCapability* DoraPlugin::getCapabilityInterface(nvinfer1::PluginCapabilityType type) noexcept
+-{
+-    switch (type)
+-    {
+-    case PluginCapabilityType::kBUILD: return static_cast<IPluginV3OneBuild*>(this);
+-    case PluginCapabilityType::kRUNTIME: return static_cast<IPluginV3OneRuntime*>(this);
+-    case PluginCapabilityType::kCORE: return static_cast<IPluginV3OneCore*>(this);
+-    }
+-    return nullptr;
+-}
+-
+-nvinfer1::IPluginV3* DoraPlugin::clone() noexcept
++// IPluginV2 methods
++// nvinfer1::IPluginCapability* DoraPlugin::getCapabilityInterface(nvinfer1::PluginCapabilityType type) noexcept
++// {
++//     switch (type)
++//     {
++//     case PluginCapabilityType::kBUILD: return static_cast<IPluginV3OneBuild*>(this);
++//     case PluginCapabilityType::kRUNTIME: return static_cast<IPluginV3OneRuntime*>(this);
++//     case PluginCapabilityType::kCORE: return static_cast<IPluginV3OneCore*>(this);
++//     }
++//     return nullptr;
++// }
++
++nvinfer1::IPluginV2* DoraPlugin::clone() noexcept
+ {
+     std::unique_ptr<DoraPlugin> plugin{std::make_unique<DoraPlugin>(mOutHiddenSizes, mType, mRemoveInputPadding)};
+     plugin->setPluginNamespace(mNamespace.c_str());
+@@ -162,7 +162,7 @@ bool DoraPlugin::supportsFormatCombination(
+     // lora weight pointers
+     else if (pos >= IdxEntry::kLORA_WEIGHTS_PTRS_START and pos < IdxEntry::kLORA_WEIGHTS_PTRS_START + numModules)
+     {
+-        return (inOut[pos].desc.type == nvinfer1::DataType::kINT64);
++        return (inOut[pos].desc.type == nvinfer1::DataType::kINT32);
+     }
+     else if (pos != 0 and isInput)
+     {
+@@ -307,7 +307,7 @@ int32_t DoraPlugin::enqueue(nvinfer1::PluginTensorDesc const* inputDesc, nvinfer
+     return 0;
+ }
+ 
+-nvinfer1::IPluginV3* DoraPlugin::attachToContext(nvinfer1::IPluginResourceContext* context) noexcept
++nvinfer1::IPluginV2* DoraPlugin::attachToContext(nvinfer1::IPluginResourceContext* context) noexcept
+ {
+     return clone();
+ }
+@@ -342,7 +342,7 @@ nvinfer1::PluginFieldCollection const* DoraPluginCreator::getFieldNames() noexce
+     return &mFC;
+ }
+ 
+-nvinfer1::IPluginV3* DoraPluginCreator::createPlugin(
++nvinfer1::IPluginV2* DoraPluginCreator::createPlugin(
+     char const* name, nvinfer1::PluginFieldCollection const* fc, nvinfer1::TensorRTPhase phase) noexcept
+ {
+     PluginField const* fields = fc->fields;
+diff --git a/cpp/tensorrt_llm/plugins/doraPlugin/doraPlugin.h b/cpp/tensorrt_llm/plugins/doraPlugin/doraPlugin.h
+index dfee11fdc..7e3207106 100644
+--- a/cpp/tensorrt_llm/plugins/doraPlugin/doraPlugin.h
++++ b/cpp/tensorrt_llm/plugins/doraPlugin/doraPlugin.h
+@@ -27,9 +27,9 @@ public:
+     DoraPlugin(std::vector<int32_t> const& outHiddenSizes, nvinfer1::DataType type, bool removeInputPadding);
+     DoraPlugin(DoraPlugin const& p) = default;
+ 
+-    // IPluginV3 methods
+-    nvinfer1::IPluginCapability* getCapabilityInterface(nvinfer1::PluginCapabilityType type) noexcept override;
+-    nvinfer1::IPluginV3* clone() noexcept override;
++    // IPluginV2 methods
++    // nvinfer1::IPluginCapability* getCapabilityInterface(nvinfer1::PluginCapabilityType type) noexcept override;
++    nvinfer1::IPluginV2* clone() noexcept override;
+ 
+     // IPluginV3OneCore methods
+     char const* getPluginName() const noexcept override;
+@@ -61,7 +61,7 @@ public:
+     int32_t enqueue(nvinfer1::PluginTensorDesc const* inputDesc, nvinfer1::PluginTensorDesc const* outputDesc,
+         void const* const* inputs, void* const* outputs, void* workspace,
+         cudaStream_t stream) noexcept override; // fixed
+-    nvinfer1::IPluginV3* attachToContext(nvinfer1::IPluginResourceContext* context) noexcept override;
++    nvinfer1::IPluginV2* attachToContext(nvinfer1::IPluginResourceContext* context) noexcept override;
+     nvinfer1::PluginFieldCollection const* getFieldsToSerialize() noexcept override;
+ 
+ private:
+@@ -103,7 +103,7 @@ public:
+ 
+     nvinfer1::PluginFieldCollection const* getFieldNames() noexcept override;
+ 
+-    nvinfer1::IPluginV3* createPlugin(
++    nvinfer1::IPluginV2* createPlugin(
+         char const* name, nvinfer1::PluginFieldCollection const* fc, nvinfer1::TensorRTPhase phase) noexcept override;
+ 
+ private:
+diff --git a/cpp/tensorrt_llm/plugins/eaglePlugin/eaglePrepareDrafterInputsPlugin.cpp b/cpp/tensorrt_llm/plugins/eaglePlugin/eaglePrepareDrafterInputsPlugin.cpp
+index 2cd8c695e..2eda85d63 100644
+--- a/cpp/tensorrt_llm/plugins/eaglePlugin/eaglePrepareDrafterInputsPlugin.cpp
++++ b/cpp/tensorrt_llm/plugins/eaglePlugin/eaglePrepareDrafterInputsPlugin.cpp
+@@ -55,31 +55,31 @@ void EaglePrepareDrafterInputsPlugin::initFieldsToSerialize()
+     mFCToSerialize.fields = mDataToSerialize.data();
+ }
+ 
+-nvinfer1::IPluginCapability* EaglePrepareDrafterInputsPlugin::getCapabilityInterface(
+-    nvinfer1::PluginCapabilityType type) noexcept
+-{
+-    try
+-    {
+-        if (type == nvinfer1::PluginCapabilityType::kBUILD)
+-        {
+-            return static_cast<nvinfer1::IPluginV3OneBuild*>(this);
+-        }
+-        if (type == nvinfer1::PluginCapabilityType::kRUNTIME)
+-        {
+-            return static_cast<nvinfer1::IPluginV3OneRuntime*>(this);
+-        }
+-        TLLM_CHECK(type == nvinfer1::PluginCapabilityType::kCORE);
+-        return static_cast<nvinfer1::IPluginV3OneCore*>(this);
+-    }
+-    catch (std::exception const& e)
+-    {
+-        caughtError(e);
+-    }
+-    return nullptr;
+-}
+-
+-// IPluginV3 methods
+-nvinfer1::IPluginV3* EaglePrepareDrafterInputsPlugin::clone() noexcept
++// nvinfer1::IPluginCapability* EaglePrepareDrafterInputsPlugin::getCapabilityInterface(
++//     nvinfer1::PluginCapabilityType type) noexcept
++// {
++//     try
++//     {
++//         if (type == nvinfer1::PluginCapabilityType::kBUILD)
++//         {
++//             return static_cast<nvinfer1::IPluginV3OneBuild*>(this);
++//         }
++//         if (type == nvinfer1::PluginCapabilityType::kRUNTIME)
++//         {
++//             return static_cast<nvinfer1::IPluginV3OneRuntime*>(this);
++//         }
++//         TLLM_CHECK(type == nvinfer1::PluginCapabilityType::kCORE);
++//         return static_cast<nvinfer1::IPluginV3OneCore*>(this);
++//     }
++//     catch (std::exception const& e)
++//     {
++//         caughtError(e);
++//     }
++//     return nullptr;
++// }
++
++// IPluginV2 methods
++nvinfer1::IPluginV2* EaglePrepareDrafterInputsPlugin::clone() noexcept
+ {
+     auto clone = std::make_unique<EaglePrepareDrafterInputsPlugin>(*this);
+     clone->initFieldsToSerialize();
+@@ -236,7 +236,7 @@ int32_t EaglePrepareDrafterInputsPlugin::onShapeChange(nvinfer1::PluginTensorDes
+     return 0;
+ }
+ 
+-nvinfer1::IPluginV3* EaglePrepareDrafterInputsPlugin::attachToContext(
++nvinfer1::IPluginV2* EaglePrepareDrafterInputsPlugin::attachToContext(
+     nvinfer1::IPluginResourceContext* context) noexcept
+ {
+     return clone();
+@@ -505,7 +505,7 @@ PluginFieldCollection const* EaglePrepareDrafterInputsPluginCreator::getFieldNam
+     return &mFC;
+ }
+ 
+-nvinfer1::IPluginV3* EaglePrepareDrafterInputsPluginCreator::createPlugin(
++nvinfer1::IPluginV2* EaglePrepareDrafterInputsPluginCreator::createPlugin(
+     char const* name, nvinfer1::PluginFieldCollection const* fc, nvinfer1::TensorRTPhase phase) noexcept
+ {
+     try
+diff --git a/cpp/tensorrt_llm/plugins/eaglePlugin/eaglePrepareDrafterInputsPlugin.h b/cpp/tensorrt_llm/plugins/eaglePlugin/eaglePrepareDrafterInputsPlugin.h
+index 0059c46f6..188203803 100644
+--- a/cpp/tensorrt_llm/plugins/eaglePlugin/eaglePrepareDrafterInputsPlugin.h
++++ b/cpp/tensorrt_llm/plugins/eaglePlugin/eaglePrepareDrafterInputsPlugin.h
+@@ -25,7 +25,7 @@
+ namespace tensorrt_llm::plugins
+ {
+ 
+-class EaglePrepareDrafterInputsPlugin : public nvinfer1::IPluginV3,
++class EaglePrepareDrafterInputsPlugin : public nvinfer1::IPluginV2,
+                                         public nvinfer1::IPluginV3OneCore,
+                                         public nvinfer1::IPluginV3OneBuild,
+                                         public nvinfer1::IPluginV3OneRuntime
+@@ -35,9 +35,9 @@ public:
+ 
+     EaglePrepareDrafterInputsPlugin(int32_t layerIdx, int32_t numLayers, int32_t maxNonLeavesPerLayer);
+ 
+-    nvinfer1::IPluginV3* clone() noexcept override;
++    nvinfer1::IPluginV2* clone() noexcept override;
+ 
+-    nvinfer1::IPluginCapability* getCapabilityInterface(nvinfer1::PluginCapabilityType type) noexcept override;
++    // nvinfer1::IPluginCapability* getCapabilityInterface(nvinfer1::PluginCapabilityType type) noexcept override;
+ 
+     void initFieldsToSerialize();
+ 
+@@ -62,7 +62,7 @@ public:
+     int32_t onShapeChange(nvinfer1::PluginTensorDesc const* in, int32_t nbInputs, nvinfer1::PluginTensorDesc const* out,
+         int32_t nbOutputs) noexcept override;
+ 
+-    nvinfer1::IPluginV3* attachToContext(nvinfer1::IPluginResourceContext* context) noexcept override;
++    nvinfer1::IPluginV2* attachToContext(nvinfer1::IPluginResourceContext* context) noexcept override;
+ 
+     nvinfer1::PluginFieldCollection const* getFieldsToSerialize() noexcept override;
+ 
+@@ -175,7 +175,7 @@ public:
+ 
+     nvinfer1::PluginFieldCollection const* getFieldNames() noexcept override;
+ 
+-    nvinfer1::IPluginV3* createPlugin(
++    nvinfer1::IPluginV2* createPlugin(
+         char const* name, nvinfer1::PluginFieldCollection const* fc, nvinfer1::TensorRTPhase phase) noexcept override;
+ 
+ private:
+diff --git a/cpp/tensorrt_llm/plugins/gptAttentionPlugin/gptAttentionPlugin.cpp b/cpp/tensorrt_llm/plugins/gptAttentionPlugin/gptAttentionPlugin.cpp
+index ed21db866..82f8a4811 100644
+--- a/cpp/tensorrt_llm/plugins/gptAttentionPlugin/gptAttentionPlugin.cpp
++++ b/cpp/tensorrt_llm/plugins/gptAttentionPlugin/gptAttentionPlugin.cpp
+@@ -346,7 +346,7 @@ bool GPTAttentionPlugin::supportsFormatCombination(
+     else if (pos == getIdx(IdxEntry::HOST_RUNTIME_PERF_KNOBS) || pos == getIdx(IdxEntry::HOST_CONTEXT_PROGRESS))
+     {
+         posCaseLine = __LINE__;
+-        result = inOut[pos].type == nvinfer1::DataType::kINT64;
++        result = inOut[pos].type == nvinfer1::DataType::kINT32;
+     }
+     else if (useKVCache()
+         && (pos == getIdx(IdxEntry::SEQUENCE_LENGTH) || pos == getIdx(IdxEntry::HOST_PAST_KEY_VALUE_LENGTHS)
+@@ -405,7 +405,7 @@ bool GPTAttentionPlugin::supportsFormatCombination(
+     {
+         // kv cache pool pointers
+         posCaseLine = __LINE__;
+-        result = inOut[pos].type == nvinfer1::DataType::kINT64 && inOut[pos].format == TensorFormat::kLINEAR;
++        result = inOut[pos].type == nvinfer1::DataType::kINT32 && inOut[pos].format == TensorFormat::kLINEAR;
+     }
+     else if (useKVCache() && mPagedKVCache && (pos == getIdx(IdxEntry::HOST_KV_CACHE_POOL_MAPPING)))
+     {
+diff --git a/cpp/tensorrt_llm/plugins/loraPlugin/loraPlugin.cpp b/cpp/tensorrt_llm/plugins/loraPlugin/loraPlugin.cpp
+index 763ca2f06..02dcb4c66 100644
+--- a/cpp/tensorrt_llm/plugins/loraPlugin/loraPlugin.cpp
++++ b/cpp/tensorrt_llm/plugins/loraPlugin/loraPlugin.cpp
+@@ -163,7 +163,7 @@ bool LoraPlugin::supportsFormatCombination(
+     }
+     else if (pos >= getLoraWeightsPtrsIdx() && pos < getLoraWeightsPtrsIdx() + mNumLoraModules)
+     {
+-        return inOut[pos].type == nvinfer1::DataType::kINT64;
++        return inOut[pos].type == nvinfer1::DataType::kINT32;
+     }
+     else if (mRemoveInputPadding && pos == getHostContextLengthsIdx())
+     {
+diff --git a/cpp/tensorrt_llm/plugins/lruPlugin/lruPlugin.cpp b/cpp/tensorrt_llm/plugins/lruPlugin/lruPlugin.cpp
+index 9d86b8cb8..672010d70 100644
+--- a/cpp/tensorrt_llm/plugins/lruPlugin/lruPlugin.cpp
++++ b/cpp/tensorrt_llm/plugins/lruPlugin/lruPlugin.cpp
+@@ -94,7 +94,7 @@ bool lruPlugin::supportsFormatCombination(
+     }
+     else if (mPagedState && pos == getStateIdx())
+     {
+-        return inOut[pos].type == nvinfer1::DataType::kINT64;
++        return inOut[pos].type == nvinfer1::DataType::kINT32;
+     }
+     else if (pos == getStateIdx() || pos == (nbInputs + 1))
+     {
+diff --git a/cpp/tensorrt_llm/plugins/mambaConv1dPlugin/mambaConv1dPlugin.cpp b/cpp/tensorrt_llm/plugins/mambaConv1dPlugin/mambaConv1dPlugin.cpp
+index 16754248b..876f15c37 100644
+--- a/cpp/tensorrt_llm/plugins/mambaConv1dPlugin/mambaConv1dPlugin.cpp
++++ b/cpp/tensorrt_llm/plugins/mambaConv1dPlugin/mambaConv1dPlugin.cpp
+@@ -97,7 +97,7 @@ bool MambaConv1dPlugin::supportsFormatCombination(
+     }
+     else if (mPagedState && pos == getConvStateIdx())
+     {
+-        return inOut[pos].type == nvinfer1::DataType::kINT64;
++        return inOut[pos].type == nvinfer1::DataType::kINT32;
+     }
+     else
+     {
+diff --git a/cpp/tensorrt_llm/plugins/mixtureOfExperts/mixtureOfExpertsPlugin.cpp b/cpp/tensorrt_llm/plugins/mixtureOfExperts/mixtureOfExpertsPlugin.cpp
+index ae55bff8c..9a2b85820 100644
+--- a/cpp/tensorrt_llm/plugins/mixtureOfExperts/mixtureOfExpertsPlugin.cpp
++++ b/cpp/tensorrt_llm/plugins/mixtureOfExperts/mixtureOfExpertsPlugin.cpp
+@@ -475,11 +475,11 @@ bool MixtureOfExpertsPlugin::supportsFormatCombination(
+     }
+     else if (hasLora() && (pos == getLoraFC1WeightPtrsIndex() || pos == getLoraFC2WeightPtrsIndex()))
+     {
+-        return inOut[pos].type == nvinfer1::DataType::kINT64;
++        return inOut[pos].type == nvinfer1::DataType::kINT32;
+     }
+     else if (hasGatedLoraWeightsAndRanks() && pos == getLoraGatedWeightPtrsIndex())
+     {
+-        return inOut[pos].type == nvinfer1::DataType::kINT64;
++        return inOut[pos].type == nvinfer1::DataType::kINT32;
+     }
+     else if (hasLora() && mRemoveInputPadding && pos == getHostContextLengthIndex())
+     {
+diff --git a/cpp/tensorrt_llm/plugins/ncclPlugin/allreducePlugin.cpp b/cpp/tensorrt_llm/plugins/ncclPlugin/allreducePlugin.cpp
+index 89e05fb61..2e6addd15 100644
+--- a/cpp/tensorrt_llm/plugins/ncclPlugin/allreducePlugin.cpp
++++ b/cpp/tensorrt_llm/plugins/ncclPlugin/allreducePlugin.cpp
+@@ -171,7 +171,7 @@ bool AllreducePlugin::supportsFormatCombination(
+ 
+     if (mStrategy != AllReduceStrategyType::NCCL && mStrategy != AllReduceStrategyType::UB && pos == 1)
+     {
+-        return (inOut[pos].type == nvinfer1::DataType::kINT64) && (inOut[pos].format == TensorFormat::kLINEAR);
++        return (inOut[pos].type == nvinfer1::DataType::kINT32) && (inOut[pos].format == TensorFormat::kLINEAR);
+     }
+     if (mStrategy == AllReduceStrategyType::UB)
+     {
+diff --git a/cpp/tensorrt_llm/plugins/selectiveScanPlugin/selectiveScanPlugin.cpp b/cpp/tensorrt_llm/plugins/selectiveScanPlugin/selectiveScanPlugin.cpp
+index 3e60182f2..89777c6d8 100644
+--- a/cpp/tensorrt_llm/plugins/selectiveScanPlugin/selectiveScanPlugin.cpp
++++ b/cpp/tensorrt_llm/plugins/selectiveScanPlugin/selectiveScanPlugin.cpp
+@@ -120,7 +120,7 @@ bool SelectiveScanPlugin::supportsFormatCombination(
+     }
+     else if (mPagedState && pos == getStateIdx())
+     {
+-        return inOut[pos].type == nvinfer1::DataType::kINT64;
++        return inOut[pos].type == nvinfer1::DataType::kINT32;
+     }
+     else
+     {
+diff --git a/cpp/tensorrt_llm/pybind/bindings.cpp b/cpp/tensorrt_llm/pybind/bindings.cpp
+index f54414162..a1e0817b9 100644
+--- a/cpp/tensorrt_llm/pybind/bindings.cpp
++++ b/cpp/tensorrt_llm/pybind/bindings.cpp
+@@ -214,9 +214,9 @@ PYBIND11_MODULE(TRTLLM_PYBIND_MODULE, m)
+         .value("INT32", nvinfer1::DataType::kINT32)
+         .value("BOOL", nvinfer1::DataType::kBOOL)
+         .value("UINT8", nvinfer1::DataType::kUINT8)
+-        .value("FP8", nvinfer1::DataType::kFP8)
+-        .value("BF16", nvinfer1::DataType::kBF16)
+-        .value("INT64", nvinfer1::DataType::kINT64)
++        // .value("FP8", nvinfer1::DataType::kFP8)
++        // .value("BF16", nvinfer1::DataType::kBF16)
++        // .value("INT64", nvinfer1::DataType::kINT64)
+         .export_values();
+ 
+     py::enum_<tr::ModelConfig::ModelVariant>(m, "GptModelVariant")
+diff --git a/cpp/tensorrt_llm/pybind/executor/executor.cpp b/cpp/tensorrt_llm/pybind/executor/executor.cpp
+index e84ca11b9..460204fd0 100644
+--- a/cpp/tensorrt_llm/pybind/executor/executor.cpp
++++ b/cpp/tensorrt_llm/pybind/executor/executor.cpp
+@@ -50,10 +50,10 @@ tle::Tensor numpyToTensor(py::array const& array)
+     {
+         dtype = tle::DataType::kINT32;
+     }
+-    else if (npDtype.is(py::dtype("int64")))
+-    {
+-        dtype = tle::DataType::kINT64;
+-    }
++    // else if (npDtype.is(py::dtype("int64")))
++    // {
++    //     dtype = tle::DataType::kINT64;
++    // }
+     else if (npDtype.attr("kind").cast<std::string>() == "V" && npDtype.attr("itemsize").cast<int>() == 1
+         && npDtype.attr("metadata")["dtype"].cast<std::string>() == "float8")
+     {
+diff --git a/cpp/tensorrt_llm/runtime/gptJsonConfig.cpp b/cpp/tensorrt_llm/runtime/gptJsonConfig.cpp
+index 311f63eaf..a019d74b5 100644
+--- a/cpp/tensorrt_llm/runtime/gptJsonConfig.cpp
++++ b/cpp/tensorrt_llm/runtime/gptJsonConfig.cpp
+@@ -82,12 +82,16 @@ std::optional<FieldType> parseJsonFieldOptional(Json const& json, std::string_vi
+ 
+ nvinfer1::DataType strToDType(std::string type)
+ {
+-    static std::map<std::string, nvinfer1::DataType> const typeMap = {{"int64", nvinfer1::DataType::kINT64},
++    static std::map<std::string, nvinfer1::DataType> const typeMap = {
++        // {"int64", nvinfer1::DataType::kINT64},
+         {"int32", nvinfer1::DataType::kINT32}, {"int", nvinfer1::DataType::kINT32},
+-        {"float32", nvinfer1::DataType::kFLOAT}, {"bfloat16", nvinfer1::DataType::kBF16},
++        {"float32", nvinfer1::DataType::kFLOAT}, 
++        // {"bfloat16", nvinfer1::DataType::kBF16},
+         {"float16", nvinfer1::DataType::kHALF}, {"bool", nvinfer1::DataType::kBOOL},
+-        {"uint8", nvinfer1::DataType::kUINT8}, {"int8", nvinfer1::DataType::kINT8}, {"fp8", nvinfer1::DataType::kFP8},
+-        {"int4", nvinfer1::DataType::kINT4}};
++        {"uint8", nvinfer1::DataType::kUINT8}, {"int8", nvinfer1::DataType::kINT8}
++        // {"fp8", nvinfer1::DataType::kFP8},
++        // {"int4", nvinfer1::DataType::kINT4
++        };
+ 
+     TLLM_CHECK_WITH_INFO(typeMap.count(type) > 0, type + " not found in strToDtype.");
+     return typeMap.at(type);
+diff --git a/cpp/tensorrt_llm/runtime/iBuffer.cpp b/cpp/tensorrt_llm/runtime/iBuffer.cpp
+index f676fee08..ba7bc140c 100644
+--- a/cpp/tensorrt_llm/runtime/iBuffer.cpp
++++ b/cpp/tensorrt_llm/runtime/iBuffer.cpp
+@@ -91,17 +91,17 @@ char const* IBuffer::getDataTypeName(DataType dataType)
+ {
+     switch (dataType)
+     {
+-    case nvinfer1::DataType::kINT64: return DataTypeTraits<nvinfer1::DataType::kINT64>::name;
++    // case nvinfer1::DataType::kINT64: return DataTypeTraits<nvinfer1::DataType::kINT64>::name;
+     case nvinfer1::DataType::kINT32: return DataTypeTraits<nvinfer1::DataType::kINT32>::name;
+     case nvinfer1::DataType::kFLOAT: return DataTypeTraits<nvinfer1::DataType::kFLOAT>::name;
+-    case nvinfer1::DataType::kBF16: return DataTypeTraits<nvinfer1::DataType::kBF16>::name;
++    // case nvinfer1::DataType::kBF16: return DataTypeTraits<nvinfer1::DataType::kBF16>::name;
+     case nvinfer1::DataType::kHALF: return DataTypeTraits<nvinfer1::DataType::kHALF>::name;
+     case nvinfer1::DataType::kBOOL: return DataTypeTraits<nvinfer1::DataType::kBOOL>::name;
+     case nvinfer1::DataType::kUINT8: return DataTypeTraits<nvinfer1::DataType::kUINT8>::name;
+     case nvinfer1::DataType::kINT8: return DataTypeTraits<nvinfer1::DataType::kINT8>::name;
+-    case nvinfer1::DataType::kFP8: return DataTypeTraits<nvinfer1::DataType::kFP8>::name;
+-    case nvinfer1::DataType::kINT4: [[fallthrough]] /* do nothing */;
+-    case nvinfer1::DataType::kFP4: /* do nothing */;
++    // case nvinfer1::DataType::kFP8: return DataTypeTraits<nvinfer1::DataType::kFP8>::name;
++    // case nvinfer1::DataType::kINT4: [[fallthrough]] /* do nothing */;
++    // case nvinfer1::DataType::kFP4: /* do nothing */;
+     }
+     TLLM_THROW("Unknown data type");
+ }
+diff --git a/cpp/tensorrt_llm/runtime/ipcUtils.cpp b/cpp/tensorrt_llm/runtime/ipcUtils.cpp
+index 23a7e28a4..1e0fd1e25 100644
+--- a/cpp/tensorrt_llm/runtime/ipcUtils.cpp
++++ b/cpp/tensorrt_llm/runtime/ipcUtils.cpp
+@@ -149,7 +149,7 @@ AllReduceBuffers::AllReduceBuffers(SizeType32 maxBatchSize, SizeType32 maxBeamWi
+     {
+         auto const tpSize = worldConfig.getTensorParallelism();
+         mAllReduceCommPtrs = BufferManager::cpu(
+-            ITensor::makeShape({static_cast<SizeType32>(7) * tpSize + 3}), nvinfer1::DataType::kINT64);
++            ITensor::makeShape({static_cast<SizeType32>(7) * tpSize + 3}), nvinfer1::DataType::kINT32);
+     }
+     else
+     {
+@@ -178,7 +178,7 @@ AllReduceBuffers::AllReduceBuffers(SizeType32 maxBatchSize, SizeType32 maxBeamWi
+ 
+         mAllReduceCommPtrs
+             = BufferManager::cpu(ITensor::makeShape({static_cast<SizeType32>(mIpcMemoryHandles.size()) * tpSize + 3}),
+-                nvinfer1::DataType::kINT64);
++                nvinfer1::DataType::kINT32);
+         auto commPtrs = BufferRange<void*>(*mAllReduceCommPtrs);
+         // Start from 1 since 0 represents released state for barrier at the beginning of the all_reduce.
+         // The last element is the barrier flag counter.
+diff --git a/cpp/tensorrt_llm/runtime/ncclCommunicator.cpp b/cpp/tensorrt_llm/runtime/ncclCommunicator.cpp
+index dc79fd5f4..8e2f0618d 100644
+--- a/cpp/tensorrt_llm/runtime/ncclCommunicator.cpp
++++ b/cpp/tensorrt_llm/runtime/ncclCommunicator.cpp
+@@ -38,10 +38,10 @@ ncclDataType_t toNcclType(nvinfer1::DataType dataType)
+     case nvinfer1::DataType::kINT8: return ncclInt8;
+     case nvinfer1::DataType::kINT32: return ncclInt32;
+     case nvinfer1::DataType::kUINT8: return ncclUint8;
+-    case nvinfer1::DataType::kINT64: return ncclInt64;
+-    case nvinfer1::DataType::kFP8: return ncclUint8;
++    // case nvinfer1::DataType::kINT64: return ncclInt64;
++    // case nvinfer1::DataType::kFP8: return ncclUint8;
+ #if ENABLE_BF16
+-    case nvinfer1::DataType::kBF16: return ncclBfloat16;
++    // case nvinfer1::DataType::kBF16: return ncclBfloat16;
+ #endif // ENABLE_BF16
+     default: TLLM_THROW("Unsupported data type: %d", static_cast<int>(dataType));
+     }
+diff --git a/cpp/tensorrt_llm/runtime/tllmRuntime.cpp b/cpp/tensorrt_llm/runtime/tllmRuntime.cpp
+index 7c2ca4747..5f2b5a71f 100644
+--- a/cpp/tensorrt_llm/runtime/tllmRuntime.cpp
++++ b/cpp/tensorrt_llm/runtime/tllmRuntime.cpp
+@@ -307,7 +307,7 @@ void TllmRuntime::printEngineInfo()
+         tensorNameList.emplace_back(mEngine->getIOTensorName(i));
+     }
+     std::vector<std::map<std::string, std::string>> tensorInfo(nIO);          // Tensor Information Vector
+-    std::vector<std::vector<std::vector<nvinfer1::Dims64>>> profileInfo(nIO); // Tensor Optimization Profile Vector
++    std::vector<std::vector<std::vector<nvinfer1::Dims32>>> profileInfo(nIO); // Tensor Optimization Profile Vector
+     for (int i = 0; i < nIO; ++i)
+     {
+         auto const& name = tensorNameList[i];
+@@ -321,12 +321,12 @@ void TllmRuntime::printEngineInfo()
+         maxShapeWidth = std::max(maxShapeWidth, tensorInfo[i]["build_shape"].size());
+         if (tensorInfo[i]["mode"] == "I")
+         {
+-            std::vector<std::vector<nvinfer1::Dims64>> topPerTensor(nOP);
++            std::vector<std::vector<nvinfer1::Dims32>> topPerTensor(nOP);
+             for (int k = 0; k < nOP; ++k)
+             {
+                 if (tensorInfo[i]["location"] == std::string("GPU"))
+                 {
+-                    std::vector<nvinfer1::Dims64> top(3);
++                    std::vector<nvinfer1::Dims32> top(3);
+                     top[0] = mEngine->getProfileShape(nameC, k, nvinfer1::OptProfileSelector::kMIN);
+                     top[1] = mEngine->getProfileShape(nameC, k, nvinfer1::OptProfileSelector::kOPT);
+                     top[2] = mEngine->getProfileShape(nameC, k, nvinfer1::OptProfileSelector::kMAX);
+@@ -336,9 +336,9 @@ void TllmRuntime::printEngineInfo()
+                 else
+                 {
+                     // Shape input tensor, not used in TRT-LLM support yet
+-                    std::vector<nvinfer1::Dims64> top(3);
++                    std::vector<nvinfer1::Dims32> top(3);
+                     int const nDim = mEngine->getTensorShape(nameC).nbDims;
+-                    nvinfer1::Dims64 tensorShape{nDim, {-1}};
++                    nvinfer1::Dims32 tensorShape{nDim, {-1}};
+                     int const* pos = nullptr;
+                     pos = mEngine->getProfileTensorValues(nameC, k, nvinfer1::OptProfileSelector::kMIN);
+                     std::copy(pos, pos + nDim, tensorShape.d);
+@@ -356,7 +356,7 @@ void TllmRuntime::printEngineInfo()
+         }
+         else
+         {
+-            profileInfo[i] = std::vector<std::vector<nvinfer1::Dims64>>(nOP);
++            profileInfo[i] = std::vector<std::vector<nvinfer1::Dims32>>(nOP);
+         }
+     }
+     // Set input shape to get output shape
+@@ -392,7 +392,7 @@ void TllmRuntime::printEngineInfo()
+                     {
+                         // Shape input tensor, not used in TRT-LLM support yet
+                         int const nDim = mEngine->getTensorShape(nameC).nbDims;
+-                        nvinfer1::Dims64 tensorShape{nDim, {}};
++                        nvinfer1::Dims32 tensorShape{nDim, {}};
+                         int const* pos = reinterpret_cast<int const*>(context.getTensorAddress(nameC));
+                         std::copy(pos, pos + nDim, tensorShape.d);
+                         profileInfo[i][k].push_back(tensorShape);
+diff --git a/cpp/tensorrt_llm/runtime/tllmRuntime.h b/cpp/tensorrt_llm/runtime/tllmRuntime.h
+index d25490726..394fcdc32 100644
+--- a/cpp/tensorrt_llm/runtime/tllmRuntime.h
++++ b/cpp/tensorrt_llm/runtime/tllmRuntime.h
+@@ -174,7 +174,7 @@ private:
+     void printContextInfo(SizeType32 contextIndex);
+ 
+     // Tool functions for `printEngineInfo()`.
+-    static std::string shapeToString(nvinfer1::Dims64 const& dim)
++    static std::string shapeToString(nvinfer1::Dims32 const& dim)
+     {
+         std::string output("(");
+         if (dim.nbDims == 0)
+@@ -193,17 +193,17 @@ private:
+     {
+         switch (type)
+         {
+-        case nvinfer1::DataType::kINT64: return "INT64";
++        // case nvinfer1::DataType::kINT64: return "INT64";
+         case nvinfer1::DataType::kINT32: return "INT32";
+         case nvinfer1::DataType::kFLOAT: return "FP32";
+-        case nvinfer1::DataType::kBF16: return "BF16";
++        // case nvinfer1::DataType::kBF16: return "BF16";
+         case nvinfer1::DataType::kHALF: return "FP16";
+         case nvinfer1::DataType::kBOOL: return "BOOL";
+         case nvinfer1::DataType::kUINT8: return "UINT8";
+         case nvinfer1::DataType::kINT8: return "INT8";
+-        case nvinfer1::DataType::kFP8: return "FP8";
+-        case nvinfer1::DataType::kINT4: return "INT4";
+-        case nvinfer1::DataType::kFP4: return "FP4";
++        // case nvinfer1::DataType::kFP8: return "FP8";
++        // case nvinfer1::DataType::kINT4: return "INT4";
++        // case nvinfer1::DataType::kFP4: return "FP4";
+         default: return "UNKNOWN";
+         }
+         return "";
+diff --git a/cpp/tensorrt_llm/runtime/torchUtils.h b/cpp/tensorrt_llm/runtime/torchUtils.h
+index d27441614..ddebf64da 100644
+--- a/cpp/tensorrt_llm/runtime/torchUtils.h
++++ b/cpp/tensorrt_llm/runtime/torchUtils.h
+@@ -88,10 +88,10 @@ public:
+         case IBuffer::DataType::kINT8: return torch::kInt8;
+         case IBuffer::DataType::kUINT8: return torch::kUInt8;
+         case IBuffer::DataType::kINT32: return torch::kInt32;
+-        case IBuffer::DataType::kINT64: return torch::kInt64;
++        // case IBuffer::DataType::kINT64: return torch::kInt64;
+         case IBuffer::DataType::kBOOL: return at::ScalarType::Bool;
+-        case IBuffer::DataType::kFP8: return at::ScalarType::Float8_e4m3fn;
+-        case IBuffer::DataType::kBF16: return at::ScalarType::BFloat16;
++        // case IBuffer::DataType::kFP8: return at::ScalarType::Float8_e4m3fn;
++        // case IBuffer::DataType::kBF16: return at::ScalarType::BFloat16;
+         default: TLLM_THROW("unsupported data type");
+         }
+     }
+@@ -105,10 +105,10 @@ public:
+         case torch::kInt8: return IBuffer::DataType::kINT8;
+         case torch::kUInt8: return IBuffer::DataType::kUINT8;
+         case torch::kInt32: return IBuffer::DataType::kINT32;
+-        case torch::kInt64: return IBuffer::DataType::kINT64;
++        // case torch::kInt64: return IBuffer::DataType::kINT64;
+         case at::ScalarType::Bool: return IBuffer::DataType::kBOOL;
+-        case at::ScalarType::Float8_e4m3fn: return IBuffer::DataType::kFP8;
+-        case at::ScalarType::BFloat16: return IBuffer::DataType::kBF16;
++        // case at::ScalarType::Float8_e4m3fn: return IBuffer::DataType::kFP8;
++        // case at::ScalarType::BFloat16: return IBuffer::DataType::kBF16;
+         case at::ScalarType::QUInt4x2: return IBuffer::DataType::kINT4;
+         default: TLLM_THROW("unsupported data type");
+         }
+diff --git a/cpp/tensorrt_llm/runtime/utils/mpiUtils.cpp b/cpp/tensorrt_llm/runtime/utils/mpiUtils.cpp
+index ad44d8856..00249380b 100644
+--- a/cpp/tensorrt_llm/runtime/utils/mpiUtils.cpp
++++ b/cpp/tensorrt_llm/runtime/utils/mpiUtils.cpp
+@@ -54,10 +54,10 @@ MPI_Datatype getMpiDtype(MpiType dtype)
+         {MpiType::kUINT8, MPI_UINT8_T},
+         {MpiType::kINT32, MPI_INT32_T},
+         {MpiType::kUINT32, MPI_UINT32_T},
+-        {MpiType::kINT64, MPI_INT64_T},
++        // {MpiType::kINT64, MPI_INT64_T},
+         {MpiType::kUINT64, MPI_UINT64_T},
+-        {MpiType::kFP8, MPI_UINT8_T},
+-        {MpiType::kBF16, MPI_UINT16_T},
++        // {MpiType::kFP8, MPI_UINT8_T},
++        // {MpiType::kBF16, MPI_UINT16_T},
+         {MpiType::kCHAR, MPI_CHAR},
+     };
+     return dtype_map.at(dtype);
+diff --git a/cpp/tensorrt_llm/runtime/utils/numpyUtils.cpp b/cpp/tensorrt_llm/runtime/utils/numpyUtils.cpp
+index 4c37f480b..31d8865e4 100644
+--- a/cpp/tensorrt_llm/runtime/utils/numpyUtils.cpp
++++ b/cpp/tensorrt_llm/runtime/utils/numpyUtils.cpp
+@@ -38,7 +38,9 @@ std::string getNumpyTypeDesc(nvinfer1::DataType type)
+ {
+     using dt = nvinfer1::DataType;
+     static std::unordered_map<dt, std::string> const type_map{{dt::kBOOL, "?"}, {dt::kUINT8, "u1"}, {dt::kINT8, "i1"},
+-        {dt::kINT32, "i4"}, {dt::kINT64, "i8"}, {dt::kHALF, "f2"}, {dt::kFLOAT, "f4"}};
++        {dt::kINT32, "i4"},
++        //  {dt::kINT64, "i8"}, 
++         {dt::kHALF, "f2"}, {dt::kFLOAT, "f4"}};
+ 
+     if (type == dt::kBF16)
+     {
+@@ -57,7 +59,9 @@ nvinfer1::DataType typeFromNumpyDesc(std::string const& type)
+ 
+     using dt = nvinfer1::DataType;
+     static std::unordered_map<std::string, dt> const type_map{{"?", dt::kBOOL}, {"u1", dt::kUINT8}, {"i1", dt::kINT8},
+-        {"i4", dt::kINT32}, {"i8", dt::kINT64}, {"f2", dt::kHALF}, {"f4", dt::kFLOAT}};
++        {"i4", dt::kINT32}, 
++        // {"i8", dt::kINT64}, 
++        {"f2", dt::kHALF}, {"f4", dt::kFLOAT}};
+     TLLM_CHECK_WITH_INFO(type_map.count(type) > 0, "numpy data type '" + type + "' not supported");
+     return type_map.at(type);
+ }
+diff --git a/cpp/tensorrt_llm/thop/dynamicDecodeOp.cpp b/cpp/tensorrt_llm/thop/dynamicDecodeOp.cpp
+index 26563fc96..09f345295 100644
+--- a/cpp/tensorrt_llm/thop/dynamicDecodeOp.cpp
++++ b/cpp/tensorrt_llm/thop/dynamicDecodeOp.cpp
+@@ -347,7 +347,7 @@ void DynamicDecodeOp::setup(int64_t const batchSize, int64_t const beamWidth, th
+     CHECK_OPTIONAL_CPU_INPUT(lengthPenaltyOpt, torch::kFloat);
+     CHECK_OPTIONAL_CPU_INPUT(earlyStoppingOpt, torch::kInt32);
+     CHECK_OPTIONAL_CPU_INPUT(beamSearchDiversityRateOpt, torch::kFloat);
+-    CHECK_OPTIONAL_CPU_INPUT(randomSeedOpt, torch::kInt64);
++    // CHECK_OPTIONAL_CPU_INPUT(randomSeedOpt, torch::kInt32);
+     CHECK_OPTIONAL_INPUT(topPDecayOpt, torch::kFloat);
+     CHECK_OPTIONAL_INPUT(topPMinOpt, torch::kFloat);
+     CHECK_OPTIONAL_INPUT(topPResetIdsOpt, torch::kInt32);
+@@ -413,9 +413,9 @@ th::Tensor DynamicDecodeOp::forward(
+     CHECK_OPTIONAL_INPUT(embeddingBiasOpt, scalarType_);
+     CHECK_OPTIONAL_INPUT(inputLengthsOpt, torch::kInt32);
+     CHECK_OPTIONAL_INPUT(sequenceLimitLengthOpt, torch::kInt32);
+-    CHECK_OPTIONAL_INPUT(stopWordsListPtrsOpt, torch::kInt64);
++    CHECK_OPTIONAL_INPUT(stopWordsListPtrsOpt, torch::kInt32);
+     CHECK_OPTIONAL_INPUT(stopWordsLensOpt, torch::kInt32);
+-    CHECK_OPTIONAL_INPUT(badWordsListPtrsOpt, torch::kInt64);
++    CHECK_OPTIONAL_INPUT(badWordsListPtrsOpt, torch::kInt32);
+     CHECK_OPTIONAL_INPUT(badWordsLensOpt, torch::kInt32);
+     CHECK_OPTIONAL_INPUT(srcCacheIndirectionOpt, torch::kInt32);
+     CHECK_INPUT(outputTokenIds, torch::kInt32);
+diff --git a/cpp/tensorrt_llm/thop/mlaPreprocessOp.cpp b/cpp/tensorrt_llm/thop/mlaPreprocessOp.cpp
+index eac409ed8..e67ab39d8 100644
+--- a/cpp/tensorrt_llm/thop/mlaPreprocessOp.cpp
++++ b/cpp/tensorrt_llm/thop/mlaPreprocessOp.cpp
+@@ -171,7 +171,7 @@ std::vector<torch::Tensor> loadPagedKVCacheForMLA(torch::ScalarType out_dtype, i
+         "out_dtype only support float16, float32, bfloat16");
+     TLLM_CHECK(num_contexts > 0);
+     TLLM_CHECK(max_ctx_cached_kv_len > 0);
+-    CHECK_INPUT(cu_ctx_cached_kv_lens, torch::kInt64);
++    CHECK_INPUT(cu_ctx_cached_kv_lens, torch::kInt32);
+     TORCH_CHECK(cu_ctx_cached_kv_lens.dim() == 1);
+     TORCH_CHECK(cu_ctx_cached_kv_lens.size(0) >= num_contexts + 1);
+ 
+@@ -285,7 +285,7 @@ torch::Tensor setPagedKVCacheForMLA(torch::Tensor& output, torch::Tensor const&
+     // k_pe should be contiguous
+     CHECK_INPUT(k_pe, output_dtype);
+ 
+-    CHECK_INPUT(cu_seq_lens, torch::kInt64);
++    // CHECK_INPUT(cu_seq_lens, torch::kInt32);
+     TORCH_CHECK(cu_seq_lens.dim() == 1);
+     TORCH_CHECK(cu_seq_lens.size(0) >= num_requests + 1);
+ 
+@@ -334,10 +334,10 @@ torch::Tensor setPagedKVCacheV2ForMLA(torch::Tensor& output, torch::Tensor const
+     CHECK_INPUT(new_v, output_dtype);
+     CHECK_INPUT(new_k_pe, output_dtype);
+     TORCH_CHECK(new_k_pe.dim() == 2);
+-    CHECK_INPUT(cu_ctx_cached_kv_lens, torch::kInt64);
++    CHECK_INPUT(cu_ctx_cached_kv_lens, torch::kInt32);
+     TORCH_CHECK(cu_ctx_cached_kv_lens.dim() == 1);
+     TORCH_CHECK(cu_ctx_cached_kv_lens.size(0) >= num_requests + 1);
+-    CHECK_INPUT(cu_seq_lens, torch::kInt64);
++    CHECK_INPUT(cu_seq_lens, torch::kInt32);
+     TORCH_CHECK(cu_seq_lens.dim() == 1);
+     TORCH_CHECK(cu_seq_lens.size(0) >= num_requests + 1);
+ 
+@@ -387,10 +387,10 @@ void appendPagedKVCacheForMLA(torch::Tensor const& compressed_kv, torch::Tensor
+     CHECK_CONTIGUOUS(compressed_kv);
+     CHECK_INPUT(k_pe, input_dtype);
+     TORCH_CHECK(k_pe.dim() == 2);
+-    CHECK_INPUT(cu_seq_lens, torch::kInt64);
++    CHECK_INPUT(cu_seq_lens, torch::kInt32);
+     TORCH_CHECK(cu_seq_lens.dim() == 1);
+     TORCH_CHECK(cu_seq_lens.size(0) >= num_contexts + 1);
+-    CHECK_INPUT(cu_ctx_cached_kv_lens, torch::kInt64);
++    CHECK_INPUT(cu_ctx_cached_kv_lens, torch::kInt32);
+     TORCH_CHECK(cu_ctx_cached_kv_lens.dim() == 1);
+     TORCH_CHECK(cu_ctx_cached_kv_lens.size(0) >= num_contexts + 1);
+     TORCH_CHECK(max_input_uncached_seq_len > 0);
+diff --git a/cpp/tensorrt_llm/thop/selectiveScanOp.cpp b/cpp/tensorrt_llm/thop/selectiveScanOp.cpp
+index 46bcfda21..12a053234 100644
+--- a/cpp/tensorrt_llm/thop/selectiveScanOp.cpp
++++ b/cpp/tensorrt_llm/thop/selectiveScanOp.cpp
+@@ -152,7 +152,7 @@ std::tuple<th::Tensor, th::Tensor> run_selective_scan(th::Tensor const& input, t
+         auto mxSt = torch::empty({long(BxC) * H * N * P * 4}, torch::dtype(torch::kFloat16).device(torch::kCUDA));
+         auto mxdc = torch::empty({long(BxC) * H * Q * 4}, torch::dtype(torch::kFloat16).device(torch::kCUDA));
+         auto mxdA = torch::empty({long(BxC) * H * Q * 4}, torch::dtype(torch::kFloat16).device(torch::kCUDA));
+-        auto desc = torch::empty({1024}, torch::dtype(torch::kInt64).device(torch::kCUDA));
++        auto desc = torch::empty({1024}, torch::dtype(torch::kInt32).device(torch::kCUDA));
+ 
+         params.Os_ptr = mxOs.data_ptr();
+         params.St_ptr = mxSt.data_ptr();
+@@ -178,7 +178,7 @@ std::tuple<th::Tensor, th::Tensor> run_selective_scan(th::Tensor const& input, t
+         auto mxSt = torch::empty({long(B * C) * H * N * P * 4}, torch::dtype(torch::kFloat16).device(torch::kCUDA));
+         auto mxdc = torch::empty({long(B * C) * H * Q * 4}, torch::dtype(torch::kFloat16).device(torch::kCUDA));
+         auto mxdA = torch::empty({long(B * C) * H * Q * 4}, torch::dtype(torch::kFloat16).device(torch::kCUDA));
+-        auto desc = torch::empty({1024}, torch::dtype(torch::kInt64).device(torch::kCUDA));
++        auto desc = torch::empty({1024}, torch::dtype(torch::kInt32).device(torch::kCUDA));
+ 
+         params.Os_ptr = mxOs.data_ptr();
+         params.St_ptr = mxSt.data_ptr();
+diff --git a/cpp/tests/batch_manager/cacheTransceiverTest.cpp b/cpp/tests/batch_manager/cacheTransceiverTest.cpp
+index 30a1bf89e..83b248987 100644
+--- a/cpp/tests/batch_manager/cacheTransceiverTest.cpp
++++ b/cpp/tests/batch_manager/cacheTransceiverTest.cpp
+@@ -347,7 +347,7 @@ protected:
+                 TLLM_LOG_DEBUG(
+                     tensorrt_llm::mpi::MpiComm::world().getRank(), "send bufferSize: %ld to %d", bufferSize, genRank);
+                 tensorrt_llm::mpi::MpiComm::world().sendRawTag(
+-                    &bufferSize, 1, tensorrt_llm::mpi::MpiType::kINT64, genRank, 0x1F);
++                    &bufferSize, 1, tensorrt_llm::mpi::MpiType::kINT32, genRank, 0x1F);
+                 tensorrt_llm::mpi::MpiComm::world().sendRawTag(
+                     buffer.data(), buffer.size(), tensorrt_llm::mpi::MpiType::kCHAR, genRank, 0x2F);
+                 TLLM_LOG_DEBUG(tensorrt_llm::mpi::MpiComm::world().getRank(), "send buffer to %d", genRank);
+@@ -357,7 +357,7 @@ protected:
+             {
+                 int64_t bufferSize;
+                 tensorrt_llm::mpi::MpiComm::world().recvRawTag(
+-                    &bufferSize, 1, tensorrt_llm::mpi::MpiType::kINT64, 0, 0x1F);
++                    &bufferSize, 1, tensorrt_llm::mpi::MpiType::kINT32, 0, 0x1F);
+                 TLLM_LOG_DEBUG(
+                     tensorrt_llm::mpi::MpiComm::world().getRank(), "recv bufferSize: %ld from 0", bufferSize);
+                 std::vector<char> recvBuffer(bufferSize);
+@@ -774,7 +774,7 @@ protected:
+                         TLLM_LOG_DEBUG(tensorrt_llm::mpi::MpiComm::world().getRank(), "send bufferSize: %ld to %d",
+                             bufferSize, genRank);
+                         tensorrt_llm::mpi::MpiComm::world().sendRawTag(
+-                            &bufferSize, 1, tensorrt_llm::mpi::MpiType::kINT64, genRank, 0x1F);
++                            &bufferSize, 1, tensorrt_llm::mpi::MpiType::kINT32, genRank, 0x1F);
+                         tensorrt_llm::mpi::MpiComm::world().sendRawTag(
+                             buffer.data(), buffer.size(), tensorrt_llm::mpi::MpiType::kCHAR, genRank, 0x2F);
+                         TLLM_LOG_DEBUG(tensorrt_llm::mpi::MpiComm::world().getRank(), "send buffer to %d", genRank);
+@@ -785,7 +785,7 @@ protected:
+                 {
+                     int64_t bufferSize;
+                     tensorrt_llm::mpi::MpiComm::world().recvRawTag(
+-                        &bufferSize, 1, tensorrt_llm::mpi::MpiType::kINT64, 0, 0x1F);
++                        &bufferSize, 1, tensorrt_llm::mpi::MpiType::kINT32, 0, 0x1F);
+                     TLLM_LOG_DEBUG(
+                         tensorrt_llm::mpi::MpiComm::world().getRank(), "recv bufferSize: %ld from 0", bufferSize);
+                     std::vector<char> recvBuffer(bufferSize);
+diff --git a/cpp/tests/unit_tests/batch_manager/kvCacheManagerTest.cpp b/cpp/tests/unit_tests/batch_manager/kvCacheManagerTest.cpp
+index f50743f76..b78676280 100644
+--- a/cpp/tests/unit_tests/batch_manager/kvCacheManagerTest.cpp
++++ b/cpp/tests/unit_tests/batch_manager/kvCacheManagerTest.cpp
+@@ -343,7 +343,7 @@ void runPartialCopyTest()
+ 
+ TEST_F(KVCacheManagerTest, BlockManagerTestPartialCopyINT64)
+ {
+-    runPartialCopyTest<std::uint64_t, nvinfer1::DataType::kINT64, -1>();
++    runPartialCopyTest<std::uint64_t, nvinfer1::DataType::kINT32, -1>();
+ }
+ 
+ TEST_F(KVCacheManagerTest, BlockManagerTestPartialCopyINT32)
+diff --git a/cpp/tests/unit_tests/kernels/mlaPreprocessTest.cu b/cpp/tests/unit_tests/kernels/mlaPreprocessTest.cu
+index 298119348..a22985d3f 100644
+--- a/cpp/tests/unit_tests/kernels/mlaPreprocessTest.cu
++++ b/cpp/tests/unit_tests/kernels/mlaPreprocessTest.cu
+@@ -469,13 +469,13 @@ protected:
+             static_assert(std::is_same_v<DataType, TCache>, "TCache must be the same type as DataType");
+         }
+         this->h_cu_seq_lens = tensorrt_llm::runtime::BufferManager::pinned(
+-            ITensor::makeShape({this->mNumRequests + 1}), nvinfer1::DataType::kINT64);
++            ITensor::makeShape({this->mNumRequests + 1}), nvinfer1::DataType::kINT32);
+         this->h_cu_ctx_cached_kv_lens = tensorrt_llm::runtime::BufferManager::pinned(
+-            ITensor::makeShape({this->mNumRequests + 1}), nvinfer1::DataType::kINT64);
++            ITensor::makeShape({this->mNumRequests + 1}), nvinfer1::DataType::kINT32);
+         this->d_cu_seq_lens = tensorrt_llm::runtime::BufferManager::gpuSync(
+-            ITensor::makeShape({this->mNumRequests + 1}), nvinfer1::DataType::kINT64);
++            ITensor::makeShape({this->mNumRequests + 1}), nvinfer1::DataType::kINT32);
+         this->d_cu_ctx_cached_kv_lens = tensorrt_llm::runtime::BufferManager::gpuSync(
+-            ITensor::makeShape({this->mNumRequests + 1}), nvinfer1::DataType::kINT64);
++            ITensor::makeShape({this->mNumRequests + 1}), nvinfer1::DataType::kINT32);
+         {
+             // set random sequence length
+             auto* cu_seq_lens_temp_ptr = bufferCast<int64_t>(*(this->h_cu_seq_lens));
+diff --git a/cpp/tests/unit_tests/kernels/sampling/samplingTest.cpp b/cpp/tests/unit_tests/kernels/sampling/samplingTest.cpp
+index 90da247f5..3fa88603f 100644
+--- a/cpp/tests/unit_tests/kernels/sampling/samplingTest.cpp
++++ b/cpp/tests/unit_tests/kernels/sampling/samplingTest.cpp
+@@ -65,7 +65,7 @@ void SamplingKernelTest<T>::allocateBuffers(SamplingKernelTestParam const& param
+     mProbsHost = BufferManager::pinned(ITensor::makeShape({batchSize, maxTokensPerStep, vocabSize}), dataType);
+     mProbsDevice = mBufferManager->gpu(ITensor::makeShape({batchSize, maxTokensPerStep, vocabSize}), dataType);
+     mProbsPtrsDevice
+-        = BufferManager::pinned(ITensor::makeShape({batchSize, maxTokensPerStep}), nvinfer1::DataType::kINT64);
++        = BufferManager::pinned(ITensor::makeShape({batchSize, maxTokensPerStep}), nvinfer1::DataType::kINT32);
+ 
+     mCumLogProbsDevice = mBufferManager->gpu(ITensor::makeShape({maxBatchSize}), nvinfer1::DataType::kFLOAT);
+ 
+diff --git a/cpp/tests/unit_tests/kernels/sampling/samplingUtilsTest.cu b/cpp/tests/unit_tests/kernels/sampling/samplingUtilsTest.cu
+index 71a6d7671..e628097e2 100644
+--- a/cpp/tests/unit_tests/kernels/sampling/samplingUtilsTest.cu
++++ b/cpp/tests/unit_tests/kernels/sampling/samplingUtilsTest.cu
+@@ -97,7 +97,7 @@ TEST_F(SamplingUtilsKernelTest, CurandBatchInitialize)
+     curandState_t* curandStates;
+     cudaMalloc(&curandStates, sizeof(curandState_t) * 2 * batchSize);
+ 
+-    auto randomSeedsHost = mBufferManager->pinnedPool(ITensor::makeShape({batchSize}), nvinfer1::DataType::kINT64);
++    auto randomSeedsHost = mBufferManager->pinnedPool(ITensor::makeShape({batchSize}), nvinfer1::DataType::kINT32);
+     auto randomSeedsHostPtr = bufferCast<int64_t>(*randomSeedsHost);
+     size_t const periodSize = 3;
+     for (size_t i = 0; i < batchSize; ++i)
+diff --git a/cpp/tests/unit_tests/kernels/stopCriteriaKernelsTest.cpp b/cpp/tests/unit_tests/kernels/stopCriteriaKernelsTest.cpp
+index 2fefae395..f9c3f7326 100644
+--- a/cpp/tests/unit_tests/kernels/stopCriteriaKernelsTest.cpp
++++ b/cpp/tests/unit_tests/kernels/stopCriteriaKernelsTest.cpp
+@@ -69,19 +69,19 @@ public:
+         mOutputIds = BufferManager::pinned(
+             ITensor::makeShape({maxBatchSize, beamWidth, mMaxSeqLen}), nvinfer1::DataType::kINT32);
+         mOutputIdsPtr
+-            = BufferManager::pinned(ITensor::makeShape({maxBatchSize, beamWidth}), nvinfer1::DataType::kINT64);
++            = BufferManager::pinned(ITensor::makeShape({maxBatchSize, beamWidth}), nvinfer1::DataType::kINT32);
+ 
+         mParentIds = BufferManager::pinned(
+             ITensor::makeShape({maxBatchSize, beamWidth, mMaxSeqLen}), nvinfer1::DataType::kINT32);
+         mParentIdsPtr
+-            = BufferManager::pinned(ITensor::makeShape({maxBatchSize, beamWidth}), nvinfer1::DataType::kINT64);
++            = BufferManager::pinned(ITensor::makeShape({maxBatchSize, beamWidth}), nvinfer1::DataType::kINT32);
+ 
+         mRefOutputIds = BufferManager::pinned(
+             ITensor::makeShape({maxBatchSize, beamWidth, mMaxSeqLen}), nvinfer1::DataType::kINT32);
+ 
+         mStopWords
+             = BufferManager::pinned(ITensor::makeShape({maxBatchSize, 2, maxStopWordsLen}), nvinfer1::DataType::kINT32);
+-        mStopWordsPtr = BufferManager::pinned(ITensor::makeShape({maxBatchSize}), nvinfer1::DataType::kINT64);
++        mStopWordsPtr = BufferManager::pinned(ITensor::makeShape({maxBatchSize}), nvinfer1::DataType::kINT32);
+         mStopWordsLen = BufferManager::pinned(ITensor::makeShape({maxBatchSize}), nvinfer1::DataType::kINT32);
+ 
+         mBatchSlots = BufferManager::pinned(ITensor::makeShape({batchSize}), nvinfer1::DataType::kINT32);
+diff --git a/cpp/tests/unit_tests/layers/dynamicDecodeLayerTest.cpp b/cpp/tests/unit_tests/layers/dynamicDecodeLayerTest.cpp
+index a3c2d56de..5687170f2 100644
+--- a/cpp/tests/unit_tests/layers/dynamicDecodeLayerTest.cpp
++++ b/cpp/tests/unit_tests/layers/dynamicDecodeLayerTest.cpp
+@@ -179,12 +179,12 @@ void DynamicDecodeLayerTest<T>::allocateData(TestSamplingParams const& params, T
+     mBadWords
+         = BufferManager::pinned(ITensor::makeShape({mMaxBatchSize, 2, mMaxBadWordsLen}), nvinfer1::DataType::kINT32);
+     mBadWordsLens = BufferManager::pinned(ITensor::makeShape({mMaxBatchSize}), nvinfer1::DataType::kINT32);
+-    mBadWordsPtrs = BufferManager::pinned(ITensor::makeShape({mMaxBatchSize}), nvinfer1::DataType::kINT64);
++    mBadWordsPtrs = BufferManager::pinned(ITensor::makeShape({mMaxBatchSize}), nvinfer1::DataType::kINT32);
+ 
+     mStopWords
+         = BufferManager::pinned(ITensor::makeShape({mMaxBatchSize, 2, mMaxStopWordsLen}), nvinfer1::DataType::kINT32);
+     mStopWordsLens = BufferManager::pinned(ITensor::makeShape({mMaxBatchSize}), nvinfer1::DataType::kINT32);
+-    mStopWordsPtrs = BufferManager::pinned(ITensor::makeShape({mMaxBatchSize}), nvinfer1::DataType::kINT64);
++    mStopWordsPtrs = BufferManager::pinned(ITensor::makeShape({mMaxBatchSize}), nvinfer1::DataType::kINT32);
+ 
+     mBatchSlots = BufferManager::pinned(ITensor::makeShape({mBatchSize}), nvinfer1::DataType::kINT32);
+ 
+diff --git a/cpp/tests/unit_tests/runtime/loraManagerTest.cpp b/cpp/tests/unit_tests/runtime/loraManagerTest.cpp
+index 6910719da..8c86a06fa 100644
+--- a/cpp/tests/unit_tests/runtime/loraManagerTest.cpp
++++ b/cpp/tests/unit_tests/runtime/loraManagerTest.cpp
+@@ -213,7 +213,7 @@ static void checkLoraTensors(LoraManager const& loraManager, std::vector<int64_t
+         auto expectedTensor = expectedTensors.find(fieldName)->second;
+         auto actualTensor = inputTensors.find(fieldName)->second;
+         ITensor::shapeEquals(expectedTensor->getShape(), actualTensor->getShape());
+-        if (expectedTensor->getDataType() == nvinfer1::DataType::kINT64)
++        if (expectedTensor->getDataType() == nvinfer1::DataType::kINT32)
+         {
+             auto expT = bufferCast<int64_t>(*expectedTensor);
+             auto actT = bufferCast<int64_t>(*actualTensor);
+@@ -332,7 +332,7 @@ TEST_P(LoraManagerTest, fillInputTensors)
+     auto numLayers = static_cast<SizeType32>(modelConfig.getNbAttentionLayers());
+     SizeType32 numSeqs = 4;
+     TensorPtr weightsPtrs
+-        = mManager->cpu(ITensor::makeShape({numModules, numLayers, numSeqs, 3}), nvinfer1::DataType::kINT64);
++        = mManager->cpu(ITensor::makeShape({numModules, numLayers, numSeqs, 3}), nvinfer1::DataType::kINT32);
+     TensorPtr adapterSizes
+         = mManager->cpu(ITensor::makeShape({numModules, numLayers, numSeqs}), nvinfer1::DataType::kINT32);
+ 
+diff --git a/cpp/tests/unit_tests/runtime/runtimeKernelTest.cpp b/cpp/tests/unit_tests/runtime/runtimeKernelTest.cpp
+index dd517c5de..207c7447b 100644
+--- a/cpp/tests/unit_tests/runtime/runtimeKernelTest.cpp
++++ b/cpp/tests/unit_tests/runtime/runtimeKernelTest.cpp
+@@ -259,9 +259,9 @@ void testCopyBatch(tr::SizeType64 stride, tr::BufferManager& manager, tr::CudaSt
+     auto const indicesShape = tr::ITensor::makeShape({numIndices});
+     auto srcBufferHost = tr::BufferManager::cpu(bufferShape, nvinfer1::DataType::kINT32);
+     auto dstBufferDevice = manager.gpu(bufferShape, nvinfer1::DataType::kINT32);
+-    auto srcOffsets = tr::BufferManager::pinned(indicesShape, nvinfer1::DataType::kINT64);
+-    auto dstOffsets = tr::BufferManager::pinned(indicesShape, nvinfer1::DataType::kINT64);
+-    auto sizes = tr::BufferManager::pinned(indicesShape, nvinfer1::DataType::kINT64);
++    auto srcOffsets = tr::BufferManager::pinned(indicesShape, nvinfer1::DataType::kINT32);
++    auto dstOffsets = tr::BufferManager::pinned(indicesShape, nvinfer1::DataType::kINT32);
++    auto sizes = tr::BufferManager::pinned(indicesShape, nvinfer1::DataType::kINT32);
+     tr::kernels::invokeFill(*dstBufferDevice, 0, stream);
+ 
+     auto* srcBufferHostPtr = tr::bufferCast<std::int32_t>(*srcBufferHost);
+diff --git a/cpp/tests/unit_tests/runtime/torchTest.cpp b/cpp/tests/unit_tests/runtime/torchTest.cpp
+index 4aa498de8..e6b7d2cca 100644
+--- a/cpp/tests/unit_tests/runtime/torchTest.cpp
++++ b/cpp/tests/unit_tests/runtime/torchTest.cpp
+@@ -79,12 +79,12 @@ TEST_F(TorchTest, Aten)
+     }
+ 
+     auto constexpr fillValue = 1;
+-    auto tensorHostBase = manager.allocate(MemoryType::kPINNED, shapeTllm, nvinfer1::DataType::kINT64);
++    auto tensorHostBase = manager.allocate(MemoryType::kPINNED, shapeTllm, nvinfer1::DataType::kINT32);
+ 
+     for (auto memoryType : {MemoryType::kCPU, MemoryType::kGPU, MemoryType::kPINNED})
+     {
+         for (auto dtype : {nvinfer1::DataType::kFLOAT, nvinfer1::DataType::kHALF, nvinfer1::DataType::kINT8,
+-                 nvinfer1::DataType::kUINT8, nvinfer1::DataType::kINT32, nvinfer1::DataType::kINT64,
++                 nvinfer1::DataType::kUINT8, nvinfer1::DataType::kINT32, nvinfer1::DataType::kINT32,
+                  nvinfer1::DataType::kBF16, nvinfer1::DataType::kFP8, nvinfer1::DataType::kBOOL})
+         {
+             ITensor::SharedPtr tensorTllm{manager.allocate(memoryType, shapeTllm, dtype)};
+@@ -109,7 +109,7 @@ TEST_F(TorchTest, Aten)
+                 checkFilled<nvinfer1::DataType::kINT8>(*tensorHost, fillValue);
+                 checkFilled<nvinfer1::DataType::kUINT8>(*tensorHost, fillValue);
+                 checkFilled<nvinfer1::DataType::kINT32>(*tensorHost, fillValue);
+-                checkFilled<nvinfer1::DataType::kINT64>(*tensorHost, fillValue);
++                checkFilled<nvinfer1::DataType::kINT32>(*tensorHost, fillValue);
+                 checkFilled<nvinfer1::DataType::kBF16>(*tensorHost, fillValue);
+                 checkFilled<nvinfer1::DataType::kBOOL>(*tensorHost, fillValue);
+             }
+diff --git a/tensorrt_llm/python_plugin.py b/tensorrt_llm/python_plugin.py
+index 79846834d..b84b8d70e 100644
+--- a/tensorrt_llm/python_plugin.py
++++ b/tensorrt_llm/python_plugin.py
+@@ -313,7 +313,7 @@ def _convert_return_value_to_list(ret):
+     return ret
+ 
+ 
+-class PluginBase(trt.IPluginV3, trt.IPluginV3OneCore, trt.IPluginV3OneBuild,
++class PluginBase(trt.IPluginV2, trt.IPluginV3OneCore, trt.IPluginV3OneBuild,
+                  trt.IPluginV3OneRuntime):
+     '''
+     The base class of TRT-LLM plugin.
+@@ -332,7 +332,7 @@ class PluginBase(trt.IPluginV3, trt.IPluginV3OneCore, trt.IPluginV3OneBuild,
+         ), "Please make sure the plugin is registered through `@trtllm_plugin`"
+         assert cls != PluginBase
+ 
+-        trt.IPluginV3.__init__(self)
++        trt.IPluginV2.__init__(self)
+         trt.IPluginV3OneCore.__init__(self)
+         trt.IPluginV3OneBuild.__init__(self)
+         trt.IPluginV3OneRuntime.__init__(self)
+diff --git a/tensorrt_llm/tools/plugin_gen/core.py b/tensorrt_llm/tools/plugin_gen/core.py
+index 9560eda47..de8bc0317 100644
+--- a/tensorrt_llm/tools/plugin_gen/core.py
++++ b/tensorrt_llm/tools/plugin_gen/core.py
+@@ -62,8 +62,9 @@ class DType(Enum):
+                 (DType.FP64, "fp64", "kDOUBLE", "double", "float64",
+                  "kFLOAT64"),
+                 (DType.INT8, "i8", "kINT8", "int8_t", "int8", "kINT8"),
+-                (DType.INT32, "i32", "kINT32", "int32_t", "int32", "kINT32"),
+-                (DType.INT64, "i64", "kINT64", "int64_t", "int64", "KINT64")]
++                (DType.INT32, "i32", "kINT32", "int32_t", "int32", "kINT32")
++                # (DType.INT64, "i64", "kINT64", "int64_t", "int64", "KINT64")
++                ]
+ 
+ 
+ class Type:
+diff --git a/triton_backend/inflight_batcher_llm/src/utils.cc b/triton_backend/inflight_batcher_llm/src/utils.cc
+index 7d9df18bc..ce6e4f64b 100644
+--- a/triton_backend/inflight_batcher_llm/src/utils.cc
++++ b/triton_backend/inflight_batcher_llm/src/utils.cc
+@@ -59,10 +59,10 @@ nvinfer1::DataType to_trt_datatype(TRITONSERVER_DataType data_type)
+     {
+         return nvinfer1::DataType::kINT32;
+     }
+-    else if (data_type == TRITONSERVER_TYPE_UINT64)
+-    {
+-        return nvinfer1::DataType::kINT64;
+-    }
++    // else if (data_type == TRITONSERVER_TYPE_UINT64)
++    // {
++    //     return nvinfer1::DataType::kINT64;
++    // }
+     else if (data_type == TRITONSERVER_TYPE_INT8)
+     {
+         return nvinfer1::DataType::kINT8;
+@@ -75,10 +75,10 @@ nvinfer1::DataType to_trt_datatype(TRITONSERVER_DataType data_type)
+     {
+         return nvinfer1::DataType::kINT32;
+     }
+-    else if (data_type == TRITONSERVER_TYPE_INT64)
+-    {
+-        return nvinfer1::DataType::kINT64;
+-    }
++    // else if (data_type == TRITONSERVER_TYPE_INT64)
++    // {
++    //     return nvinfer1::DataType::kINT64;
++    // }
+     else if (data_type == TRITONSERVER_TYPE_FP16)
+     {
+         return nvinfer1::DataType::kHALF;
+@@ -95,10 +95,10 @@ nvinfer1::DataType to_trt_datatype(TRITONSERVER_DataType data_type)
+     {
+         return nvinfer1::DataType::kINT8;
+     }
+-    else if (data_type == TRITONSERVER_TYPE_BF16)
+-    {
+-        return nvinfer1::DataType::kBF16;
+-    }
++    // else if (data_type == TRITONSERVER_TYPE_BF16)
++    // {
++    //     return nvinfer1::DataType::kBF16;
++    // }
+     else
+     {
+         assert(false);
+@@ -124,18 +124,18 @@ TRITONSERVER_DataType to_triton_datatype(executor::DataType data_type)
+     {
+         return TRITONSERVER_TYPE_INT32;
+     }
+-    else if (data_type == executor::DataType::kINT64)
+-    {
+-        return TRITONSERVER_TYPE_INT64;
+-    }
+-    else if (data_type == executor::DataType::kBF16)
+-    {
+-        return TRITONSERVER_TYPE_BF16;
+-    }
+-    else if (data_type == executor::DataType::kFP8)
+-    {
+-        assert(false);
+-    }
++    // else if (data_type == executor::DataType::kINT64)
++    // {
++    //     return TRITONSERVER_TYPE_INT64;
++    // }
++    // else if (data_type == executor::DataType::kBF16)
++    // {
++    //     return TRITONSERVER_TYPE_BF16;
++    // }
++    // else if (data_type == executor::DataType::kFP8)
++    // {
++    //     assert(false);
++    // }
+     else if (data_type == executor::DataType::kFP16)
+     {
+         return TRITONSERVER_TYPE_FP16;
+diff --git a/triton_backend/inflight_batcher_llm/tests/utilsTest.cpp b/triton_backend/inflight_batcher_llm/tests/utilsTest.cpp
+index cd6a5c780..e92a2de09 100644
+--- a/triton_backend/inflight_batcher_llm/tests/utilsTest.cpp
++++ b/triton_backend/inflight_batcher_llm/tests/utilsTest.cpp
+@@ -146,7 +146,7 @@ TEST(UtilsTest, extractSingleton)
+ {
+     std::unordered_map<std::string, NamedTensor> inputsTensors;
+     pushTensor<int32_t>(inputsTensors, "int32", nvinfer1::DataType::kINT32, {1}, {2});
+-    pushTensor<int64_t>(inputsTensors, "int64", nvinfer1::DataType::kINT64, {1, 1}, {4294967296ll});
++    pushTensor<int64_t>(inputsTensors, "int64", nvinfer1::DataType::kINT32, {1, 1}, {4294967296ll});
+     pushTensor<float>(inputsTensors, "float32", nvinfer1::DataType::kFLOAT, {1, 2}, {0.5, 0.6});
+ 
+     // extractSingleton
+@@ -388,14 +388,14 @@ std::optional<tensorrt_llm::executor::Request> getRequest(
+     pushTensor<float>(inputsTensors, InputFieldsNames::beamSearchDiversityRate, nvinfer1::DataType::kFLOAT, {1}, {0.1});
+     pushTensor<float>(inputsTensors, InputFieldsNames::presencePenalty, nvinfer1::DataType::kFLOAT, {1}, {0.2});
+     pushTensor<float>(inputsTensors, InputFieldsNames::frequencyPenalty, nvinfer1::DataType::kFLOAT, {1}, {0.3});
+-    pushTensor<uint64_t>(inputsTensors, InputFieldsNames::seed, nvinfer1::DataType::kINT64, {1}, {3456});
++    pushTensor<uint64_t>(inputsTensors, InputFieldsNames::seed, nvinfer1::DataType::kINT32, {1}, {3456});
+ 
+     // PromptTuningConfig
+     pushTensor<float>(inputsTensors, InputFieldsNames::promptEmbeddingTable, nvinfer1::DataType::kFLOAT, {1, 2, 2},
+         {0.5, 0.6, 0.7, 0.8});
+ 
+     // LoraConfig
+-    pushTensor<uint64_t>(inputsTensors, InputFieldsNames::loraTaskId, nvinfer1::DataType::kINT64, {1}, {87654});
++    pushTensor<uint64_t>(inputsTensors, InputFieldsNames::loraTaskId, nvinfer1::DataType::kINT32, {1}, {87654});
+     pushTensor<float>(inputsTensors, InputFieldsNames::loraWeights, nvinfer1::DataType::kFLOAT, {1, 3, 2},
+         {0.5, 0.6, 0.7, 0.8, 0.1, 0.1});
+     pushTensor<int32_t>(

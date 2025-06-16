@@ -15,7 +15,7 @@ ARG TVM_VERSION \
     MLC_COMMIT \
     MLC_PATCH \
     LLVM_VERSION=17 \
-    FORCE_BUILD=off \
+    FORCE_BUILD=on \
     SOURCE_DIR=/opt/mlc-llm \
     TMP_DIR=/tmp/mlc
 
