@@ -23,7 +23,7 @@ def tensorrt_llm(version, branch=None, patch=None, src=None, depends=None, requi
         'TRT_LLM_SOURCE': src,
         'TRT_LLM_PATCH': patch,
         'CUDA_ARCHS': ';'.join([f'{x}-real' for x in CUDA_ARCHITECTURES]),
-        'CUDA_VERSION': CUDA_VERSION,
+        # 'CUDA_VERSION': CUDA_VERSION,
     }
 
     if depends:
@@ -47,5 +47,7 @@ def tensorrt_llm(version, branch=None, patch=None, src=None, depends=None, requi
 
 package = [
     tensorrt_llm('0.12', branch='v0.12.0-jetson', requires='<cu128', default=False),
-    tensorrt_llm('0.19.0', requires='>=cu128', default=True),
+    tensorrt_llm('0.19.0', requires='>=cu128', default=False),
+    tensorrt_llm('0.21.0', branch='9c012d5b', patch='patches/9c012d5b.diff', requires='>=cu128', default=True),
+    # tensorrt_llm('0.18.2', branch='v0.18.2', requires='>=cu122', default=True)
 ]

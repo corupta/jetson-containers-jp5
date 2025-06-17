@@ -3,19 +3,6 @@ set -ex
 
 PYTORCH_VERSION=$(python3 -c 'import torch; print(torch.__version__)')
 
-apt-get update
-apt-get install -y --no-install-recommends \
-    openmpi-bin \
-    libopenmpi-dev \
-    git-lfs \
-    ccache
-rm -rf /var/lib/apt/lists/*
-apt-get clean
-
-bash ${TMP_DIR}/install_cusparselt.sh
-
-pip3 install polygraphy mpi4py
-
 if [ -s ${SOURCE_TAR} ]; then
 	echo "extracting TensorRT-LLM sources from ${TRT_LLM_SOURCE}"
 	mkdir -p ${SOURCE_DIR}
@@ -34,23 +21,25 @@ else
 		git apply ${GIT_PATCHES}
 	fi
 	
-	sed -i 's|tensorrt.*||' requirements.txt
-	sed -i 's|torch.*|torch|' requirements.txt
-	sed -i 's|nvidia-cudnn.*||' requirements.txt
+	sed -i '/^--extra-index-url/d' requirements.txt
+	sed -i 's|^tensorrt\W.*|tensorrt|' requirements.txt
+	sed -i 's|^torch\W.*|torch|' requirements.txt
+	#sed -i 's|nvidia-cudnn.*||' requirements.txt
 	
 	git status
 	git diff --submodule=diff
 fi	
 
-if [ "$FORCE_BUILD" == "on" ]; then
-	echo "Forcing build of TensorRT-LLM ${TRT_LLM_VERSION}"
-	exit 1
-fi
+# if [ "$FORCE_BUILD" == "on" ]; then
+# 	echo "Forcing build of TensorRT-LLM ${TRT_LLM_VERSION}"
+# 	exit 1
+# fi
 
-pip3 install -r ${SOURCE_DIR}/requirements.txt
-pip3 install tensorrt_llm==${TRT_LLM_VERSION}
+# apt update && apt install python3.12-venv
+# pip3 install -r ${SOURCE_DIR}/requirements.txt
+# pip3 install tensorrt_llm==${TRT_LLM_VERSION}
 
-pip3 uninstall -y torch && pip3 install torch==${PYTORCH_VERSION}
+#pip3 uninstall -y torch && pip3 install torch==${PYTORCH_VERSION}
 
 #pip3 show tensorrt_llm
 #python3 -c "import tensorrt_llm; print(tensorrt_llm.__version__)"

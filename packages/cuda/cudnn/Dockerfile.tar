@@ -1,0 +1,40 @@
+#---
+# name: cudnn
+# group: cuda
+# depends: cuda
+# config: config.py
+# test: test.sh
+#---
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+ARG CUDNN_URL
+ARG CUDNN_DEB
+ARG CUDNN_PACKAGES
+ARG CUDNN_MAJOR
+
+RUN ls /etc/apt/sources.list.d/ && \
+    apt-get update && \
+    apt-cache search cudnn
+
+RUN echo "Downloading ${CUDNN_DEB}" && \
+    rm -rf /tmp/cudnn && mkdir /tmp/cudnn && cd /tmp/cudnn && \
+    wget ${WGET_FLAGS} ${CUDNN_URL} -O cudnn.tar && \
+    tar -xvf cudnn.tar -C /usr/src && \
+    mv /usr/src/cudnn-linux-* /usr/src/cudnn
+
+RUN cp -r /usr/src/cudnn/lib/* /usr/lib/$(uname -m)-linux-gnu/ && \
+    cp -r /usr/src/cudnn/include/* /usr/include/$(uname -m)-linux-gnu/ && \
+    rm -rf /tmp/cudnn
+
+# RUN cd /usr/src/cudnn_samples_v*/conv_sample/ && cat ../samples_common.mk
+
+# RUN echo "Patching makefile support matrix list"
+
+# RUN sed -i '/^SMS_BLACKWELL\s\+?=/c\SMS_BLACKWELL ?=\nifeq ($(shell expr $(CUDA_VERSION) \\>= 13000),1)\nSMS_BLACKWELL ?= 100 101 120\nendif' /usr/src/cudnn_samples_v*/samples_common.mk
+
+# RUN cd /usr/src/cudnn_samples_v*/conv_sample/ && cat ../samples_common.mk
+
+RUN cd /usr/src/cudnn_samples_v*/conv_sample/ && \
+    make clean && \
+    make -j$(nproc)

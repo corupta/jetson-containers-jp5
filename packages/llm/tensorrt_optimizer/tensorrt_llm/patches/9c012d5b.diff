@@ -1,0 +1,167 @@
+diff --git a/cpp/tensorrt_llm/kernels/contextFusedMultiHeadAttention/fmhaRunner.cpp b/cpp/tensorrt_llm/kernels/contextFusedMultiHeadAttention/fmhaRunner.cpp
+index e21562110..b7877a362 100644
+--- a/cpp/tensorrt_llm/kernels/contextFusedMultiHeadAttention/fmhaRunner.cpp
++++ b/cpp/tensorrt_llm/kernels/contextFusedMultiHeadAttention/fmhaRunner.cpp
+@@ -84,7 +84,7 @@ FusedMHARunnerV2::FusedMHARunnerV2(MHARunnerFixedParams fixedParams)
+     : mFixedParams(fixedParams)
+ {
+     TLLM_CHECK_WITH_INFO(
+-        (mSM == kSM_80 || mSM == kSM_86 || mSM == kSM_89 || mSM == kSM_90 || mSM == kSM_100 || mSM == kSM_120),
++        (mSM == kSM_80 || mSM == kSM_86 || mSM == kSM_87 || mSM == kSM_89 || mSM == kSM_90 || mSM == kSM_100 || mSM == kSM_120),
+         "Unsupported architecture");
+     TLLM_CHECK_WITH_INFO((mFixedParams.dataType == DATA_TYPE_FP16 || mFixedParams.dataType == DATA_TYPE_BF16
+                              || mFixedParams.dataType == DATA_TYPE_E4M3),
+@@ -301,7 +301,7 @@ void FusedMHARunnerV2::setupLaunchParams(MHARunnerParams runnerParams)
+ 
+     bool const isSm70 = (mSM == kSM_70);
+     bool const isSm90 = (mSM == kSM_90);
+-    bool const isSm8x = (mSM == kSM_86 || mSM == kSM_89);
++    bool const isSm8x = (mSM == kSM_86 || mSM == kSM_87 || mSM == kSM_89);
+     bool const isSm80 = (mSM == kSM_80);
+     bool const isSm89 = (mSM == kSM_89);
+     bool const isSm100 = (mSM == kSM_100);
+diff --git a/cpp/tensorrt_llm/kernels/multiHeadAttentionCommon.h b/cpp/tensorrt_llm/kernels/multiHeadAttentionCommon.h
+index 4ad5d78f2..0a171ceb6 100644
+--- a/cpp/tensorrt_llm/kernels/multiHeadAttentionCommon.h
++++ b/cpp/tensorrt_llm/kernels/multiHeadAttentionCommon.h
+@@ -108,6 +108,7 @@ constexpr int32_t kSM_72 = 72;
+ constexpr int32_t kSM_75 = 75;
+ constexpr int32_t kSM_80 = 80;
+ constexpr int32_t kSM_86 = 86;
++constexpr int32_t kSM_87 = 87;
+ constexpr int32_t kSM_89 = 89;
+ constexpr int32_t kSM_90 = 90;
+ constexpr int32_t kSM_100 = 100;
+diff --git a/tensorrt_llm/_utils.py b/tensorrt_llm/_utils.py
+index efe76e14b..4ebbff5f4 100644
+--- a/tensorrt_llm/_utils.py
++++ b/tensorrt_llm/_utils.py
+@@ -201,12 +201,11 @@ _str_to_trt_dtype_dict = dict(float16=trt.float16,
+                               int8=trt.int8,
+                               bool=trt.bool,
+                               bfloat16=trt.bfloat16,
+-                              fp8=trt.fp8,
+-                              nvfp4=trt.fp4)
++                              fp8=trt.fp8)
+ 
+ 
+ def str_dtype_to_trt(dtype):
+-    if dtype == "fp4":
++    if dtype == "fp4" or dtype == 'nvfp4':
+         # Special handling for FP4 since CI's trt version is not recent enough.
+         if not hasattr(trt, 'fp4'):
+             raise ValueError(
+diff --git a/tensorrt_llm/parameter.py b/tensorrt_llm/parameter.py
+index 7859eff93..4eb47a92c 100644
+--- a/tensorrt_llm/parameter.py
++++ b/tensorrt_llm/parameter.py
+@@ -107,7 +107,7 @@ class Parameter:
+             lower_shape = None
+             # workaround for reinterpreted data type
+             dtype = self._value.dtype
+-            if (self.dtype == trt.fp4 or self.dtype
++            if (self.dtype
+                     == trt.fp8) and (dtype == np.uint8 or dtype == np.int8
+                                      or dtype == np.int32 or dtype == np.int64):
+                 lower_type = self.dtype
+@@ -116,15 +116,15 @@ class Parameter:
+             self._value = constant(self._value, lower_type, lower_shape)
+             return self._value
+         elif self._value is None or isinstance(self._value, np.ndarray):
+-            if self._dtype == trt.fp4:
+-                shape = list(self._shape)
+-                assert shape[
+-                    -1] % 16 == 0, "For FP4, the last dimension of the shape should be multiple of 16"
+-                shape[-1] = shape[-1] // 16
+-                dtype = np.int64
+-            else:
+-                shape = self._shape
+-                dtype = trt_dtype_to_np(self._dtype)
++            # if self._dtype == trt.fp4:
++            #     shape = list(self._shape)
++            #     assert shape[
++            #         -1] % 16 == 0, "For FP4, the last dimension of the shape should be multiple of 16"
++            #     shape[-1] = shape[-1] // 16
++            #     dtype = np.int64
++            # else:
++            shape = self._shape
++            dtype = trt_dtype_to_np(self._dtype)
+             ndarray = np.empty(shape, dtype)
+             tensor = constant(ndarray, self._dtype, self._shape)
+             default_net()._register_unfilled_weights(tensor.producer.name,
+@@ -213,16 +213,16 @@ class Parameter:
+             # convert the scalar into a tensor which each dim is 1.
+             v = v.reshape(self.shape)
+ 
+-        if self.dtype == trt.fp4:
+-            assert v.shape[:-1] == self.shape[:-1] and v.shape[-1] == self.shape[-1] // 2 // v.dtype.itemsize, \
+-                f'For FP4, the shape of the value should be the same as the original shape, ' \
+-                f'except the last dimension should be half of the original shape. ' \
+-                f'Updated: {v.shape}, original: {self.shape}'
+-        else:
+-            assert v.shape == self.shape, \
+-                f'The value updated is not the same shape as the original. ' \
+-                f'Updated: {v.shape}, original: {self.shape}'
+-        if (self.dtype == trt.fp4 or self.dtype
++        # if self.dtype == trt.fp4:
++        #     assert v.shape[:-1] == self.shape[:-1] and v.shape[-1] == self.shape[-1] // 2 // v.dtype.itemsize, \
++        #         f'For FP4, the shape of the value should be the same as the original shape, ' \
++        #         f'except the last dimension should be half of the original shape. ' \
++        #         f'Updated: {v.shape}, original: {self.shape}'
++        # else:
++        assert v.shape == self.shape, \
++            f'The value updated is not the same shape as the original. ' \
++            f'Updated: {v.shape}, original: {self.shape}'
++        if (self.dtype
+                 == trt.fp8) and (v.dtype == np.int8 or v.dtype == np.uint8
+                                  or v.dtype == np.int32 or v.dtype == np.int64):
+             pass
+diff --git a/tensorrt_llm/quantization/functional.py b/tensorrt_llm/quantization/functional.py
+index b1f3c0e5e..93eb5dd2c 100644
+--- a/tensorrt_llm/quantization/functional.py
++++ b/tensorrt_llm/quantization/functional.py
+@@ -1290,7 +1290,7 @@ def dynamic_quantize(
+         double_scale: Tensor,
+         axis: int = -1,
+         block_size: int = 16,
+-        data_qtype: trt.DataType = trt.fp4,
++        data_qtype: trt.DataType = None,
+         scale_qtype: trt.DataType = trt.fp8) -> Tuple[Tensor, Tensor]:
+     '''
+     Parameters:
+@@ -1309,6 +1309,8 @@ def dynamic_quantize(
+     Returns:
+         A tuple of two tensors: quantized tensor and block scale tensor.
+     '''
++    if data_qtype is None:
++        data_qtype = trt.fp4 # if we put it in function definition, it breaks if trt.fp4 is not defined
+     if axis < 0:
+         axis = len(x.shape) + axis
+     dynq = default_trtnet().add_dynamic_quantize(x.trt_tensor, axis, block_size,
+diff --git a/tests/unittest/utils/util.py b/tests/unittest/utils/util.py
+index 31dcb8efd..e304cecbd 100644
+--- a/tests/unittest/utils/util.py
++++ b/tests/unittest/utils/util.py
+@@ -332,14 +332,14 @@ def run_session(session: Session,
+     ])
+ 
+     def create_torch(t):
+-        if t.dtype == trt.fp4:
+-            shape = list(t.shape)
+-            shape[-1] = shape[-1] // 2
+-            return torch.empty(tuple(shape), dtype=torch.uint8, device='cuda')
+-        else:
+-            return torch.empty(tuple(t.shape),
+-                               dtype=trt_dtype_to_torch(t.dtype),
+-                               device='cuda')
++        # if t.dtype == trt.fp4:
++        #     shape = list(t.shape)
++        #     shape[-1] = shape[-1] // 2
++        #     return torch.empty(tuple(shape), dtype=torch.uint8, device='cuda')
++        # else:
++        return torch.empty(tuple(t.shape),
++                            dtype=trt_dtype_to_torch(t.dtype),
++                            device='cuda')
+ 
+     outputs = {
+         t.name: create_torch(t) if t.name not in outputs else outputs[t.name]
