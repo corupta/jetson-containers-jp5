@@ -17,6 +17,14 @@ cat setup.py
 sed -i 's/^license = "Apache-2.0"/license = { text = "Apache License 2.0" }/' \
   pyproject.toml
 
+export FLASHINFER_ENABLE_AOT=1
+export FLASHINFER_ENABLE_F16=1
+export FLASHINFER_ENABLE_BF16=0
+export FLASHINFER_ENABLE_FP8=0
+export FLASHINFER_ENABLE_FP8_E4M3=0
+export FLASHINFER_ENABLE_FP8_E5M2=0
+export FLASHINFER_ENABLE_SM90=0
+export FLASHINFER_HEAD_DIMS="64,128"
 if [ "$FLASHINFER_VERSION_SPEC" = "0.2.5" ]; then
   FLASHINFER_ENABLE_AOT=1 pip install --no-build-isolation -e . -v
 else

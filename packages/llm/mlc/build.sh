@@ -24,20 +24,20 @@ if [ -s /tmp/mlc/patch.diff ]; then
 fi
 sed -i 's|flashinfer-python==0.2.5|flashinfer-python|' ${SOURCE_DIR}/python/setup.py
 
-cd ${SOURCE_DIR}/3rdparty/tvm/3rdparty/flashinfer
-git restore .
-git checkout 1605eaab
-git submodule update --init --recursive
-git config user.email "jetpack@containers.com"
-git config user.name "Jetpack Containers"
-git cherry-pick 3a69560
-# aka 0.2.1.post2
-git apply /tmp/flashinfer/patch.diff
-sed -i 's|options={.*| |g' setup.py
-sed -i 's|if arch < 75|if arch < 72|' setup.py
-perl -0777 -i -pe 's/-DDMLC_USE_LOGGING_LIBRARY=\s*/-DDMLC_USE_LOGGING_LIBRARY=/g' CMakeLists.txt
-cat CMakeLists.txt | grep DDMLC_USE_LOGGING_LIBRARY
-cd ${SOURCE_DIR}
+# cd ${SOURCE_DIR}/3rdparty/tvm/3rdparty/flashinfer
+# git restore .
+# git checkout 1605eaab
+# git submodule update --init --recursive
+# git config user.email "jetpack@containers.com"
+# git config user.name "Jetpack Containers"
+# git cherry-pick 3a69560
+# # aka 0.2.1.post2
+# git apply /tmp/flashinfer/patch.diff
+# sed -i 's|options={.*| |g' setup.py
+# sed -i 's|if arch < 75|if arch < 72|' setup.py
+# perl -0777 -i -pe 's/-DDMLC_USE_LOGGING_LIBRARY=\s*/-DDMLC_USE_LOGGING_LIBRARY=/g' CMakeLists.txt
+# cat CMakeLists.txt | grep DDMLC_USE_LOGGING_LIBRARY
+# cd ${SOURCE_DIR}
 
 git status
 # git diff --submodule=diff

@@ -14,10 +14,43 @@ index 7797ad2..b9d82ef 100644
  
  def clear_cache_dir():
 diff --git a/include/flashinfer/math.cuh b/include/flashinfer/math.cuh
-index 27c6351..8298988 100644
+index 27c6351..560f512 100644
 --- a/include/flashinfer/math.cuh
 +++ b/include/flashinfer/math.cuh
-@@ -121,13 +121,19 @@ __forceinline__ __device__ float rsqrt(float x) {
+@@ -60,10 +60,16 @@ __forceinline__ __device__ float ptx_log2(float x) {
+  * \param x input
+  */
+ __forceinline__ __device__ half2 ptx_exp2(half2 x) {
++#if (__CUDACC_VER_MAJOR__ < 11) || (__CUDA_ARCH__ < 750)
++  half lo = __low2half(x);
++  half hi = __high2half(x);
++  return __halves2half2(flashinfer::math::ptx_exp2(lo), flashinfer::math::ptx_exp2(hi));  // reuse half version
++#else
+   uint32_t y_u32;
+   uint32_t x_u32 = half2_as_uint32(x);
+   asm volatile("ex2.approx.f16x2 %0, %1;" : "=r"(y_u32) : "r"(x_u32));
+   return uint32_as_half2(y_u32);
++#endif
+ }
+ 
+ /*!
+@@ -71,9 +77,15 @@ __forceinline__ __device__ half2 ptx_exp2(half2 x) {
+  * \param x input
+  */
+ __forceinline__ __device__ half ptx_exp2(half x) {
++#if (__CUDACC_VER_MAJOR__ < 11) || (__CUDA_ARCH__ < 750)
++  float xf = __half2float(x);
++  float yf = flashinfer::math::ptx_exp2(xf);  // calls float version
++  return __float2half(yf);
++#else
+   ushort y_u16;
+   asm volatile("ex2.approx.f16 %0, %1;" : "=h"(y_u16) : "h"(__half_as_ushort(x)));
+   return __ushort_as_half(y_u16);
++#endif
+ }
+ 
+ /*!
+@@ -121,13 +133,19 @@ __forceinline__ __device__ float rsqrt(float x) {
  }
  
  /*!
@@ -38,7 +71,7 @@ index 27c6351..8298988 100644
  }
  
  /*!
-@@ -135,10 +141,16 @@ __forceinline__ __device__ float tanh(float x) {
+@@ -135,10 +153,16 @@ __forceinline__ __device__ float tanh(float x) {
   * \param x input
   */
  __forceinline__ __device__ half2 tanh(half2 x) {
@@ -55,7 +88,7 @@ index 27c6351..8298988 100644
  }
  
  /*!
-@@ -146,9 +158,15 @@ __forceinline__ __device__ half2 tanh(half2 x) {
+@@ -146,9 +170,15 @@ __forceinline__ __device__ half2 tanh(half2 x) {
   * \param x input
   */
  __forceinline__ __device__ half tanh(half x) {

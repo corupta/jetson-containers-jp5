@@ -411,12 +411,11 @@ https://github.com/user-attachments/assets/e262474d-6da5-4b24-994a-16607f21ea34
 
 ### MLC 0.20.0
 Yeah using flashinfer built when I was trying to make TensorRT-LLM work, I might be able to build this one.
-After lots of trial and error, I gave up. an early version of flashInfer 0.1.6 is necessary to build, but support for sm<75 added later. My best bet was to upgrade flashinfer to a version that would still be compatible with tvm/mlc but also support sm72. Well I did choose a good point that could compile, but it was not compatible with tvm sadly as several method declarations changed. 
+(I was able to build it without flashinfer with TIR-based KVCache)
+After lots of trial and error, I gave up. an early version of flashInfer 0.1.6 is necessary to build, but support for sm<75 added later. My best bet was to upgrade flashinfer to a version that would still be compatible with tvm/mlc but also support sm72. Well I did choose a good point that could compile, but it was not compatible with tvm sadly as several method declarations changed. As a one last resort, tried building wheels in Orin and install in Xavier, which also failed? (It built, but running models is broken :))
+
 Currently, both flashinfer and MLC is being refactored to use FFI, such that we won't need to build flashinfer within MLC, it is good news and bad news. bad news is it won't compile atm, good news is might compile in the future when they finish the new version :)
 I'm planning to try sglang and vllm as well, but lmdeploy is pretty fast anyways.
-
-
-
 
 
 

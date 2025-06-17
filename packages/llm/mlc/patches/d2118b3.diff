@@ -56,10 +56,43 @@ index 30e261c2..bb5f2427 100755
  set(CUTLASS_NVCC_ARCHS_ENABLED ${CUTLASS_NVCC_ARCHS} CACHE STRING "The SM architectures to build code for.")
 Submodule 3rdparty/flashinfer contains modified content
 diff --git a/3rdparty/tvm/3rdparty/flashinfer/include/flashinfer/math.cuh b/3rdparty/tvm/3rdparty/flashinfer/include/flashinfer/math.cuh
-index c2401c7..76133a2 100644
+index c2401c7..cc739b0 100644
 --- a/3rdparty/tvm/3rdparty/flashinfer/include/flashinfer/math.cuh
 +++ b/3rdparty/tvm/3rdparty/flashinfer/include/flashinfer/math.cuh
-@@ -115,13 +115,19 @@ __forceinline__ __device__ float rsqrt(float x) {
+@@ -54,10 +54,16 @@ __forceinline__ __device__ float ptx_log2(float x) {
+  * \param x input
+  */
+ __forceinline__ __device__ half2 ptx_exp2(half2 x) {
++#if (__CUDACC_VER_MAJOR__ < 11) || (__CUDA_ARCH__ < 750)
++  half lo = __low2half(x);
++  half hi = __high2half(x);
++  return __halves2half2(flashinfer::math::ptx_exp2(lo), flashinfer::math::ptx_exp2(hi));  // reuse half version
++#else
+   uint32_t y_u32;
+   uint32_t x_u32 = half2_as_uint32(x);
+   asm volatile("ex2.approx.f16x2 %0, %1;" : "=r"(y_u32) : "r"(x_u32));
+   return uint32_as_half2(y_u32);
++#endif
+ }
+ 
+ /*!
+@@ -65,9 +71,15 @@ __forceinline__ __device__ half2 ptx_exp2(half2 x) {
+  * \param x input
+  */
+ __forceinline__ __device__ half ptx_exp2(half x) {
++#if (__CUDACC_VER_MAJOR__ < 11) || (__CUDA_ARCH__ < 750)
++  float xf = __half2float(x);
++  float yf = flashinfer::math::ptx_exp2(xf);  // calls float version
++  return __float2half(yf);
++#else
+   ushort y_u16;
+   asm volatile("ex2.approx.f16 %0, %1;" : "=h"(y_u16) : "h"(__half_as_ushort(x)));
+   return __ushort_as_half(y_u16);
++#endif
+ }
+ 
+ /*!
+@@ -115,13 +127,19 @@ __forceinline__ __device__ float rsqrt(float x) {
  }
  
  /*!
@@ -80,7 +113,7 @@ index c2401c7..76133a2 100644
  }
  
  /*!
-@@ -129,10 +135,16 @@ __forceinline__ __device__ float tanh(float x) {
+@@ -129,10 +147,16 @@ __forceinline__ __device__ float tanh(float x) {
   * \param x input
   */
  __forceinline__ __device__ half2 tanh(half2 x) {
@@ -97,7 +130,7 @@ index c2401c7..76133a2 100644
  }
  
  /*!
-@@ -140,9 +152,15 @@ __forceinline__ __device__ half2 tanh(half2 x) {
+@@ -140,9 +164,15 @@ __forceinline__ __device__ half2 tanh(half2 x) {
   * \param x input
   */
  __forceinline__ __device__ half tanh(half x) {
@@ -319,6 +352,21 @@ index a010a051..68476415 100644
  if(NOT DEFINED TVM_SOURCE_DIR)
    if(DEFINED ENV{TVM_SOURCE_DIR})
      set(TVM_SOURCE_DIR "$ENV{TVM_SOURCE_DIR}")
+diff --git a/python/mlc_llm/interface/compiler_flags.py b/python/mlc_llm/interface/compiler_flags.py
+index d8a65b02..6b7efe1c 100644
+--- a/python/mlc_llm/interface/compiler_flags.py
++++ b/python/mlc_llm/interface/compiler_flags.py
+@@ -91,8 +91,8 @@ class OptimizationFlags:
+                 return False
+             arch_list = detect_cuda_arch_list(target)
+             for arch in arch_list:
+-                if arch < 80:
+-                    logger.warning("flashinfer is not supported on CUDA arch < 80")
++                if arch < 72:
++                    logger.warning("flashinfer is not supported on CUDA arch < 72")
+                     return False
+             return True
+ 
 diff --git a/python/mlc_llm/libinfo.py b/python/mlc_llm/libinfo.py
 index 2212d8c7..a322ef68 100644
 --- a/python/mlc_llm/libinfo.py
