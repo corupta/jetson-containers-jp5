@@ -402,6 +402,7 @@ https://github.com/user-attachments/assets/e262474d-6da5-4b24-994a-16607f21ea34
 * In the end, we download cuda 12.2 cudnn 8.9 tensorrt 8.6.2.3 and upgrade to tensorrt 8.6.1.5 cuda 12.4 cudnn 9.10
 * The reason for that is, what's introduced in tensorrt 9+ is int4, etc which are NOT SUPPORTED IN HARDWARE of Jetson Xavier AGX. So, even if tensorrt 9.3 could work partially, it was partially broke, 8.6 is more stable.
 * Also CUDA 12.5 breaks tensorrt 8.6 :) due to many header change. So, we use CUDA 12.4, although 12.5 works in Xavier.
+* `PIP_EXTRA_INDEX_URL=http://localhost:3141/jp5/cu124`
 * `LSB_RELEASE=22.04 CUDA_VERSION=12.4 PYTHON_VERSION=3.12 PYTORCH_VERSION=2.7.1 NUMPY_VERSION=1 CUDNN_VERSION=9.10 TENSORRT_VERSION=8.6 jetson-containers build tensorrt:8.6`
 * Deployed `corupta/tensorrt:8.6-r35.6.1-cp312-cu124-22.04`
 
