@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # finds the versions of JetPack-L4T and CUDA from the build environment:
 #
@@ -8,7 +9,7 @@
 #    CUDA_ARCHITECTURES (list[int]) -- e.g. [53, 62, 72, 87, 101]
 #    SYSTEM_ARCH (str) -- e.g. 'aarch64' or 'x86_64'
 #    LSB_RELEASE (str) -- e.g. '18.04', '20.04', '22.04'
-#    
+#
 import os
 import re
 import sys
@@ -127,7 +128,8 @@ def get_jetpack_version(l4t_version: str = None, default='6.2'):
 
     NVIDIA_JETPACK = {
         # -------- JP7 --------
-        "38.1.0": "7.0 EA",
+        "38.1.0": "7.0",
+        "38.0.0": "7.0 EA",
 
         # -------- JP6 --------
         "36.4.3": "6.2",
@@ -248,7 +250,7 @@ def get_cuda_version(version_file: str = "/usr/local/cuda/version.json", l4t_ver
             l4t_version = get_l4t_version(l4t_version=l4t_version)
             if l4t_version.major >= 38:
                 if l4t_version == Version('38.1'):
-                    cuda_version = '12.9'
+                    cuda_version = '13.0'
             elif l4t_version.major >= 36:
                 # L4T r36.x (JP 6.x) and above does not require having CUDA installed on host
                 # When CUDA is not installed on host, users can specify which version of
@@ -312,7 +314,7 @@ def get_cuda_arch(l4t_version: str=None, cuda_version: str=None, format=list):
         # Nano/TX1 = 5.3, TX2 = 6.2, Xavier = 7.2, Orin = 8.7, Thor = 10.1
         if IS_TEGRA:
             if l4t_version.major >= 38:  # JetPack 7
-                cuda_architectures = [87, 101]
+                cuda_architectures = [87, 101, 110]
             elif l4t_version.major >= 36:  # JetPack 6
                 cuda_architectures = [87]
             elif l4t_version.major >= 34:  # JetPack 5
@@ -320,15 +322,15 @@ def get_cuda_arch(l4t_version: str=None, cuda_version: str=None, format=list):
             elif l4t_version.major == 32:  # JetPack 4
                 cuda_architectures = [53, 62, 72]
         elif IS_SBSA:
-            cuda_architectures = [90, 100, 101, 120]  # Hopper, Blackwell
-            if cuda_version >= Version('12.9'):
-                cuda_architectures += [103, 121]
+            cuda_architectures = [87, 90, 100]  # Ampere Orin, Hopper GH200 90, Blackwell GB200 100
+            if cuda_version >= Version('13.0'):
+                cuda_architectures += [103, 110, 121] # Thor 110, Spark 121
     else:
         cuda_architectures = [
             80, 86,  # Ampere
             89,  # Ada
             90,  # Hopper
-            100, 101, 120  # Blackwell
+            100, 120  # Blackwell
         ]
 
         if cuda_version >= Version('12.9'):

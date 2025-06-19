@@ -3,7 +3,7 @@
 # group: llm
 # depends: [python]
 # test: test.py
-# notes: provides `huggingface-cli` and `huggingface-downloader` tools
+# notes: https://github.com/huggingface/huggingface_hub
 #---
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
@@ -24,6 +24,7 @@ RUN set -ex \
         huggingface_hub[cli] \
         dataclasses \
     \
+    && chmod a+x /usr/local/bin/huggingface-downloader /usr/local/bin/_huggingface-downloader.py \
     # make sure it loads \
     && huggingface-cli --help \
     && huggingface-downloader --help \

@@ -4,7 +4,7 @@ def nvidiamodelopt(version, requires=None, default=False):
     pkg = package.copy()
 
     if requires:
-        pkg['requires'] = requires   
+        pkg['requires'] = requires
 
     pkg['name'] = f'nvidia_modelopt:{version}'
 

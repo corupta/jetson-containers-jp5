@@ -2,7 +2,7 @@
 # name: taichi
 # group: sim
 # config: config.py
-# depends: [cuda, ninja, cmake, rust, llvm:20, vulkansdk:1.4.313.0]
+# depends: [cuda, ninja, cmake, rust, llvm:20, vulkan]
 # requires: '>=36.0.0'
 # test: test.py
 # notes: https://github.com/taichi-dev/taichi
@@ -63,6 +63,11 @@ RUN apt-get install -y --no-install-recommends \
     libxinerama-dev \
     libxrandr-dev \
     libzstd-dev \
+    libxkbcommon-dev \
+    libxkbcommon-x11-dev \
+    clang-20 \
+    libc++-dev \
+    libc++abi-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
