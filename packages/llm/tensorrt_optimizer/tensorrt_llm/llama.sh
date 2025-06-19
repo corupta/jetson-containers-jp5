@@ -56,25 +56,13 @@ llama_gptq()
 		    --max_input_len 128	    
     fi
 
-    python3 $LLAMA_EXAMPLES/../run.py \
+    python3 $LLAMA_EXAMPLES/../../../run.py \
         --max_input_len=128 \
         --max_output_len=128 \
         --max_attention_window_size 256 \
         --max_tokens_in_paged_kv_cache=256 \
         --tokenizer_dir $(huggingface-downloader $MODEL) \
         --engine_dir $engine_dir
-
-    python3 /opt/TensorRT-LLM/benchmarks/python/benchmark.py \
-        -m dec \
-        --engine_dir $engine_dir \
-        --quantization int4_weight_only_gptq \
-        --batch_size 1 \
-        --input_output_len "16,128;32,128;64,128;128,128" \
-        --log_level verbose \
-        --enable_cuda_graph \
-        --warm_up 2 \
-        --num_runs 3 \
-        --duration 10  
 }
 
 #llama_fp16
