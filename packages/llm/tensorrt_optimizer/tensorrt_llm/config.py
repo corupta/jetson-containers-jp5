@@ -49,6 +49,7 @@ package = [
     tensorrt_llm('0.12', branch='v0.12.0-jetson', requires='<cu128', default=False),
     tensorrt_llm('0.19.0', requires='>=cu128', default=False),
     tensorrt_llm('0.20.0', requires='>=cu126', default=False),
-    tensorrt_llm('0.21.0', branch='9c012d5b', patch='patches/9c012d5b.diff', requires='>=cu128', default=True),
+    tensorrt_llm('0.21.0', branch='9c012d5b', patch='patches/9c012d5b.diff', requires='>=cu128', default=False),
+    tensorrt_llm('0.21.1', branch='5d4ab47', patch='patches/5d4ab47.diff', requires='>=cu128', default=True),
     # tensorrt_llm('0.18.2', branch='v0.18.2', requires='>=cu122', default=True)
 ]

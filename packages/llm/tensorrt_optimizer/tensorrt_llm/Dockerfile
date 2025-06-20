@@ -21,7 +21,7 @@ ARG TRT_LLM_VERSION \
     SOURCE_DIR="/opt/TensorRT-LLM" \
     SOURCE_TAR="/tmp/TensorRT-LLM/source.tar.gz" \
     GIT_PATCHES="/tmp/TensorRT-LLM/patch.diff" \
-    TMP_DIR="/tmp/TensorRT-LLM/"
+    TMP_DIR="/tmp/TensorRT-LLM"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -35,15 +35,17 @@ RUN apt-get update && \
 RUN pip3 install polygraphy mpi4py uvicorn fastapi && \
     pip3 install --upgrade six
 
-COPY sources ${TMP_DIR}
+COPY install_cusparselt.sh ${TMP_DIR}/
 RUN bash ${TMP_DIR}/install_cusparselt.sh
 
+COPY sources ${TMP_DIR}/
 COPY ${TRT_LLM_PATCH} ${GIT_PATCHES}
-COPY build.sh install.sh /tmp/setup/
 
-RUN /tmp/setup/install.sh 
+COPY install ${TMP_DIR}/
+RUN bash ${TMP_DIR}/install.sh 
 
-RUN /tmp/setup/build.sh
+COPY build.sh ${TMP_DIR}/
+RUN bash ${TMP_DIR}/build.sh
 
 COPY llama.sh ${SOURCE_DIR}/
 
