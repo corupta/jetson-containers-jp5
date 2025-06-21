@@ -28,6 +28,7 @@ RUN apt-get update && \
         openmpi-bin \
         libopenmpi-dev \
         git-lfs \
+        xxd \
         ccache && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean
@@ -41,7 +42,7 @@ RUN bash ${TMP_DIR}/install_cusparselt.sh
 COPY sources ${TMP_DIR}/
 COPY ${TRT_LLM_PATCH} ${GIT_PATCHES}
 
-COPY install ${TMP_DIR}/
+COPY install.sh ${TMP_DIR}/
 RUN bash ${TMP_DIR}/install.sh 
 
 COPY build.sh ${TMP_DIR}/

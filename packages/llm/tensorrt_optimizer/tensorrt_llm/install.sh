@@ -15,19 +15,6 @@ else
 	git status
 	git submodule update --init --recursive
 	git lfs pull
-	
-	if [ -s ${GIT_PATCHES} ]; then 
-		echo "applying git patches from ${TRT_LLM_PATCH}"
-		git apply ${GIT_PATCHES}
-	fi
-	
-	sed -i '/^--extra-index-url/d' requirements.txt
-	sed -i 's|^tensorrt\W.*|tensorrt|' requirements.txt
-	sed -i 's|^torch\W.*|torch|' requirements.txt
-	#sed -i 's|nvidia-cudnn.*||' requirements.txt
-	
-	git status
-	git diff --submodule=diff
 fi	
 
 # if [ "$FORCE_BUILD" == "on" ]; then

@@ -7,6 +7,20 @@ set -ex
 echo "Building TensorRT-LLM ${TRT_LLM_VERSION}"
 
 cd ${SOURCE_DIR}
+if [ -s ${GIT_PATCHES} ]; then 
+        echo "applying git patches from ${TRT_LLM_PATCH}"
+        git apply ${GIT_PATCHES}
+fi
+
+sed -i '/^--extra-index-url/d' requirements.txt
+sed -i 's|^tensorrt\W.*|tensorrt|' requirements.txt
+sed -i 's|^torch\W.*|torch|' requirements.txt
+#sed -i 's|nvidia-cudnn.*||' requirements.txt
+
+git status
+# git diff --submodule=diff
+
+
 sed -i 's|venv_python = venv_prefix / sys\.executable\.removeprefix(sys\.prefix)\[1:\]|venv_python = venv_prefix / "bin" / Path(sys.executable).name|' ${SOURCE_DIR}/scripts/build_wheel.py
 sed -i 's|^flashinfer-python\W.*|flashinfer-python|' ${SOURCE_DIR}/requirements.txt
 # sed -i 's/find_package(TensorRT 10 REQUIRED COMPONENTS OnnxParser)/find_package(TensorRT REQUIRED COMPONENTS OnnxParser)/' ${SOURCE_DIR}/cpp/CMakeLists.txt
@@ -17,25 +31,18 @@ sed -i 's|^flashinfer-python\W.*|flashinfer-python|' ${SOURCE_DIR}/requirements.
 # patch tensorrt header for fp4 (in TensorRT 10.7.0)
 sed -i 's/^.*kINT4 = 9,.*/    kINT4 = 9,  kFP4=10,/' /usr/include/aarch64-linux-gnu/NvInferRuntimeBase.h
 
-# mv cpp/tensorrt_llm/kernels/contextFusedMultiHeadAttention/cubin/fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm86.cubin.cpp \
-#         cpp/tensorrt_llm/kernels/contextFusedMultiHeadAttention/cubin/fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm87.cubin.cpp
-# sed -i 's|_sm86_|_sm87_|g' \
-#         cpp/tensorrt_llm/kernels/contextFusedMultiHeadAttention/cubin/fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm87.cubin.cpp
 
-for f in $(find . -name '*sm_86*.cpp'); do
-        f2=$(echo $f | sed 's|sm_86|sm_87|g')
-        echo "patch sm86->sm87 $f2"
-        mv $f $f2
-        sed -i 's|_sm_86_|_sm_87_|g' $f2
-        sed -i 's|_sm86_|_sm87_|g' $f2
-done
-for f in $(find . -name '*sm86*.cpp'); do
-        f2=$(echo $f | sed 's|sm86|sm87|g')
-        echo "patch sm86->sm87 $f2"
-        mv $f $f2
-        sed -i 's|_sm_86_|_sm_87_|g' $f2
-        sed -i 's|_sm86_|_sm87_|g' $f2
-done
+# BUILD CUBINS FOR JETSON ORIN. (SM 87)
+cd ${SOURCE_DIR}/cpp/kernels/xqa
+python3 gen_cubins.py
+cp -r cubin/*sm_87*.cpp ${SOURCE_DIR}/cpp/tensorrt_llm/kernels/decoderMaskedMultiheadAttention/cubin/
+rm ${SOURCE_DIR}/cpp/tensorrt_llm/kernels/decoderMaskedMultiheadAttention/cubin/*sm_86*.cpp
+# TODO WE MIGHT FIX MEDUSA BUILD AS WELL (ie: python3 gen_cubins.py medusa)
+#  to do so, compare mha.cu, mha_sm90.cu and mha_sm120.cu and fix
+#       mha.cu(1485): error: identifier "inputSeqLen" is undefined => static_assert(inputSeqLen == 1);
+
+# fmha now uses cu instead of cubins. (but only if we delete them)
+rm ${SOURCE_DIR}/cpp/tensorrt_llm/kernels/contextFusedMultiHeadAttention/cubin/*.cubin.cpp
 
 python3 ${SOURCE_DIR}/scripts/build_wheel.py \
         --clean \
