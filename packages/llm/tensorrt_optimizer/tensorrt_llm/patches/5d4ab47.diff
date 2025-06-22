@@ -66,7 +66,7 @@ index 5f14c8fec..1012ce469 100644
  # #################################################################################################
  # C++ unit tests
 diff --git a/cpp/kernels/fmha_v2/setup.py b/cpp/kernels/fmha_v2/setup.py
-index ec0032cfa..174ee8d97 100644
+index ec0032cfa..4344e1dae 100644
 --- a/cpp/kernels/fmha_v2/setup.py
 +++ b/cpp/kernels/fmha_v2/setup.py
 @@ -3434,14 +3434,14 @@ extern uint32_t cubin_fmha_v2_flash_attention_bf16_64_128_S_q_paged_kv_192x128_t
@@ -100,37 +100,40 @@ index ec0032cfa..174ee8d97 100644
 -extern unsigned char cubin_fmha_v2_flash_attention_e4m3_fp32_64_64_S_q_paged_kv_576x512_output_bf16_sm89_cu_cubin[];
 -extern uint32_t cubin_fmha_v2_flash_attention_e4m3_fp32_64_64_S_q_paged_kv_576x512_output_bf16_sm89_cu_cubin_len;"""
 -    result = add_kernel_line(result, target, addition)
-+#     target = "#ifndef EXCLUDE_SM_89"
-+#     addition = """extern unsigned char cubin_fmha_v2_flash_attention_bf16_64_32_S_qkv_128_sm89_cu_cubin[];
-+# extern uint32_t cubin_fmha_v2_flash_attention_bf16_64_32_S_qkv_128_sm89_cu_cubin_len;
-+# extern unsigned char cubin_fmha_v2_flash_attention_e4m3_fp32_64_64_S_q_paged_kv_576x512_output_bf16_sm89_cu_cubin[];
-+# extern uint32_t cubin_fmha_v2_flash_attention_e4m3_fp32_64_64_S_q_paged_kv_576x512_output_bf16_sm89_cu_cubin_len;"""
-+#     result = add_kernel_line(result, target, addition)
- 
+-
 -    target = "#ifndef EXCLUDE_SM_86"
 -    addition = """extern unsigned char cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm86_cu_cubin[];
 -extern uint32_t cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm86_cu_cubin_len;"""
-+    target = "#ifndef EXCLUDE_SM_87"
-+    addition = """extern unsigned char cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm87_cu_cubin[];
-+extern uint32_t cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm87_cu_cubin_len;"""
-     result = add_kernel_line(result, target, addition)
- 
+-    result = add_kernel_line(result, target, addition)
+-
 -    target = "#ifndef EXCLUDE_SM_80"
 -    addition = """extern unsigned char cubin_fmha_v2_flash_attention_fp16_128_128_S_q_paged_kv_64_sm80_cu_cubin[];
 -extern uint32_t cubin_fmha_v2_flash_attention_fp16_128_128_S_q_paged_kv_64_sm80_cu_cubin_len;
 -extern unsigned char cubin_fmha_v2_flash_attention_fp16_64_128_S_q_paged_kv_128_sm80_cu_cubin[];
 -extern uint32_t cubin_fmha_v2_flash_attention_fp16_64_128_S_q_paged_kv_128_sm80_cu_cubin_len;"""
 -    result = add_kernel_line(result, target, addition)
-+#     target = "#ifndef EXCLUDE_SM_80"
-+#     addition = """extern unsigned char cubin_fmha_v2_flash_attention_fp16_128_128_S_q_paged_kv_64_sm80_cu_cubin[];
-+# extern uint32_t cubin_fmha_v2_flash_attention_fp16_128_128_S_q_paged_kv_64_sm80_cu_cubin_len;
-+# extern unsigned char cubin_fmha_v2_flash_attention_fp16_64_128_S_q_paged_kv_128_sm80_cu_cubin[];
-+# extern uint32_t cubin_fmha_v2_flash_attention_fp16_64_128_S_q_paged_kv_128_sm80_cu_cubin_len;"""
-+#     result = add_kernel_line(result, target, addition)
++    #     target = "#ifndef EXCLUDE_SM_89"
++    #     addition = """extern unsigned char cubin_fmha_v2_flash_attention_bf16_64_32_S_qkv_128_sm89_cu_cubin[];
++    # extern uint32_t cubin_fmha_v2_flash_attention_bf16_64_32_S_qkv_128_sm89_cu_cubin_len;
++    # extern unsigned char cubin_fmha_v2_flash_attention_e4m3_fp32_64_64_S_q_paged_kv_576x512_output_bf16_sm89_cu_cubin[];
++    # extern uint32_t cubin_fmha_v2_flash_attention_e4m3_fp32_64_64_S_q_paged_kv_576x512_output_bf16_sm89_cu_cubin_len;"""
++    #     result = add_kernel_line(result, target, addition)
++
++    #     target = "#ifndef EXCLUDE_SM_87"
++    #     addition = """extern unsigned char cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm87_cu_cubin[];
++    # extern uint32_t cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm87_cu_cubin_len;"""
++    #     result = add_kernel_line(result, target, addition)
++
++    #     target = "#ifndef EXCLUDE_SM_80"
++    #     addition = """extern unsigned char cubin_fmha_v2_flash_attention_fp16_128_128_S_q_paged_kv_64_sm80_cu_cubin[];
++    # extern uint32_t cubin_fmha_v2_flash_attention_fp16_128_128_S_q_paged_kv_64_sm80_cu_cubin_len;
++    # extern unsigned char cubin_fmha_v2_flash_attention_fp16_64_128_S_q_paged_kv_128_sm80_cu_cubin[];
++    # extern uint32_t cubin_fmha_v2_flash_attention_fp16_64_128_S_q_paged_kv_128_sm80_cu_cubin_len;"""
++    #     result = add_kernel_line(result, target, addition)
  
      def modify_kernel_line(result, target, new_line):
          lines = result.split('\n')
-@@ -3480,24 +3480,24 @@ extern uint32_t cubin_fmha_v2_flash_attention_fp16_64_128_S_q_paged_kv_128_sm80_
+@@ -3480,25 +3480,25 @@ extern uint32_t cubin_fmha_v2_flash_attention_fp16_64_128_S_q_paged_kv_128_sm80_
                  break
          return '\n'.join(lines)
  
@@ -164,11 +167,13 @@ index ec0032cfa..174ee8d97 100644
  
 -    target = "fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_causal_sm86_kernel_nl"
 -    new_line = '{ DATA_TYPE_BF16, DATA_TYPE_BF16, 0, 64, 32, 64, 64, 0, 0, 0, kSM_86, cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm86_cu_cubin, cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm86_cu_cubin_len, "fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_causal_sm86_kernel_nl", 16384, 128, 64, 1, 2, false, true, false, true, true, false, false, true, nullptr},'
-+    target = "fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_causal_sm87_kernel_nl"
-+    new_line = '{ DATA_TYPE_BF16, DATA_TYPE_BF16, 0, 64, 32, 64, 64, 0, 0, 0, kSM_87, cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm87_cu_cubin, cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm87_cu_cubin_len, "fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_causal_sm87_kernel_nl", 16384, 128, 64, 1, 2, false, true, false, true, true, false, false, true, nullptr},'
-     result = modify_kernel_line(result, target, new_line)
+-    result = modify_kernel_line(result, target, new_line)
++    # target = "fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_causal_sm87_kernel_nl"
++    # new_line = '{ DATA_TYPE_BF16, DATA_TYPE_BF16, 0, 64, 32, 64, 64, 0, 0, 0, kSM_87, cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm87_cu_cubin, cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm87_cu_cubin_len, "fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_causal_sm87_kernel_nl", 16384, 128, 64, 1, 2, false, true, false, true, true, false, false, true, nullptr},'
++    # result = modify_kernel_line(result, target, new_line)
  
      # make sure only one empty line at the end
+     lines = result.split('\n')
 @@ -3983,7 +3983,7 @@ def enumerate_hmma_kernels(specs, sm=80, dtype='fp16'):
  
      specs.append(

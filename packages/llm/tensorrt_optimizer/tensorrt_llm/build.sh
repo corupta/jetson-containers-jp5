@@ -41,6 +41,9 @@ rm ${SOURCE_DIR}/cpp/tensorrt_llm/kernels/decoderMaskedMultiheadAttention/cubin/
 #  to do so, compare mha.cu, mha_sm90.cu and mha_sm120.cu and fix
 #       mha.cu(1485): error: identifier "inputSeqLen" is undefined => static_assert(inputSeqLen == 1);
 
+# │/usr/bin/ld: ../tensorrt_llm/libtensorrt_llm.so: undefined reference to `tensorrt_llm::kernels::cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm87_cu_cubin'                                                                                                                             │
+# │/usr/bin/ld: ../tensorrt_llm/libtensorrt_llm.so: undefined reference to `tensorrt_llm::kernels::cubin_fmha_v2_flash_attention_bf16_64_32_S_q_paged_kv_64_sm87_cu_cubin_len'    
+
 # fmha now uses cu instead of cubins. (but only if we delete them)
 rm ${SOURCE_DIR}/cpp/tensorrt_llm/kernels/contextFusedMultiHeadAttention/cubin/*.cubin.cpp
 
