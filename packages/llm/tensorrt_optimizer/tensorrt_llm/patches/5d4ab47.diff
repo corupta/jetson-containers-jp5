@@ -2995,10 +2995,21 @@ index e13694b9c..2c9d431f9 100644
              )
          else:
 diff --git a/tensorrt_llm/_torch/models/modeling_qwen3.py b/tensorrt_llm/_torch/models/modeling_qwen3.py
-index c91c314e9..44d865d21 100644
+index c91c314e9..da2f8a3d8 100644
 --- a/tensorrt_llm/_torch/models/modeling_qwen3.py
 +++ b/tensorrt_llm/_torch/models/modeling_qwen3.py
-@@ -33,7 +33,7 @@ class Qwen3Attention(Attention):
+@@ -16,7 +16,9 @@ from ..modules.gated_mlp import GatedMLP
+ from ..modules.linear import TensorParallelMode
+ from ..modules.multi_stream_utils import maybe_execute_in_parallel
+ from ..modules.rms_norm import RMSNorm
+-from .modeling_utils import (DecoderModel, DecoderModelForCausalLM,
++from ..speculative import SpecMetadata
++from .modeling_speculative import SpecDecOneEngineForCausalLM
++from .modeling_utils import (DecoderModel,
+                              register_auto_model)
+ 
+ 
+@@ -33,7 +35,7 @@ class Qwen3Attention(Attention):
          if getattr(config, "rope_scaling", None) is not None:
              pos_embd_params = PositionalEmbeddingParams(
                  type=PositionEmbeddingType.from_string(
@@ -3007,6 +3018,60 @@ index c91c314e9..44d865d21 100644
                  rope=RopeParams.from_config(config),
              )
          else:
+@@ -118,6 +120,7 @@ class Qwen3DecoderLayer(DecoderLayer):
+         self,
+         model_config: ModelConfig[Qwen3Config],
+         layer_idx: int,
++        spec_metadata: Optional[SpecMetadata] = None,
+     ) -> Tuple[torch.Tensor, torch.Tensor]:
+         super().__init__()
+         self.layer_idx = layer_idx
+@@ -170,6 +173,9 @@ class Qwen3DecoderLayer(DecoderLayer):
+         hidden_states, residual = self.post_attention_layernorm(
+             hidden_states, residual)
+         hidden_states = self.mlp(hidden_states)
++        if spec_metadata:
++            spec_metadata.maybe_capture_hidden_states(self.layer_idx,
++                                                      hidden_states, residual)
+ 
+         return hidden_states, residual
+ 
+@@ -208,6 +214,7 @@ class Qwen3Model(DecoderModel):
+         position_ids: Optional[torch.IntTensor] = None,
+         inputs_embeds: Optional[torch.FloatTensor] = None,
+         mrope_config: Optional[Tuple[torch.Tensor, int]] = None,
++        spec_metadata: Optional[SpecMetadata] = None,
+         **kwargs,
+     ) -> torch.Tensor:
+         if (input_ids is None) ^ (inputs_embeds is not None):
+@@ -228,6 +235,7 @@ class Qwen3Model(DecoderModel):
+                 attn_metadata=attn_metadata,
+                 residual=residual,
+                 mrope_config=mrope_config,
++                spec_metadata=spec_metadata,
+             )
+ 
+         hidden_states, _ = self.norm(hidden_states, residual)
+@@ -235,7 +243,7 @@ class Qwen3Model(DecoderModel):
+ 
+ 
+ @register_auto_model("Qwen3ForCausalLM")
+-class Qwen3ForCausalLM(DecoderModelForCausalLM[Qwen3Model, Qwen3Config]):
++class Qwen3ForCausalLM(SpecDecOneEngineForCausalLM[Qwen3Model, Qwen3Config]):
+ 
+     def __init__(
+         self,
+@@ -243,9 +251,7 @@ class Qwen3ForCausalLM(DecoderModelForCausalLM[Qwen3Model, Qwen3Config]):
+     ):
+         super().__init__(
+             Qwen3Model(model_config),
+-            config=model_config,
+-            hidden_size=model_config.pretrained_config.hidden_size,
+-            vocab_size=model_config.pretrained_config.vocab_size,
++            model_config,
+         )
+ 
+     # NOTE: Qwen2-VL needs special mrope_config so adding separate forward() function to accept 'mrope_config'.
 diff --git a/tensorrt_llm/_torch/models/modeling_qwen_moe.py b/tensorrt_llm/_torch/models/modeling_qwen_moe.py
 index 0d18a5b90..52de9b1e8 100644
 --- a/tensorrt_llm/_torch/models/modeling_qwen_moe.py
